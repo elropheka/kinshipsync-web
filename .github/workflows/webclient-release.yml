@@ -81,6 +81,15 @@ jobs:
           echo "Build verification passed"
           echo "Files in dist:"
           ls -la dist/
+          echo ""
+          echo "Checking for .htaccess in dist:"
+          if [ -f "dist/.htaccess" ]; then
+            echo "✅ .htaccess found in dist/"
+            cat dist/.htaccess
+          else
+            echo "❌ .htaccess NOT found in dist/ - this will cause deployment issues!"
+            exit 1
+          fi
 
       - name: Deploy to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -97,6 +106,7 @@ jobs:
             .env*
             cgi-bin/**
           include: |
+            **/.htaccess
             .htaccess
           log-level: verbose
         continue-on-error: false

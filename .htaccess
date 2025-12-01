@@ -11,5 +11,5 @@
   RewriteRule ^ index.html [L]
 </IfModule>
 
-# DirectoryIndex directive to prioritize index.html over index.php
-DirectoryIndex index.html index.php
+# DirectoryIndex directive to prioritize index.html
+DirectoryIndex index.html
