@@ -32,7 +32,6 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -47,7 +46,6 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     if (file) {
       if (!file.type.startsWith('image/')) {
         const errMsg = 'Invalid file type. Please select an image.';
-        setError(errMsg);
         toast.error(errMsg);
         if (onError) onError(errMsg);
         setSelectedFile(null);
@@ -56,21 +54,18 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
       }
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
-      setError(null); // Clear previous errors
     }
   };
 
   const handleUpload = async () => {
     if (!selectedFile) {
       const errMsg = 'No file selected to upload.';
-      setError(errMsg);
       toast.error(errMsg);
       if (onError) onError(errMsg);
       return;
     }
 
     setIsLoading(true);
-    setError(null);
     try {
       const downloadURL = await uploadFileToStorage(selectedFile, storagePath);
       onImageUploaded(downloadURL);
@@ -80,7 +75,6 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     } catch (err) {
       const errorMessage = getErrorMessage(err) || 'Unknown error during upload.';
       console.error('Upload failed:', errorMessage);
-      setError(errorMessage);
       toast.error(`Upload failed: ${errorMessage}`);
       if (onError) onError(errorMessage);
       // Do not clear selectedFile or previewUrl on failure, so user can retry or choose another
@@ -93,7 +87,6 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     setSelectedFile(null);
     setPreviewUrl(null);
     onImageRemoved(); // Signal intent to remove
-    setError(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = ''; // Clear the file input
     }

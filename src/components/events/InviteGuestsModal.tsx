@@ -44,13 +44,11 @@ const InviteGuestsModal: React.FC<InviteGuestsModalProps> = ({
   const [customMessage, setCustomMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setSuccessMessage(null);
-    setErrorMessage(null);
 
     if (!recipientEmail && !recipientUserId) {
       toast.error('Please provide either a recipient email or a recipient user ID.');

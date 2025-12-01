@@ -48,7 +48,6 @@ const Auth = () => {
   const navigate = useNavigate(); // For redirecting after auth
   const [activeTab, setActiveTab] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false); // Separate loading for Google
 
@@ -84,7 +83,6 @@ const Auth = () => {
 
   const handleSignupSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, signupData.email, signupData.password);
@@ -123,7 +121,6 @@ const Auth = () => {
       // Navigation will be handled by AuthContext listener in App.tsx
     } catch (err) {
       const errorMsg = getErrorMessage(err);
-      setError(errorMsg);
       toast.error(errorMsg);
       console.error('Signup error:', err);
     } finally {
@@ -133,7 +130,6 @@ const Auth = () => {
 
   const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, loginData.email, loginData.password);
@@ -142,7 +138,6 @@ const Auth = () => {
       // Navigation will be handled by AuthContext listener in App.tsx
     } catch (err) {
       const errorMsg = getErrorMessage(err);
-      setError(errorMsg);
       toast.error(errorMsg);
       console.error('Login error:', err);
     } finally {
@@ -151,7 +146,6 @@ const Auth = () => {
   };
 
   const handleGoogleSignIn = async () => {
-    setError(null);
     setGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
@@ -198,7 +192,6 @@ const Auth = () => {
       // Navigation will be handled by AuthContext listener in App.tsx
     } catch (err) {
       const errorMsg = getErrorMessage(err);
-      setError(errorMsg);
       toast.error(errorMsg);
       console.error('Google Sign-In error:', err);
     } finally {
