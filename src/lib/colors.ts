@@ -1,0 +1,96 @@
+// Color constants from the new teal and nude palette
+export const teal = '#008080';
+export const lightTeal = '#4DB6AC';
+export const baseNude = '#F5EBDD';
+export const lightNude = '#FBF6EF';
+export const brown = '#A47551';
+export const darkBrown = '#7B4E2D';
+
+export const Colors = {
+  light: {
+    text: '#11181C',
+    textSecondary: '#687076',
+    textLight: '#FFFFFF',
+    textDarkContrast: '#076678',
+
+    background: baseNude,
+    backgroundPrimary: '#FFF8F0',
+    backgroundSecondary: lightNude,
+    backgroundLight: '#FFFFFF',
+    backgroundPaper: '#FFFFFF',
+    neutralBg: '#FFF5EC',
+    buttonPrimary: teal,
+
+    primary: teal,
+    primaryContrastText: '#FFFFFF',
+    accent: brown,
+    accentContrastText: '#FFFFFF',
+    accentHighlight: '#E6C300',
+
+    tint: teal,
+    icon: '#687076',
+    tabIconDefault: '#A47551',
+    tabIconSelected: teal,
+    border: '#D1D5DB',
+    divider: '#E5E7EB',
+
+    success: '#4CAF50',
+    successContrastText: '#FFFFFF',
+    error: '#F44336',
+    danger: '#D32F2F',
+    errorContrastText: '#FFFFFF',
+    warning: '#FFC107',
+    warningContrastText: '#11181C',
+    info: '#2196F3',
+    infoContrastText: '#FFFFFF',
+
+    primaryLight: lightTeal,
+    successLight: '#E8F5E9',
+    warningLight: '#FFF8E1',
+    infoLight: '#E3F2FD',
+    errorLight: '#FFEBEE',
+    dangerLight: '#FFCDD2',
+    secondary: brown,
+    secondaryLight: '#D8BFA6',
+    tertiary: '#FF6F00',
+    tertiaryLight: '#FFE0B2',
+    grey: '#B0BEC5',
+  },
+  dark: {
+    text: '#ECEDEE',
+    textSecondary: '#9BA1A6',
+    textLight: '#1E1E1E',
+    textDarkContrast: '#E0F2F7',
+
+    background: '#121212',
+    backgroundPrimary: '#1E1E1E',
+    backgroundSecondary: '#2E2E2E',
+    backgroundLight: '#1A1A1A',
+    backgroundPaper: '#1E1E1E',
+    neutralBg: '#2B2B2B',
+    buttonPrimary: darkBrown,
+
+    primary: '#0EA175',
+    primaryContrastText: '#FFFFFF',
+    accent: '#A47551',
+    accentContrastText: '#FFFFFF',
+    accentHighlight: '#FFD700',
+
+    tint: '#0EA175',
+    icon: '#9BA1A6',
+    tabIconDefault: '#9BA1A6',
+    tabIconSelected: '#0EA175',
+    border: '#424242',
+    divider: '#2E2E2E',
+
+    success: '#66BB6A',
+    successContrastText: '#121212',
+    error: '#EF5350',
+    danger: '#E57373',
+    errorContrastText: '#121212',
+    warning: '#FFEE58',
+    warningContrastText: '#121212',
+    info: '#42A5F5',
+    infoContrastText: '#121212',
+  },
+}; 

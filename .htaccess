@@ -1,0 +1,15 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Serve existing files or directories as is
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Otherwise, route everything to index.html
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# DirectoryIndex directive to prioritize index.html over index.php
+DirectoryIndex index.html index.php
