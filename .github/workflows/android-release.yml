@@ -1,0 +1,123 @@
+name: Build Android Release
+
+on:
+  push:
+    branches:
+      - release/android
+
+jobs:
+  build:
+    name: Build Release AAB
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: mobile/kinshipSync/package-lock.json
+
+      - name: Install dependencies
+        working-directory: mobile/kinshipSync
+        run: npm ci --legacy-peer-deps
+
+      - name: Increment version
+        id: version
+        working-directory: mobile/kinshipSync
+        run: |
+          # Get current version from package.json
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Increment patch version
+          npm version patch --no-git-tag-version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "New version: $NEW_VERSION"
+          
+          # Extract version components for Android
+          VERSION_NAME=$NEW_VERSION
+          # Convert version to version code (remove dots and pad if needed)
+          VERSION_CODE=$(echo $NEW_VERSION | sed 's/\.//g' | sed 's/^/1/')
+          
+          echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
+          
+          # Update Android version
+          sed -i "s/versionName \".*\"/versionName \"$VERSION_NAME\"/" android/app/build.gradle
+          sed -i "s/versionCode [0-9]*/versionCode $VERSION_CODE/" android/app/build.gradle
+
+      - name: Commit version changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add mobile/kinshipSync/package.json
+          git add mobile/kinshipSync/android/app/build.gradle
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Bump version to ${{ steps.version.outputs.version_name }}"
+            git push
+          fi
+
+      - name: Create Git Tag
+        run: |
+          if git rev-parse "v${{ steps.version.outputs.version_name }}" >/dev/null 2>&1; then
+            echo "Tag v${{ steps.version.outputs.version_name }} already exists"
+          else
+            git tag "v${{ steps.version.outputs.version_name }}"
+            git push origin "v${{ steps.version.outputs.version_name }}"
+          fi
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Restore Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > mobile/kinshipSync/android/app/my-release-key.keystore
+
+      - name: Set up Gradle properties
+        run: |
+          echo "MYAPP_UPLOAD_STORE_FILE=my-release-key.keystore" >> mobile/kinshipSync/android/gradle.properties
+          echo "MYAPP_UPLOAD_KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> mobile/kinshipSync/android/gradle.properties
+          echo "MYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> mobile/kinshipSync/android/gradle.properties
+          echo "MYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> mobile/kinshipSync/android/gradle.properties
+          echo "org.gradle.java.home=$JAVA_HOME" >> mobile/kinshipSync/android/gradle.properties
+
+      - name: Build Release AAB
+        working-directory: mobile/kinshipSync/android
+        run: ./gradlew bundleRelease
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kinship-release-v${{ steps.version.outputs.version_name }}.aab
+          path: mobile/kinshipSync/android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version.outputs.version_name }}
+          release_name: Release v${{ steps.version.outputs.version_name }}
+          body: |
+            Automated release for version ${{ steps.version.outputs.version_name }}
+            
+            Changes:
+            - Version bumped to ${{ steps.version.outputs.version_name }}
+            - Android version code: ${{ steps.version.outputs.version_code }}
+          draft: false
+          prerelease: false

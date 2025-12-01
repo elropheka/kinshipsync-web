@@ -1,0 +1,145 @@
+name: Build and Deploy Web Client
+
+on:
+  push:
+    branches:
+      - main
+
+# Prevent concurrent builds - cancel old builds when new ones start
+concurrency:
+  group: web-deploy
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and Deploy Web Client
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: webClient/kinshipSync/package-lock.json
+
+      - name: Install dependencies
+        working-directory: webClient/kinshipSync
+        run: npm install --legacy-peer-deps
+
+      - name: Increment version
+        id: version
+        working-directory: webClient/kinshipSync
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+          npm version patch --no-git-tag-version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "New version: $NEW_VERSION"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Commit version changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add webClient/kinshipSync/package.json
+          git commit -m "Bump web client version to ${{ steps.version.outputs.version }}"
+          git pull --rebase origin release/web || echo "Warning: Pull/rebase failed, potential conflicts."
+          git push
+
+      - name: Create Git Tag
+        run: |
+          if git rev-parse "web-v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "Tag web-v${{ steps.version.outputs.version }} already exists"
+          else
+            git tag "web-v${{ steps.version.outputs.version }}"
+            git push origin "web-v${{ steps.version.outputs.version }}"
+          fi
+
+      - name: Build Vite App
+        working-directory: webClient/kinshipSync
+        env:
+          VITE_APP_FIREBASE_VAPID_KEY: ${{ secrets.VITE_APP_FIREBASE_VAPID_KEY }}
+        run: npm run build
+
+      - name: Verify build output
+        working-directory: webClient/kinshipSync
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Build failed - dist directory not found"
+            exit 1
+          fi
+          echo "Build verification passed"
+          echo "Files in dist:"
+          ls -la dist/
+
+      - name: Deploy to cPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: kinshipsync.com
+          username: ${{ secrets.CPANEL_USERNAME }}
+          password: ${{ secrets.CPANEL_PASSWORD }}
+          local-dir: ./webClient/kinshipSync/dist/
+          server-dir: ./public_html/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            .env*
+            cgi-bin/**
+          include: |
+            .htaccess
+          log-level: verbose
+        continue-on-error: false
+
+      - name: Verify .htaccess deployment
+        run: |
+          echo "🔍 Checking if .htaccess file was deployed..."
+          echo "If the routing issue persists, check:"
+          echo "1. cPanel File Manager - verify .htaccess exists in public_html/"
+          echo "2. cPanel Error Logs - check for mod_rewrite errors"
+          echo "3. Contact hosting provider if mod_rewrite is disabled"
+
+      - name: Create GitHub Release
+        if: success()
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: web-v${{ steps.version.outputs.version }}
+          name: Web Release v${{ steps.version.outputs.version }}
+          body: |
+            Automated web client release for version ${{ steps.version.outputs.version }}
+
+            🚀 **Deployment Details:**
+            - Version bumped to ${{ steps.version.outputs.version }}
+            - Deployed to: https://kinshipsync.com/
+            - Build verified and deployment completed successfully
+            
+            **Verify deployment:** https://kinshipsync.com/
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+
+      - name: Deployment failure notification
+        if: failure()
+        run: |
+          echo "❌ Deployment failed for version ${{ steps.version.outputs.version }}"
+          echo ""
+          echo "🔍 Troubleshooting steps:"
+          echo "1. **MOST COMMON ISSUE**: Check if cPanel password has expired and needs reset"
+          echo "2. Update CPANEL_PASSWORD secret in repository settings if password was reset"
+          echo "3. Verify FTP access is enabled in cPanel"
+          echo "4. Ensure the public_html directory exists, has proper permissions, and cgi-bin folder is preserved"
+          echo "5. Check if your hosting provider has any FTP restrictions"
+          echo ""
+          echo "📧 Contact your hosting provider if issues persist"
+          echo ""
+          echo "ℹ️  With concurrency control enabled, any new pushes will cancel this failed build and start fresh"
