@@ -30,15 +30,15 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: webClient/kinshipSync/package-lock.json
+          cache-dependency-path: ./package-lock.json
 
       - name: Install dependencies
-        working-directory: webClient/kinshipSync
+        working-directory: ./
         run: npm install --legacy-peer-deps
 
       - name: Increment version
         id: version
-        working-directory: webClient/kinshipSync
+        working-directory: ./
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           echo "Current version: $CURRENT_VERSION"
@@ -51,7 +51,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add webClient/kinshipSync/package.json
+          git add ./package.json
           git commit -m "Bump web client version to ${{ steps.version.outputs.version }}"
           git pull --rebase origin release/web || echo "Warning: Pull/rebase failed, potential conflicts."
           git push
@@ -66,13 +66,13 @@ jobs:
           fi
 
       - name: Build Vite App
-        working-directory: webClient/kinshipSync
+        working-directory: ./
         env:
           VITE_APP_FIREBASE_VAPID_KEY: ${{ secrets.VITE_APP_FIREBASE_VAPID_KEY }}
         run: npm run build
 
       - name: Verify build output
-        working-directory: webClient/kinshipSync
+        working-directory: ./
         run: |
           if [ ! -d "dist" ]; then
             echo "Build failed - dist directory not found"
@@ -88,7 +88,7 @@ jobs:
           server: kinshipsync.com
           username: ${{ secrets.CPANEL_USERNAME }}
           password: ${{ secrets.CPANEL_PASSWORD }}
-          local-dir: ./webClient/kinshipSync/dist/
+          local-dir: ./dist/
           server-dir: ./public_html/
           exclude: |
             **/.git*
