@@ -20,7 +20,8 @@ export interface UserProfile {
     country?: string;
   };
   fcmTokens?: string[]; // Firebase Cloud Messaging tokens, usually managed server-side or via specific hooks
-  
+  oneSignalSubscriptionIds?: string[];
+
   role: "organizer" | "admin" | "vendor" | "member"; // Singular role
   isAdmin?: boolean; // Explicit admin status (may become redundant)
   isVendor?: boolean; // Explicit vendor status (may become redundant)

@@ -1,9 +1,9 @@
 import { doc, updateDoc, arrayUnion, arrayRemove, getDoc, collection, addDoc, query, where, getDocs, orderBy, serverTimestamp, writeBatch, Timestamp } from 'firebase/firestore';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
-import { firestore, app, functions } from './firebaseConfig'; // Assuming this path for web client
-import { httpsCallable } from 'firebase/functions';
-import type { UserProfile } from '../types/userTypes'; // Assuming UserProfile type exists in web client
-import type { InAppNotification, NewNotificationPayload} from '../types/notificationTypes';
+import { firestore, app } from './firebaseConfig';
+import type { UserProfile } from '../types/userTypes';
+import { messagingService } from './MessagingService';
+import type { InAppNotification, InAppNotificationData, NewNotificationPayload} from '../types/notificationTypes';
 
 // --- Permission Handling (Web) ---
 export const requestNotificationPermissions = async (): Promise<boolean> => {
@@ -219,57 +219,86 @@ export const deleteInAppNotification = async (notificationId: string): Promise<b
 };
 
 
-// --- Push Notification Service Logic (Placeholder/Stub) ---
-/**
- * Sends a push notification.
- * This is a placeholder. Actual implementation would involve a backend service (e.g., Firebase Cloud Functions).
- */
+// --- Push Notification Service Logic ---
 export const sendPushNotificationInternal = async (
   recipientId: string,
   title: string,
   body: string,
-  data?: Record<string, any>
+  data?: InAppNotificationData
 ): Promise<boolean> => {
   console.log(`Attempting to send PUSH notification to ${recipientId}: Title: "${title}", Body: "${body}"`, data);
-  try {
-    const callableSendPushNotification = httpsCallable(functions, 'sendPushNotification');
-    const result = await callableSendPushNotification({
-      recipientId,
-      title,
-      body,
-      notificationData: data,
-    });
 
-    const responseData = result.data as { success: boolean; message: string };
-    if (responseData.success) {
-      console.log(`Push notification successfully sent for recipient: ${recipientId}`);
-      return true;
-    } else {
-      console.error(`Failed to send push notification for recipient ${recipientId}:`, responseData.message);
+  if (!recipientId || !title || !body) {
+    console.error('Missing required parameters for push notification:', { recipientId, title, body });
+    return false;
+  }
+
+  try {
+    const userDocRef = doc(firestore, 'users', recipientId);
+    const userDocSnap = await getDoc(userDocRef);
+
+    if (!userDocSnap.exists()) {
+      console.error(`User with ID ${recipientId} not found. Cannot send push notification.`);
       return false;
     }
+
+    const userData = userDocSnap.data() as UserProfile;
+    const oneSignalSubscriptionId = userData.oneSignalSubscriptionIds?.[0];
+    const pushToken = oneSignalSubscriptionId || userData.fcmTokens?.[0];
+
+    if (!pushToken) {
+      console.error(`User ${recipientId} has no push token or OneSignal subscription ID.`);
+      return false;
+    }
+
+    if (oneSignalSubscriptionId) {
+      console.log(`Using OneSignal subscription ID for user ${recipientId}`);
+    } else {
+      console.warn(`Using legacy FCM token for user ${recipientId}.`);
+    }
+
+    const notificationData: Record<string, unknown> = {};
+    if (data) {
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          notificationData[key] = value;
+        }
+      });
+    }
+
+    const result = await messagingService.sendPush({
+      to: pushToken,
+      title,
+      body,
+      data: Object.keys(notificationData).length > 0 ? notificationData : undefined,
+    });
+
+    if (result.success) {
+      console.log(`Push notification successfully sent for recipient: ${recipientId}`);
+      return true;
+    }
+
+    console.error(
+      `Failed to send push notification for recipient ${recipientId}:`,
+      result.message || result.error
+    );
+    return false;
   } catch (error) {
-    console.error('Error sending push notification via Cloud Function:', error);
+    console.error('Error sending push notification via messaging API:', error);
     return false;
   }
 };
 
-// --- Email Notification Service Logic (Placeholder/Stub) ---
-/**
- * Sends an email notification.
- * This is a placeholder. Actual implementation would involve a backend service.
- */
+// --- Email Notification Service Logic ---
 export const sendEmailNotificationInternal = async (
   recipientId: string,
   subject: string,
-  htmlContent: string, // Changed to htmlContent to match Cloud Function
-  fromEmail?: string, // Optional sender email
-  fromName?: string // Optional sender name
+  htmlContent: string,
+  fromEmail?: string
 ): Promise<boolean> => {
   console.log(`Attempting to send EMAIL notification to ${recipientId}: Subject: "${subject}"`);
 
   try {
-    // Fetch recipient's email address from their user profile
     const userDocRef = doc(firestore, 'users', recipientId);
     const userDocSnap = await getDoc(userDocRef);
 
@@ -280,35 +309,31 @@ export const sendEmailNotificationInternal = async (
 
     const userData = userDocSnap.data() as UserProfile;
     const toEmail = userData.email;
-    const toName = userData.displayName;
 
     if (!toEmail) {
       console.error(`User ${recipientId} has no email address. Cannot send email.`);
       return false;
     }
 
-    const functionsInstance = functions;
-    const callableSendEmail = httpsCallable(functionsInstance, 'sendEmail');
-
-    const result = await callableSendEmail({
-      toEmail,
-      toName,
+    const result = await messagingService.sendEmail({
+      to: toEmail,
       subject,
-      htmlContent,
-      fromEmail,
-      fromName,
+      body: htmlContent,
+      from: fromEmail,
     });
 
-    const responseData = result.data as { success: boolean; message: string };
-    if (responseData.success) {
+    if (result.success) {
       console.log(`Email notification successfully sent for recipient: ${recipientId}`);
       return true;
-    } else {
-      console.error(`Failed to send email notification for recipient ${recipientId}:`, responseData.message);
-      return false;
     }
+
+    console.error(
+      `Failed to send email notification for recipient ${recipientId}:`,
+      result.message || result.error
+    );
+    return false;
   } catch (error) {
-    console.error('Error sending email notification via Cloud Function:', error);
+    console.error('Error sending email notification via messaging API:', error);
     return false;
   }
 };

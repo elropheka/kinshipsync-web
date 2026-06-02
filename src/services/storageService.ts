@@ -1,54 +1,136 @@
-import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'; // getStorage removed
-import { storage } from './firebaseConfig'; // Import the initialized storage instance
+import { ref, deleteObject } from 'firebase/storage';
+import type { AxiosError } from 'axios';
+import { storage } from './firebaseConfig';
+import { messagingApiClient } from './api/MessagingApiClient';
+import {
+  extractCloudinaryPublicId,
+  fileToDataUri,
+  isCloudinaryUrl,
+  sanitizeStorageFolder,
+} from '@/lib/cloudinaryUtils';
 
-/**
- * Uploads a file to Firebase Storage.
- * @param file The file to upload.
- * @param path The path in Firebase Storage where the file should be stored (e.g., 'vendorLogos', 'portfolioImages').
- * @returns A promise that resolves with the download URL of the uploaded file.
- */
-export const uploadFileToStorage = async (file: File, path: string): Promise<string> => {
-  if (!file) {
-    throw new Error('No file provided for upload.');
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+
+interface StorageApiResponse {
+  success: boolean;
+  data?: {
+    url: string;
+  };
+  message?: string;
+  error?: string;
+}
+
+export class StorageService {
+  private ensureApiToken(): void {
+    if (!messagingApiClient.getApiToken()) {
+      throw new Error(
+        'Storage API token is not configured. Set VITE_MESSAGING_API_TOKEN in your environment.'
+      );
+    }
   }
 
-  // Create a unique file name to prevent overwrites, e.g., using timestamp or UUID
-  const fileName = `${path}/${Date.now()}-${file.name}`;
-  const storageRef = ref(storage, fileName);
+  async uploadFileToStorage(file: File, path: string): Promise<string> {
+    if (!file) {
+      throw new Error('No file provided for upload.');
+    }
 
-  try {
-    const uploadTask = await uploadBytesResumable(storageRef, file);
-    const downloadURL = await getDownloadURL(uploadTask.ref);
-    return downloadURL;
-  } catch (error) {
-    console.error('Error uploading file:', error);
-    // It's good practice to type the error or check its structure
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error during file upload.';
-    throw new Error(`Failed to upload file: ${errorMessage}`);
-  }
-};
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      throw new Error(
+        `File is too large. Maximum size is ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB.`
+      );
+    }
 
-/**
- * Deletes a file from Firebase Storage using its download URL.
- * @param downloadUrl The download URL of the file to delete.
- * @returns A promise that resolves when the file is deleted.
- */
-export const deleteFileFromStorage = async (downloadUrl: string): Promise<void> => {
-  if (!downloadUrl) {
-    console.warn('No download URL provided for deletion.');
-    return;
+    this.ensureApiToken();
+
+    const folder = sanitizeStorageFolder(path);
+    const dataUri = await fileToDataUri(file);
+    const resourceType = file.type.startsWith('image/') ? 'image' : 'raw';
+
+    try {
+      const response = await messagingApiClient
+        .getHttpClient()
+        .post<StorageApiResponse>('/storage/upload', {
+          file: dataUri,
+          folder,
+          resourceType,
+        });
+
+      if (!response.data.success || !response.data.data?.url) {
+        throw new Error(
+          response.data.error || response.data.message || 'Upload failed'
+        );
+      }
+
+      return response.data.data.url;
+    } catch (error) {
+      const axiosError = error as AxiosError<StorageApiResponse>;
+      console.error('Error uploading file to messaging storage:', error);
+      const errorMessage =
+        axiosError.response?.data?.message ||
+        axiosError.response?.data?.error ||
+        (error instanceof Error ? error.message : 'Unknown error during file upload.');
+      throw new Error(`Failed to upload file: ${errorMessage}`);
+    }
   }
-  try {
-    const storageRef = ref(storage, downloadUrl); // This gets a reference from the download URL
-    await deleteObject(storageRef);
-  } catch (error) {
-    console.error('Error deleting file from storage:', error);
-    // It's good practice to type the error or check its structure
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error during file deletion.';
-    // Optionally, rethrow or handle if deletion failure is critical
-    // For example, if the URL is malformed, Firebase might throw an error.
-    // If the file doesn't exist, it might not throw an error, or it might. Check Firebase docs.
-    // Generally, we might not want to throw an error here if the main operation can still proceed.
-    console.warn(`Failed to delete file ${downloadUrl}: ${errorMessage}`);
+
+  async deleteFileFromStorage(downloadUrl: string): Promise<void> {
+    if (!downloadUrl) {
+      console.warn('No download URL provided for deletion.');
+      return;
+    }
+
+    if (isCloudinaryUrl(downloadUrl)) {
+      await this.deleteCloudinaryFile(downloadUrl);
+      return;
+    }
+
+    await this.deleteFirebaseFile(downloadUrl);
   }
-};
+
+  private async deleteCloudinaryFile(downloadUrl: string): Promise<void> {
+    const publicId = extractCloudinaryPublicId(downloadUrl);
+    if (!publicId) {
+      console.warn(`Could not parse Cloudinary public_id from URL: ${downloadUrl}`);
+      return;
+    }
+
+    this.ensureApiToken();
+
+    try {
+      await messagingApiClient.getHttpClient().delete<StorageApiResponse>('/storage/delete', {
+        data: {
+          publicId,
+          resourceType: 'image',
+        },
+      });
+    } catch (error) {
+      const axiosError = error as AxiosError<StorageApiResponse>;
+      console.error('Error deleting file from Cloudinary:', error);
+      const errorMessage =
+        axiosError.response?.data?.message ||
+        axiosError.response?.data?.error ||
+        (error instanceof Error ? error.message : 'Unknown error during file deletion.');
+      console.warn(`Failed to delete Cloudinary file ${downloadUrl}: ${errorMessage}`);
+    }
+  }
+
+  private async deleteFirebaseFile(downloadUrl: string): Promise<void> {
+    try {
+      const storageRef = ref(storage, downloadUrl);
+      await deleteObject(storageRef);
+    } catch (error) {
+      console.error('Error deleting file from Firebase storage:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error during file deletion.';
+      console.warn(`Failed to delete Firebase file ${downloadUrl}: ${errorMessage}`);
+    }
+  }
+}
+
+const storageService = new StorageService();
+
+export const uploadFileToStorage = (file: File, path: string): Promise<string> =>
+  storageService.uploadFileToStorage(file, path);
+
+export const deleteFileFromStorage = (downloadUrl: string): Promise<void> =>
+  storageService.deleteFileFromStorage(downloadUrl);

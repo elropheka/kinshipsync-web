@@ -1,7 +1,6 @@
-import { getFunctions, httpsCallable } from 'firebase/functions';
-import { app } from './firebaseConfig'; // Assuming firebaseConfig exports 'app'
 import type { EventInvitationPayload } from '../types/eventTypes';
-import { createDirectConversation, sendMessage } from './chatService'; // Import chat service functions
+import { createDirectConversation, sendMessage } from './chatService';
+import { messagingService } from './MessagingService';
 
 /**
  * Sends an event invitation via email and/or in-app chat message.
@@ -14,9 +13,6 @@ export const sendEventInvitation = async (
   if (!isAuthenticated) {
     throw new Error("User not authenticated. Please sign in.");
   }
-
-  const functionsInstance = getFunctions(app);
-  const callableSendEmail = httpsCallable(functionsInstance, 'sendEmail');
 
   let emailSent = false;
   let chatMessageSent = false;
@@ -274,20 +270,18 @@ export const sendEventInvitation = async (
         </body>
         </html>`;
 
-      const result = await callableSendEmail({
-        toEmail: payload.recipientEmail,
-        toName: payload.recipientEmail, // Or fetch recipient's name if available
+      const result = await messagingService.sendEmail({
+        to: payload.recipientEmail,
         subject: emailSubject,
-        htmlContent: emailHtmlContent,
-        fromName: 'KinshipSync', // Use organizer's name as sender name
+        body: emailHtmlContent,
+        from: 'KinshipSync',
       });
 
-      const responseData = result.data as { success: boolean; message: string };
-      if (responseData.success) {
+      if (result.success) {
         console.log(`Email invitation successfully sent to ${payload.recipientEmail}`);
         emailSent = true;
       } else {
-        console.error(`Failed to send email invitation to ${payload.recipientEmail}:`, responseData.message);
+        console.error(`Failed to send email invitation to ${payload.recipientEmail}:`, result.message || result.error);
       }
     } catch (error) {
       console.error('Error sending email invitation:', error);

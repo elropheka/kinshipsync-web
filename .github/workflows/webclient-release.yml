@@ -83,6 +83,8 @@ jobs:
         working-directory: ./
         env:
           VITE_APP_FIREBASE_VAPID_KEY: ${{ secrets.VITE_APP_FIREBASE_VAPID_KEY }}
+          VITE_MESSAGING_API_URL: ${{ secrets.VITE_MESSAGING_API_URL }}
+          VITE_MESSAGING_API_TOKEN: ${{ secrets.VITE_MESSAGING_API_TOKEN }}
         run: pnpm run build
 
       - name: Verify build output
