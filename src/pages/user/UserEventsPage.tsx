@@ -11,7 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EventCreateEditModal from '@/components/common/EventCreateEditModal';
 import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/errorUtils";
+import { useErrorToast } from '@/hooks/useErrorToast';
+import { ErrorState } from '@/components/common/ErrorState';
 import { PlusCircle, Edit3, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useEventWebsite } from '@/hooks/useEventWebsite';
@@ -228,13 +229,16 @@ const UserEventsPage: React.FC = () => {
 
   if (isLoadingUserEvents) return <div className="flex justify-center items-center h-full"><p>Loading events...</p></div>;
 
+  useErrorToast(userEventsError, { title: 'Unable to load events' });
+
   if (userEventsError) {
-    toast.error(getErrorMessage(userEventsError));
     return (
-      <div className="flex flex-col justify-center items-center h-full p-4">
-        <p className="text-muted-foreground mb-4">Unable to load events. Please try again.</p>
-        <Button onClick={refetchEvents} className="mt-4">Try Again</Button>
-      </div>
+      <ErrorState
+        error={userEventsError}
+        title="Unable to load events"
+        onRetry={refetchEvents}
+        retryLabel="Try Again"
+      />
     );
   }
   

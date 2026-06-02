@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { toast } from 'sonner';
-import { getErrorMessage } from '@/lib/errorUtils';
+import { useErrorToast } from '@/hooks/useErrorToast';
+import { ErrorState } from '@/components/common/ErrorState';
 import { doc, getDoc, Timestamp } from 'firebase/firestore'; // Added Timestamp
 import { firestore } from '../../services/firebaseConfig'; // Adjust path as necessary
 import type { UserProfile } from '../../types/userTypes'; // Use type-only import
@@ -66,16 +66,15 @@ const UserDetailPage: React.FC = () => {
     fetchUserData();
   }, [userId]);
 
+  useErrorToast(error, { title: 'Unable to load user' });
+
   if (loading) {
     return <div className="p-6 text-center">Loading user details...</div>;
   }
 
   if (error) {
-    toast.error(getErrorMessage(error));
     return (
-      <div className="p-6 text-center">
-        <p className="text-muted-foreground">Unable to load user details. Please try again.</p>
-      </div>
+      <ErrorState error={error} title="Unable to load user details" className="p-6" />
     );
   }
 

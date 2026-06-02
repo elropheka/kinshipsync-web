@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom'; // Removed Link
-import { toast } from 'sonner';
-import { getErrorMessage } from '@/lib/errorUtils';
+import { useErrorToast } from '@/hooks/useErrorToast';
+import { ErrorState } from '@/components/common/ErrorState';
 import { doc, getDoc, Timestamp, collection, getDocs, query, where } from 'firebase/firestore';
 import { firestore } from '../../services/firebaseConfig'; // Adjust path as necessary
 import type { Vendor, VendorCategory } from '../../types/vendorTypes'; // Use type-only import
@@ -96,16 +96,15 @@ const VendorDetailPage: React.FC = () => {
     fetchVendorData();
   }, [vendorId]);
 
+  useErrorToast(error, { title: 'Unable to load vendor' });
+
   if (loading) {
     return <div className="p-6 text-center">Loading vendor details...</div>;
   }
 
   if (error) {
-    toast.error(getErrorMessage(error));
     return (
-      <div className="p-6 text-center">
-        <p className="text-muted-foreground">Unable to load vendor details. Please try again.</p>
-      </div>
+      <ErrorState error={error} title="Unable to load vendor details" className="p-6" />
     );
   }
 

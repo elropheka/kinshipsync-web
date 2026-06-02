@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { toast } from 'sonner';
-import { getErrorMessage } from '@/lib/errorUtils';
+import { useErrorToast } from '@/hooks/useErrorToast';
 import { useEventWebsite } from '@/hooks/useEventWebsite';
 import { EventSitePage } from '@/components/eventSite/EventSitePage';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
@@ -8,6 +7,8 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 export const EventSiteDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { event, websiteDetails, loading, error } = useEventWebsite(slug);
+
+  useErrorToast(error, { title: 'Unable to load event' });
 
   if (loading) {
     return (
@@ -18,11 +19,6 @@ export const EventSiteDetailPage = () => {
   }
 
   if (error || !event || !websiteDetails) {
-    if (error) {
-      toast.error(getErrorMessage(error));
-    } else {
-      toast.error('Event not found');
-    }
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

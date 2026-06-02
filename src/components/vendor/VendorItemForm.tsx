@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { showValidationErrors } from '@/lib/formValidationUtils';
+import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/errorUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ImageUploadInput from '@/components/common/ImageUploadInput'; // Added
@@ -78,8 +80,7 @@ const VendorItemForm: React.FC<VendorItemFormProps> = ({ onSubmit, initialData, 
       }
     } catch (error) {
       console.error("Error in form submission or old image deletion:", error);
-      // Optionally, re-throw or display error to user
-      // form.setError("root", { message: "Submission failed." }) // Example of setting form error
+      toast.error(getErrorMessage(error));
     }
   };
 

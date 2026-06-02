@@ -9,7 +9,8 @@ import EventEditModal from '@/components/admin/EventEditModal';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Trash2 } from 'lucide-react'; // Added Trash2 icon
 import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/errorUtils"; 
+import { useErrorToast } from '@/hooks/useErrorToast';
+import { ErrorState } from '@/components/common/ErrorState'; 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from 'react-router-dom';
 import {
@@ -169,27 +170,32 @@ const AdminEventsPage: React.FC = () => {
     return getAdminEventColumns(userMap, handleEditEvent, handleViewEvent, handleDeleteEvent);
   }, [userMap, handleEditEvent, handleViewEvent, handleDeleteEvent]);
 
+  useErrorToast(errorEvents, { title: 'Unable to load events' });
+  useErrorToast(errorUsers, { title: 'Unable to load users' });
+
   if (isLoadingEvents || isLoadingUsers) {
     return <div className="p-4">Loading data...</div>;
   }
 
   if (errorEvents) {
-    toast.error(getErrorMessage(errorEvents));
     return (
-      <div className="flex flex-col justify-center items-center h-full p-4">
-        <p className="text-muted-foreground mb-4">Unable to load events. Please try again.</p>
-        <Button onClick={() => window.location.reload()}>Reload Page</Button>
-      </div>
+      <ErrorState
+        error={errorEvents}
+        title="Unable to load events"
+        onRetry={() => window.location.reload()}
+        retryLabel="Reload Page"
+      />
     );
   }
 
   if (errorUsers) {
-    toast.error(getErrorMessage(errorUsers));
     return (
-      <div className="flex flex-col justify-center items-center h-full p-4">
-        <p className="text-muted-foreground mb-4">Unable to load users. Please try again.</p>
-        <Button onClick={() => window.location.reload()}>Reload Page</Button>
-      </div>
+      <ErrorState
+        error={errorUsers}
+        title="Unable to load users"
+        onRetry={() => window.location.reload()}
+        retryLabel="Reload Page"
+      />
     );
   }
 

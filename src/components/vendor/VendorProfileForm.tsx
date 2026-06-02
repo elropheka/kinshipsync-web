@@ -3,6 +3,8 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { showValidationErrors } from '@/lib/formValidationUtils';
+import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/errorUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ImageUploadInput from '@/components/common/ImageUploadInput'; // Added
@@ -169,7 +171,7 @@ const VendorProfileForm = forwardRef<VendorProfileFormRef, VendorProfileFormProp
       // No portfolio image deletion logic needed as the field is removed.
     } catch (error) {
       console.error("Error in form submission or old image deletion:", error);
-      // form.setError("root", { message: "Submission failed." })
+      toast.error(getErrorMessage(error));
     }
   };
 

@@ -9,6 +9,8 @@ import type { VendorItem } from '@/types/vendorItemTypes';
 import type { VendorItemFormData } from '@/schemas/vendorItemSchema'; // Corrected import path
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errorUtils";
+import { useErrorToast } from '@/hooks/useErrorToast';
+import { ErrorState } from '@/components/common/ErrorState';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,7 +51,7 @@ const VendorItemsPage: React.FC = () => {
       if (success) {
         toast.success("Item deleted successfully.");
       } else {
-        toast.error("Failed to delete item.");
+        toast.error(getErrorMessage(error) || "Failed to delete item.");
       }
       setItemToDeleteId(null);
       setIsDeleteDialogOpen(false);
@@ -61,13 +63,16 @@ const VendorItemsPage: React.FC = () => {
     [handleEditItem, handleDeleteItem] // Added handlers to dependency array
   );
 
+  useErrorToast(error, { title: 'Unable to load items' });
+
   if (error) {
-    toast.error(getErrorMessage(error));
     return (
-      <div className="flex flex-col justify-center items-center h-full p-4">
-        <p className="text-muted-foreground mb-4">Unable to load items. Please try again.</p>
-        <Button onClick={() => window.location.reload()}>Reload Page</Button>
-      </div>
+      <ErrorState
+        error={error}
+        title="Unable to load items"
+        onRetry={() => window.location.reload()}
+        retryLabel="Reload Page"
+      />
     );
   }
 

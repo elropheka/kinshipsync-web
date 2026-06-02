@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { toast } from 'sonner';
-import { getErrorMessage } from '@/lib/errorUtils';
+import { useErrorToast } from '@/hooks/useErrorToast';
+import { ErrorState } from '@/components/common/ErrorState';
 import { useVendorProfile } from '@/hooks/useVendorProfile'; // To get profile name
 import { useVendorItems } from '@/hooks/useVendorItems'; // Import useVendorItems
 import type { Vendor } from '@/types/vendorTypes';
@@ -58,13 +58,17 @@ const VendorDashboard: React.FC = () => {
   }
 
   // Handle individual errors if needed, or a general error display
+  useErrorToast(profileError, { title: 'Unable to load profile' });
+  useErrorToast(itemsError, { title: 'Unable to load items' });
+
   if (profileError) {
-    toast.error(getErrorMessage(profileError));
     return (
-      <div className="flex flex-col justify-center items-center h-full p-4">
-        <p className="text-muted-foreground mb-4">Unable to load profile. Please try again.</p>
-        <Button onClick={() => window.location.reload()}>Reload Page</Button>
-      </div>
+      <ErrorState
+        error={profileError}
+        title="Unable to load profile"
+        onRetry={() => window.location.reload()}
+        retryLabel="Reload Page"
+      />
     );
   }
   // if (itemsError) { // Optionally display item loading error specifically

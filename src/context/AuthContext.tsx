@@ -5,6 +5,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth, firestore } from '@/services/firebaseConfig'; // Added firestore
 import { doc, getDoc } from 'firebase/firestore'; // Added getDoc
 import type { UserProfile } from '@/types/userTypes'; // For roles, isAdmin, isVendor
+import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/errorUtils';
 
 // AppUser extends FirebaseUser with role information
 interface AppUser extends FirebaseUser {
@@ -103,7 +105,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         } catch (error) {
           console.error("Error fetching user profile from 'profiles' collection:", error);
-          setUserProfile(null); 
+          toast.error(getErrorMessage(error));
+          setUserProfile(null);
           setCurrentUser({ ...firebaseUser, role: 'organizer' }); // Default on error
         }
       } else {

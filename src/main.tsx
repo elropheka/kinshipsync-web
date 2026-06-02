@@ -10,20 +10,26 @@ import Auth from './pages/Auth';
 import { EventSiteDetailPage } from './pages/detail/EventSiteDetailPage';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { registerGlobalErrorHandlers } from './lib/globalErrorHandlers';
+
+registerGlobalErrorHandlers();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <HelmetProvider>
       <AuthProvider>
         <ThemeProvider>
-          <Router>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/events/site/:slug" element={<EventSiteDetailPage />} />
-            <Route path="/dashboard/*" element={<App />} />
-          </Routes>
-          </Router>
+          <ErrorBoundary>
+            <Router>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/events/site/:slug" element={<EventSiteDetailPage />} />
+                <Route path="/dashboard/*" element={<App />} />
+              </Routes>
+            </Router>
+          </ErrorBoundary>
           <Toaster position="top-right" richColors />
         </ThemeProvider>
       </AuthProvider>

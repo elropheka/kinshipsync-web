@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { toast } from 'sonner';
 import { getErrorMessage } from '@/lib/errorUtils';
+import { useErrorToast } from '@/hooks/useErrorToast';
+import { ErrorState } from '@/components/common/ErrorState';
 import { doc, getDoc, Timestamp } from 'firebase/firestore';
 import { firestore } from '../../services/firebaseConfig';
 import type { Event as EventType } from '../../types/eventTypes';
@@ -76,16 +77,20 @@ const EventDetailPage: React.FC = () => {
     fetchEventData();
   }, [eventId]);
 
+  useErrorToast(error, { title: 'Unable to load event' });
+  useErrorToast(websiteError, { title: 'Website error' });
+
   if (loading) {
     return <div className="p-6 text-center">Loading event details...</div>;
   }
 
   if (error) {
-    toast.error(getErrorMessage(error));
     return (
-      <div className="p-6 text-center">
-        <p className="text-muted-foreground">Unable to load event details. Please try again.</p>
-      </div>
+      <ErrorState
+        error={error}
+        title="Unable to load event details"
+        className="p-6"
+      />
     );
   }
 
@@ -200,9 +205,9 @@ const EventDetailPage: React.FC = () => {
             {websiteLoading ? (
               <div className="text-center py-4">Loading website details...</div>
             ) : websiteError ? (
-              (() => { toast.error(getErrorMessage(websiteError)); return null; })() || (
-                <div className="text-muted-foreground py-4 text-center">Unable to load website details.</div>
-              )
+              <div className="text-muted-foreground py-4 text-center">
+                {getErrorMessage(websiteError)}
+              </div>
             ) : (
               <EventDetailWebsite
                 eventWebsite={websiteDetails}

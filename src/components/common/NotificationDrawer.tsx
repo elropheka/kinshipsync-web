@@ -1,6 +1,6 @@
 import { useState, useEffect, forwardRef } from 'react';
-import { toast } from 'sonner';
 import { getErrorMessage } from '@/lib/errorUtils';
+import { useErrorToast } from '@/hooks/useErrorToast';
 import { Bell, X, CheckCircle } from 'lucide-react'; // Added CheckCircle icon
 import type { InAppNotification } from '../../types/notificationTypes'; // Import InAppNotification type
 import { Button } from '@/components/ui/button'; // Assuming you have a Button component
@@ -20,6 +20,7 @@ interface NotificationDrawerProps {
 // Use forwardRef to allow parent component to pass a ref to the main div
 const NotificationDrawer = forwardRef<HTMLDivElement, NotificationDrawerProps>(
   ({ isOpen, onClose, notifications, markAsRead, markAllAsRead, loading, error }, ref) => {
+    useErrorToast(error, { title: 'Notifications' });
     const [activeFilter, setActiveFilter] = useState<NotificationFilterType>('all');
     const [filteredNotifications, setFilteredNotifications] = useState<InAppNotification[]>([]);
 
@@ -117,7 +118,9 @@ const NotificationDrawer = forwardRef<HTMLDivElement, NotificationDrawerProps>(
         </div>
         <div className="overflow-y-auto h-[calc(100%-105px)]">
           {loading && <p className="p-4 text-center text-muted-foreground">Loading notifications...</p>}
-          {error && (() => { toast.error(getErrorMessage(error)); return null; })()}
+          {error && (
+            <p className="p-4 text-center text-destructive text-sm">{getErrorMessage(error)}</p>
+          )}
           {!loading && !error && filteredNotifications.length === 0 && (
             <p className="p-4 text-center text-muted-foreground">
               {activeFilter === 'all' || activeFilter === 'unread' ? 'No notifications found.' : `No ${activeFilter.replace(/_/g, ' ')} notifications.`}
