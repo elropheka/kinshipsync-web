@@ -199,6 +199,7 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
       '/dashboard/vendor/events': 'My Events',
       '/dashboard/user': 'My Events',
       '/dashboard/user/profile': 'My Profile',
+      '/dashboard/settings': 'Settings',
       '/dashboard/user/delete-my-account': 'Delete Account',
     };
     if (titles[pathname]) {
@@ -313,14 +314,16 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => {
-                  if (isVendor) navigate('/dashboard/vendor/profile');
-                  else if (isAdmin) navigate('/dashboard/admin'); // Or a future admin profile page
-                  else navigate('/dashboard/user/profile'); // Fallback for general user
+                  if (isVendor && !isAdmin) {
+                    navigate('/dashboard/vendor/profile');
+                  } else {
+                    navigate('/dashboard/user/profile');
+                  }
                 }}>
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/settings')}> {/* Placeholder for settings page */}
+                <DropdownMenuItem onClick={() => navigate('/dashboard/settings')}>
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>

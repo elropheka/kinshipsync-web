@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import ImageUploadInput from '@/components/common/ImageUploadInput';
 import { deleteFileFromStorage } from '@/services/storageService';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -17,14 +17,20 @@ import { ProfileFormSkeleton } from '@/components/common/skeletons';
 import { showValidationErrors } from "@/lib/formValidationUtils";
 import type { UpdateUserProfilePayload } from '@/types/userTypes';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
-const profileFormSchema = z.object({
-  displayName: z.string().min(1, "Display name is required.").max(100),
-  firstName: z.string().max(50).optional().or(z.literal('')),
-  lastName: z.string().max(50).optional().or(z.literal('')),
-  avatarUrl: z.string().url("Invalid URL for avatar.").optional().or(z.literal('')),
-});
+const profileFormSchema = z
+  .object({
+    displayName: z.string().max(100).optional().or(z.literal('')),
+    firstName: z.string().max(50).optional().or(z.literal('')),
+    lastName: z.string().max(50).optional().or(z.literal('')),
+    avatarUrl: z.string().url('Invalid URL for avatar.').optional().or(z.literal('')),
+  })
+  .refine(
+    (data) =>
+      Boolean(data.displayName?.trim() || data.firstName?.trim() || data.lastName?.trim()),
+    { message: 'Provide a display name or at least a first or last name.', path: ['displayName'] }
+  );
 
 export type ProfileFormData = z.infer<typeof profileFormSchema>;
 
@@ -70,6 +76,24 @@ const ProfilePage: React.FC = () => {
     }
   }, [userProfile, form, initialLoadComplete]);
 
+  const handleAvatarUploaded = async (newUrl: string) => {
+    form.setValue('avatarUrl', newUrl, { shouldValidate: true, shouldDirty: true });
+    const oldAvatarUrl = userProfile?.avatarUrl;
+    const success = await updateCurrentUserProfile({ avatarUrl: newUrl });
+    if (success) {
+      toast.success('Profile photo updated.');
+      if (oldAvatarUrl && oldAvatarUrl !== newUrl) {
+        try {
+          await deleteFileFromStorage(oldAvatarUrl);
+        } catch (deleteError) {
+          console.error('Failed to delete old avatar:', deleteError);
+        }
+      }
+    } else {
+      toast.error(getErrorMessage(profileError) || 'Failed to save profile photo.');
+    }
+  };
+
   const handleFormSubmit = async (data: ProfileFormData) => {
     if (!form.formState.isValid) {
       showValidationErrors(form.formState.errors, 'Please correct the form errors:');
@@ -83,10 +107,17 @@ const ProfilePage: React.FC = () => {
 
     const oldAvatarUrl = userProfile?.avatarUrl;
 
+    const trimmedFirst = data.firstName?.trim() ?? '';
+    const trimmedLast = data.lastName?.trim() ?? '';
+    let displayName = data.displayName?.trim() ?? '';
+    if (!displayName && (trimmedFirst || trimmedLast)) {
+      displayName = [trimmedFirst, trimmedLast].filter(Boolean).join(' ');
+    }
+
     const payload: UpdateUserProfilePayload = {
-      displayName: data.displayName,
-      firstName: data.firstName,
-      lastName: data.lastName,
+      displayName,
+      firstName: trimmedFirst,
+      lastName: trimmedLast,
       avatarUrl: data.avatarUrl,
     };
 
@@ -133,38 +164,63 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="container mx-auto py-4 sm:py-6 md:py-10 bg-background">
       <div className="max-w-2xl mx-auto space-y-6">
-        {/* Profile summary card */}
-        <Card className={`${sectionCardClass} overflow-hidden`}>
-          <div className="bg-gradient-to-r from-primary/10 via-background to-accent/10 px-6 py-8">
-            <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-full bg-primary/15 border-2 border-border flex items-center justify-center shrink-0">
-                <User className="h-8 w-8 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">{displayLabel}</h1>
-                {userProfile?.email && (
-                  <p className="text-muted-foreground flex items-center gap-2 mt-1">
-                    <Mail className="h-4 w-4 text-primary" />
-                    {userProfile.email}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        </Card>
+        {userProfile ? (
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleFormSubmit, (errors) => {
+                showValidationErrors(errors, 'Please correct the form errors:');
+              })}
+              className="space-y-6"
+            >
+              {/* Profile header: photo at top, then name */}
+              <Card className={`${sectionCardClass} overflow-hidden`}>
+                <div className="bg-gradient-to-r from-primary/10 via-background to-accent/10 px-6 py-8">
+                  <div className="flex flex-col items-center text-center gap-4">
+                    <FormField
+                      control={form.control}
+                      name="avatarUrl"
+                      render={({ field }) => (
+                        <FormItem className="space-y-0">
+                          <FormControl>
+                            <ImageUploadInput
+                              label="profile-photo"
+                              variant="avatar"
+                              currentImageUrl={field.value}
+                              storagePath="userAvatars"
+                              onImageUploaded={(newUrl) => {
+                                void handleAvatarUploaded(newUrl);
+                              }}
+                              onImageRemoved={() => {
+                                form.setValue('avatarUrl', '', { shouldValidate: true, shouldDirty: true });
+                              }}
+                              onError={(errorMessage) => {
+                                form.setError('avatarUrl', { type: 'manual', message: errorMessage });
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-center" />
+                        </FormItem>
+                      )}
+                    />
+                    <div>
+                      <h1 className="text-2xl font-bold text-foreground">{displayLabel}</h1>
+                      {userProfile.email && (
+                        <p className="text-muted-foreground flex items-center justify-center gap-2 mt-1">
+                          <Mail className="h-4 w-4 text-primary shrink-0" />
+                          {userProfile.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Card>
 
-        {/* Form sections */}
-        <Card className={sectionCardClass}>
-          <CardHeader>
-            <CardTitle className="text-foreground">Personal information</CardTitle>
-            <CardDescription>Update your display name and contact details.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {userProfile ? (
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleFormSubmit, (errors) => {
-                  showValidationErrors(errors, 'Please correct the form errors:');
-                })} className="space-y-6">
+              <Card className={sectionCardClass}>
+                <CardHeader>
+                  <CardTitle className="text-foreground">Personal information</CardTitle>
+                  <CardDescription>Update your display name and contact details.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
                   <FormField
                     control={form.control}
                     name="displayName"
@@ -219,35 +275,6 @@ const ProfilePage: React.FC = () => {
                     />
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="avatarUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-foreground">Profile photo</FormLabel>
-                        <FormControl>
-                          <ImageUploadInput
-                            label="Avatar"
-                            currentImageUrl={field.value}
-                            storagePath="userAvatars"
-                            onImageUploaded={(newUrl) => {
-                              form.setValue('avatarUrl', newUrl, { shouldValidate: true, shouldDirty: true });
-                            }}
-                            onImageRemoved={() => {
-                              form.setValue('avatarUrl', '', { shouldValidate: true, shouldDirty: true });
-                            }}
-                            onError={(errorMessage) => {
-                              form.setError('avatarUrl', { type: 'manual', message: errorMessage });
-                            }}
-                            imageClassName="h-24 w-24 object-cover rounded-full border-2 border-border"
-                          />
-                        </FormControl>
-                        <FormDescription>Upload a profile picture for your account.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
                   <Button
                     type="submit"
                     disabled={isUpdating || isLoadingProfile}
@@ -255,13 +282,19 @@ const ProfilePage: React.FC = () => {
                   >
                     {isUpdating ? 'Saving...' : 'Save Changes'}
                   </Button>
-                </form>
-              </Form>
-            ) : (
-              <p className="text-muted-foreground">Loading profile information or profile not found.</p>
-            )}
-          </CardContent>
-        </Card>
+                </CardContent>
+              </Card>
+            </form>
+          </Form>
+        ) : (
+          <Card className={sectionCardClass}>
+            <CardContent className="py-8">
+              <p className="text-muted-foreground text-center">
+                Loading profile information or profile not found.
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

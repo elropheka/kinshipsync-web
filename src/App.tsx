@@ -19,6 +19,8 @@ import VendorDashboard from '@/pages/vendor/Dashboard';
 import VendorProfile from '@/pages/vendor/Profile';
 import VendorItems from '@/pages/vendor/Items';
 import VendorEvents from '@/pages/vendor/Events';
+import NotFoundPage from '@/pages/NotFoundPage';
+import SettingsPage from '@/pages/SettingsPage';
 
 function App() {
   return (
@@ -38,10 +40,8 @@ function App() {
             <Route path="create-vendor-category" element={<CreateVendorCategoryPage />} />
           </Route>
 
-          {/* Dashboard */}
-          {/* <Route path="events"> */}
-            <Route path="events" element={<EventsDashboardPage />} />
-          {/* </Route> */}
+          <Route path="events" element={<EventsDashboardPage />} />
+          <Route path="settings" element={<SettingsPage />} />
 
           {/* Detail Pages */}
           <Route path="events/:eventId" element={<EventDetailPage />} />
@@ -62,6 +62,8 @@ function App() {
             <Route path="items" element={<VendorItems />} />
             <Route path="events" element={<VendorEvents />} />
           </Route>
+
+          <Route path="*" element={<NotFoundPage compact />} />
         </Route>
       </Routes>
   );

@@ -6,7 +6,8 @@ import { signOut as firebaseSignOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { 
   LogOut, LayoutDashboard, ListChecks, Users, CalendarClock, UserPlus, 
-  UserCog, Briefcase, FolderPlus, Palette, ChevronDown, ChevronRight, Trash2 
+  UserCog, Briefcase, FolderPlus, Palette, ChevronDown, ChevronRight, Trash2,
+  Settings,
 } from 'lucide-react';
 import clsx from 'clsx';
 import tealLogoOnly from '@/assets/branding/teal-logo-only.png';
@@ -158,7 +159,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                   <SidebarNavLink to="/dashboard/vendor/profile" icon={UserCog} label="Vendor Profile View" isOpen={isOpen} isSubItem={isOpen} />
                 </ul>
               )}
-              {/* "Create Theme" link moved into Events dropdown */}
+              {isOpen && (
+                <h3 className="px-2 pt-4 pb-1 text-xs font-semibold text-primary uppercase tracking-wider">
+                  Account
+                </h3>
+              )}
+              <SidebarNavLink to="/dashboard/user/profile" icon={UserCog} label="My Profile" isOpen={isOpen} />
+              <SidebarNavLink to="/dashboard/settings" icon={Settings} label="Settings" isOpen={isOpen} />
             </>
           )}
 
