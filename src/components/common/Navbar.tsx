@@ -19,8 +19,6 @@ import {
 import { auth } from '@/services/firebaseConfig'; // For logout
 import { signOut as firebaseSignOut } from 'firebase/auth'; // For logout
 import { RiMenuFold3Line as DoorClosed, RiMenuFold4Line as DoorOpen } from "react-icons/ri";
-import tealTextLogo from '@/assets/branding/teal-text-logo.png';
-
 interface SearchResultItem {
   id: string;
   type: 'user' | 'event' | 'vendor';
@@ -185,6 +183,8 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
   const getPageTitle = (pathname: string): string => {
     // Exact matches first
     const titles: Record<string, string> = {
+      '/dashboard/events': 'Events',
+      '/dashboard/admin': 'Admin Dashboard',
       '/dashboard/admin/': 'Admin Dashboard',
       '/dashboard/admin/users': 'Manage Users',
       '/dashboard/admin/vendors': 'Manage Vendors',
@@ -192,21 +192,24 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
       '/dashboard/admin/register-vendor': 'Register Vendor',
       '/dashboard/admin/create-vendor-category': 'Create Vendor Category',
       '/dashboard/admin/create-theme': 'Create Theme',
-      '/dashboard/vendor/dashboard': 'Vendor Dashboard',
+      '/dashboard/vendor': 'Vendor Dashboard',
+      '/dashboard/vendor/': 'Vendor Dashboard',
       '/dashboard/vendor/items': 'My Items/Services',
       '/dashboard/vendor/profile': 'Vendor Profile',
+      '/dashboard/vendor/events': 'My Events',
       '/dashboard/user': 'My Events',
       '/dashboard/user/profile': 'My Profile',
-      // Add more specific paths here
+      '/dashboard/user/delete-my-account': 'Delete Account',
     };
     if (titles[pathname]) {
       return titles[pathname];
     }
     // Fallback for parameterized routes or general sections
     if (pathname.startsWith('/dashboard/admin')) return 'Admin Panel';
-    if (pathname.startsWith('/dasboard/vendor')) return 'Vendor Portal';
+    if (pathname.startsWith('/dashboard/vendor')) return 'Vendor Portal';
     if (pathname.startsWith('/dashboard/user')) return 'User Space';
-    return 'KinshipSync'; // Default title
+    if (pathname.startsWith('/dashboard/events')) return 'Events';
+    return '';
   };
 
   const pageTitle = getPageTitle(location.pathname);
@@ -229,12 +232,11 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
           <Button variant="ghost" size="icon" onClick={onToggleSidebar} className="mr-1 text-primary hover:bg-primary/10" title={isSidebarOpen ? "Close sidebar" : "Open sidebar"}>
             {isSidebarOpen ? <DoorClosed className="h-6 w-6" /> : <DoorOpen className="h-6 w-6" />}
           </Button>
-          <Link to="/" className="hidden md:block shrink-0">
-            <img src={tealTextLogo} alt="KinshipSync" className="h-8 w-auto object-contain" />
-          </Link>
-          <h1 className="text-xl font-semibold text-primary truncate hidden sm:block">
-            {pageTitle}
-          </h1>
+          {pageTitle ? (
+            <h1 className="text-xl font-semibold text-primary truncate">
+              {pageTitle}
+            </h1>
+          ) : null}
         </div>
 
       {/* Center section: Search Bar */}
@@ -277,22 +279,8 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
         </div>
       </div>
 
-      {/* Right section: Greeting, Notifications and User Dropdown Menu */}
+      {/* Right section: Notifications and User Dropdown Menu */}
         <div className="flex items-center space-x-3 sm:space-x-4 flex-shrink-0">
-          {currentUser && (
-            <span className="text-sm text-foreground hidden sm:inline">
-              Hi, {userProfile?.firstName || currentUser.displayName?.split(' ')[0] || 'User'}
-            </span>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            title={themeMode === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
-            className="mr-2" // Added some margin for spacing
-          >
-            {themeMode === 'light' ? <Moon className="h-6 w-6" /> : <Sun className="h-6 w-6" />}
-          </Button>
           <Button ref={ref} variant="ghost" size="icon" title="Notifications" onClick={onToggleNotificationDrawer} className="relative">
             <Bell className="h-6 w-6" />
             {props.unreadCount && props.unreadCount > 0 && (
@@ -334,6 +322,14 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
                 <DropdownMenuItem onClick={() => navigate('/settings')}> {/* Placeholder for settings page */}
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={toggleTheme}>
+                  {themeMode === 'light' ? (
+                    <Moon className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Sun className="mr-2 h-4 w-4" />
+                  )}
+                  <span>{themeMode === 'light' ? 'Dark mode' : 'Light mode'}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>

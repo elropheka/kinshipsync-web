@@ -27,4 +27,26 @@ export class ProfileDisplayNameResolver {
 
     return fallbackId?.trim() || 'Unknown';
   }
+
+  /** First-name style label for dashboard greetings (e.g. "Hi, El"). */
+  static greetingName(
+    profile: NameFields | null | undefined,
+    authDisplayName?: string | null
+  ): string {
+    if (profile?.firstName?.trim()) {
+      return profile.firstName.trim();
+    }
+
+    const authFirst = authDisplayName?.split(' ')[0]?.trim();
+    if (authFirst) {
+      return authFirst;
+    }
+
+    const full = ProfileDisplayNameResolver.fromProfile(profile, undefined);
+    if (full !== 'Unknown') {
+      return full.split(' ')[0] || full;
+    }
+
+    return 'there';
+  }
 }

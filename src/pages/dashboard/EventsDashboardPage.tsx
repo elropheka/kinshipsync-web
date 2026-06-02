@@ -4,6 +4,7 @@ import { useUserVisibleEvents } from '@/hooks/useUserVisibleEvents';
 import { useAllEvents } from '@/hooks/useAllEvents';
 import { useAllThemes } from '@/hooks/useAllThemes';
 import { useAuth } from '@/context/AuthContext';
+import { ProfileDisplayNameResolver } from '@/lib/profileDisplayName';
 import type { Event, CreateEventPayload, UpdateEventPayload } from '@/types/eventTypes';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -83,7 +84,7 @@ const EventGroup: React.FC<{ title: string; events: Event[] }> = ({ title, event
 };
 
 const EventsDashboardPage: React.FC = () => {
-  const { userProfile } = useAuth();
+  const { userProfile, currentUser } = useAuth();
   const { groupedEvents, isLoading: isLoadingEventsData, error: eventsError, refetchEvents } = useUserVisibleEvents();
   const { addEvent, isLoading: isProcessingEvent } = useAllEvents();
   const { allThemes: themes, isLoading: isLoadingThemes, error: themesError } = useAllThemes();
@@ -95,10 +96,10 @@ const EventsDashboardPage: React.FC = () => {
 
   useErrorToast(error, { title: 'Unable to load events' });
 
-  const welcomeName =
-    userProfile?.displayName ||
-    [userProfile?.firstName, userProfile?.lastName].filter(Boolean).join(' ') ||
-    'there';
+  const greetingName = ProfileDisplayNameResolver.greetingName(
+    userProfile,
+    currentUser?.displayName
+  );
 
   const eventCounts = useMemo(() => {
     const ongoing = groupedEvents.ongoing?.length || 0;
@@ -211,7 +212,7 @@ const EventsDashboardPage: React.FC = () => {
                 Welcome back
               </p>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
-                Hello, {welcomeName}
+                Hi, {greetingName}
               </h1>
               <p className="text-muted-foreground mt-2 max-w-xl">
                 Plan family gatherings, track RSVPs, and keep everyone in sync from one warm, organized place.
