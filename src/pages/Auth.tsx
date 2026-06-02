@@ -426,9 +426,9 @@ const Auth = () => {
                     Remember me
                   </label>
                 </div>
-                <a href="#" className="text-sm text-secondary hover:underline">
+                <Link to="/auth/forgot-password" className="text-sm text-secondary hover:underline">
                   Forgot password?
-                </a>
+                </Link>
               </div>
 
               <button

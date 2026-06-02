@@ -20,6 +20,9 @@ export function getErrorMessage(error: unknown): string {
       if (message.includes('auth/user-not-found')) {
         return 'User account not found.';
       }
+      if (message.includes('auth/invalid-email')) {
+        return 'Please enter a valid email address.';
+      }
       if (message.includes('auth/wrong-password') || message.includes('auth/invalid-credential')) {
         return 'Invalid email or password.';
       }

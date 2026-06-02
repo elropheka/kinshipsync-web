@@ -7,6 +7,8 @@ import './index.css';
 import App from './App.tsx';
 import LandingPage from './pages/LandingPage';
 import Auth from './pages/Auth';
+import ForgotPassword from './pages/ForgotPassword';
+import PasswordResetEmailSent from './pages/PasswordResetEmailSent';
 import { EventSiteDetailPage } from './pages/detail/EventSiteDetailPage';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -25,6 +27,8 @@ createRoot(document.getElementById('root')!).render(
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+                <Route path="/auth/password-reset-sent" element={<PasswordResetEmailSent />} />
                 <Route path="/events/site/:slug" element={<EventSiteDetailPage />} />
                 <Route path="/dashboard/*" element={<App />} />
               </Routes>
