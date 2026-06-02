@@ -12,6 +12,7 @@ import UserEventFormModal from '@/components/user/UserEventFormModal';
 import { toast } from "sonner";
 import { useErrorToast } from '@/hooks/useErrorToast';
 import { ErrorState } from '@/components/common/ErrorState';
+import { OrganizerDisplay } from '@/components/common/OrganizerDisplay';
 import {
   PlusCircle,
   TrendingUp,
@@ -59,9 +60,11 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
         </div>
       </CardContent>
       <CardFooter>
-        <p className="text-xs text-muted-foreground">
-          Organized by: {event?.organizerId || 'Unknown'}
-        </p>
+        {event?.organizerId ? (
+          <OrganizerDisplay organizerId={event.organizerId} />
+        ) : (
+          <p className="text-xs text-muted-foreground">Organized by: Unknown</p>
+        )}
       </CardFooter>
     </Card>
   );

@@ -13,7 +13,7 @@ import { ErrorState } from '@/components/common/ErrorState';
 import { PlusCircle, Edit3 } from 'lucide-react';
 import EventCreateEditModal from '@/components/common/EventCreateEditModal';
 import { useAuth } from '@/context/AuthContext';
-import { useUserProfile } from '@/hooks/useUserProfile';
+import { OrganizerDisplay } from '@/components/common/OrganizerDisplay';
 
 interface EventCardProps {
   event: Event;
@@ -59,19 +59,6 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, currentUserId }) =
         <OrganizerDisplay organizerId={event.organizerId} />
       </CardFooter>
     </Card>
-  );
-};
-
-const OrganizerDisplay: React.FC<{ organizerId: string }> = ({ organizerId }) => {
-  const { userProfile, isLoading, error } = useUserProfile(organizerId);
-
-  if (isLoading) return <p className="text-xs text-muted-foreground">Organized by: Loading...</p>;
-  if (error) return <p className="text-xs text-muted-foreground">Organized by: {organizerId} (Error loading name)</p>;
-  
-  return (
-    <p className="text-xs text-muted-foreground">
-      Organized by: {userProfile?.displayName || organizerId}
-    </p>
   );
 };
 

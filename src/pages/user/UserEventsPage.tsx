@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useUserVisibleEvents } from '@/hooks/useUserVisibleEvents';
 import { useAllEvents } from '@/hooks/useAllEvents';
 import type { Event, CreateEventPayload, UpdateEventPayload, UpdateEventWebsiteDetailsPayload, WebsitePayload } from '@/types/eventTypes';
-import { useUserProfile } from '@/hooks/useUserProfile';
+import { OrganizerDisplay } from '@/components/common/OrganizerDisplay';
 import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -100,59 +100,6 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, currentUserId }) =
       {card}
     </Link>
   ) : card;
-};
-
-const OrganizerDisplay: React.FC<{ organizerId: string }> = ({ organizerId }) => {
-  
-  const { userProfile, isLoading, error } = useUserProfile(organizerId);
-
-  if (isLoading) return <p className="text-xs text-muted-foreground">Organized by: Loading...</p>;
-  if (error) return <p className="text-xs text-muted-foreground">Organized by: {organizerId} (Error loading name)</p>;
-  
-  const getOrganizerName = () => {
-    if (!userProfile) {
-      // console.log("No user profile found for:", organizerId);
-      return organizerId;
-    }
-
-    // Log the normalized fields
-    // console.log("OrganizerDisplay - Normalized Profile Data:", {
-    //   organizerId,
-    //   firstName: userProfile.firstName,
-    //   lastName: userProfile.lastName,
-    //   displayName: userProfile.displayName,
-    //   rawData: userProfile // Log full profile for debugging
-    // });
-    
-    // Try firstName + lastName first
-    if (userProfile.firstName && userProfile.lastName) {
-      const fullName = `${userProfile.firstName} ${userProfile.lastName}`;
-      // console.log("Using firstName + lastName:", fullName);
-      return fullName;
-    }
-    
-    // Fall back to displayName
-    if (userProfile.displayName) {
-      // If displayName contains a space, it might be a full name
-      const nameParts = userProfile.displayName.split(' ');
-      if (nameParts.length >= 2) {
-        // console.log("Using displayName as full name:", userProfile.displayName);
-        return userProfile.displayName;
-      }
-      // console.log("Using displayName:", userProfile.displayName);
-      return userProfile.displayName;
-    }
-    
-    // Last resort: use organizerId
-    // console.log("No name fields found, using organizerId:", organizerId);
-    return organizerId;
-  };
-  
-  return (
-    <p className="text-xs text-muted-foreground">
-      Organized by: {getOrganizerName()}
-    </p>
-  );
 };
 
 const UserEventsPage: React.FC = () => {
