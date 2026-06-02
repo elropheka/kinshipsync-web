@@ -1,15 +1,20 @@
 import React, { useMemo, useCallback, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { FiSearch, FiShoppingBag } from 'react-icons/fi';
 import { DataTable } from '@/components/common/DataTable';
 import { getAdminVendorColumns } from './adminVendorColumns';
 import { useAllVendors } from '@/hooks/useAllVendors';
-import { useAllUsers } from '@/hooks/useAllUsers'; // Import useAllUsers
-import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/errorUtils";
+import { useAllUsers } from '@/hooks/useAllUsers';
+import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/errorUtils';
 import { useErrorToast } from '@/hooks/useErrorToast';
 import { ErrorState } from '@/components/common/ErrorState';
-import type { Vendor, UpdateVendorProfilePayload } from "@/types/vendorTypes";
-// import type { UserProfile } from '@/types/userTypes'; // Import UserProfile - Removed as it might be unused
+import type { Vendor, UpdateVendorProfilePayload } from '@/types/vendorTypes';
 import VendorEditModal from '@/components/admin/VendorEditModal';
+import { DashboardCard } from '@/components/dashboard/DashboardCard';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { dashboardInputClass } from '@/components/dashboard/DashboardCard';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,27 +24,27 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"; // Import AlertDialog components
+} from '@/components/ui/alert-dialog';
 
 const AdminVendorsPage: React.FC = () => {
-  const { vendors, isLoading, error, adminToggleVendorFeature, adminUpdateVendorProfile, adminDeleteVendor } = useAllVendors();
-  const { users, adminUpdateUserProfile: updateUserProfileRoles } = useAllUsers(); // Get users and the updater
+  const { vendors, isLoading, error, adminToggleVendorFeature, adminUpdateVendorProfile, adminDeleteVendor } =
+    useAllVendors();
+  const { users, adminUpdateUserProfile: updateUserProfileRoles } = useAllUsers();
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
   const [isVendorEditModalOpen, setIsVendorEditModalOpen] = useState(false);
-  const [vendorToDelete, setVendorToDelete] = useState<Vendor | null>(null); // For delete confirmation
+  const [vendorToDelete, setVendorToDelete] = useState<Vendor | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isUpdatingVendor, setIsUpdatingVendor] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-
-  const handleToggleFeature = useCallback(async (vendorId: string, currentStatus: boolean) => {
-    const success = await adminToggleVendorFeature(vendorId, currentStatus);
-    if (success) {
-      toast.success(`Vendor feature status ${currentStatus ? "removed" : "added"}.`);
-      // fetchAllVendors(); // Already handled by optimistic update in useAllVendors
-    } else {
-      toast.error(getErrorMessage(error) || "Failed to update vendor feature status.");
-    }
-  }, [adminToggleVendorFeature]);
+  const handleToggleFeature = useCallback(
+    async (vendorId: string, currentStatus: boolean) => {
+      const success = await adminToggleVendorFeature(vendorId, currentStatus);
+      if (success) toast.success(`Vendor feature status ${currentStatus ? 'removed' : 'added'}.`);
+      else toast.error(getErrorMessage(error) || 'Failed to update vendor feature status.');
+    },
+    [adminToggleVendorFeature, error]
+  );
 
   const handleEditVendor = useCallback((vendor: Vendor) => {
     setEditingVendor(vendor);
@@ -53,69 +58,56 @@ const AdminVendorsPage: React.FC = () => {
 
   const handleVendorModalSubmit = async (vendorId: string, updatedData: UpdateVendorProfilePayload) => {
     if (!adminUpdateVendorProfile) {
-        toast.error("Update function not available.");
-        return;
+      toast.error('Update function not available.');
+      return;
     }
     setIsUpdatingVendor(true);
     const success = await adminUpdateVendorProfile(vendorId, updatedData);
     if (success) {
-      toast.success("Vendor profile updated.");
+      toast.success('Vendor profile updated.');
       handleVendorModalClose();
-      // fetchAllVendors(); // Already handled by adminUpdateVendorProfile in useAllVendors
     } else {
-      toast.error(getErrorMessage(error) || "Failed to update vendor profile.");
+      toast.error(getErrorMessage(error) || 'Failed to update vendor profile.');
     }
     setIsUpdatingVendor(false);
   };
 
-  const columns = useMemo(() => {
-    return getAdminVendorColumns(handleToggleFeature, handleEditVendor, (vendor: Vendor) => {
-      setVendorToDelete(vendor);
-      setIsDeleteDialogOpen(true);
-    });
-  }, [handleToggleFeature, handleEditVendor]);
+  const filteredVendors = useMemo(() => {
+    if (!searchQuery.trim()) return vendors;
+    const q = searchQuery.toLowerCase();
+    return vendors.filter(
+      (v) =>
+        v.name?.toLowerCase().includes(q) ||
+        v.contactEmail?.toLowerCase().includes(q)
+    );
+  }, [vendors, searchQuery]);
+
+  const columns = useMemo(
+    () =>
+      getAdminVendorColumns(handleToggleFeature, handleEditVendor, (vendor: Vendor) => {
+        setVendorToDelete(vendor);
+        setIsDeleteDialogOpen(true);
+      }),
+    [handleToggleFeature, handleEditVendor]
+  );
 
   const confirmDeleteVendor = async () => {
     if (!vendorToDelete || !adminDeleteVendor || !updateUserProfileRoles) {
-      toast.error("Delete operation failed. Required resources missing.");
+      toast.error('Delete operation failed.');
       setIsDeleteDialogOpen(false);
       setVendorToDelete(null);
       return;
     }
 
-    const vendorId = vendorToDelete.id; // Assuming vendor ID is the user ID
-
-    // Step 1: Delete vendor profile
+    const vendorId = vendorToDelete.id;
     const vendorDeleteSuccess = await adminDeleteVendor(vendorId);
 
     if (vendorDeleteSuccess) {
       toast.success(`Vendor ${vendorToDelete.name} deleted.`);
-
-      // Step 2: Update user role
-      const userToUpdate = users.find(u => u.userId === vendorId);
+      const userToUpdate = users.find((u) => u.userId === vendorId);
       if (userToUpdate) {
-        let newRole: "organizer" | "admin" | "vendor" = 'organizer'; // Default to 'organizer'
-        
-        // If the user is an admin, their role should remain 'admin'
-        // Assuming 'role' is the singular field in UserProfile as per latest feedback
-        // And AdminUpdateUserProfilePayload accepts 'role'
-        if (userToUpdate.role === 'admin') {
-          newRole = 'admin';
-        }
-        
-        const profileUpdatePayload: { role: typeof newRole; isVendor: boolean } = {
-          role: newRole,
-          isVendor: false,
-        };
-        
-        const userRoleUpdateSuccess = await updateUserProfileRoles(vendorId, profileUpdatePayload);
-        if (userRoleUpdateSuccess) {
-          toast.success(`User ${userToUpdate.displayName || vendorId}'s role updated.`);
-        } else {
-          toast.warning(`Vendor deleted, but failed to update user ${userToUpdate.displayName || vendorId}'s role. Please update manually.`);
-        }
-      } else {
-        toast.warning(`Vendor deleted, but user profile for ID ${vendorId} not found to update roles.`);
+        const newRole = userToUpdate.role === 'admin' ? 'admin' : 'organizer';
+        await updateUserProfileRoles(vendorId, { role: newRole, isVendor: false });
       }
     } else {
       toast.error(`Failed to delete vendor ${vendorToDelete.name}.`);
@@ -139,16 +131,39 @@ const AdminVendorsPage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto py-4 sm:py-6 md:py-10 bg-background">
-      <div className="rounded-xl border border-border bg-card shadow-sm p-4 sm:p-6">
-      <DataTable
-        columns={columns}
-        data={vendors}
-        isLoading={isLoading}
-        emptyMessage="No vendors found."
-        globalFilterPlaceholder="Search all vendors..."
-      />
+    <div className="max-w-5xl mx-auto pb-8 space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <h1 className="font-display text-3xl text-[#5D2413] mb-1">Vendor Management</h1>
+          <p className="text-muted-foreground text-sm">{vendors.length} registered vendors</p>
+        </div>
+        <Button asChild className="rounded-full bg-secondary hover:bg-secondary/90 text-white gap-2 self-start">
+          <Link to="/dashboard/admin/register-vendor">
+            <FiShoppingBag className="w-4 h-4" />
+            Register Vendor
+          </Link>
+        </Button>
       </div>
+
+      <div className="relative">
+        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input
+          placeholder="Search vendors..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className={`pl-10 rounded-full ${dashboardInputClass}`}
+        />
+      </div>
+
+      <DashboardCard className="overflow-hidden">
+        <DataTable
+          columns={columns}
+          data={filteredVendors}
+          isLoading={isLoading}
+          emptyMessage="No vendors found."
+        />
+      </DashboardCard>
+
       <VendorEditModal
         vendor={editingVendor}
         isOpen={isVendorEditModalOpen}
@@ -156,21 +171,19 @@ const AdminVendorsPage: React.FC = () => {
         onSubmit={handleVendorModalSubmit}
         isUpdating={isUpdatingVendor}
       />
+
       {vendorToDelete && (
         <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the vendor profile for 
-                "{vendorToDelete.name}" and attempt to revert their user role.
+                This will permanently delete the vendor profile for &ldquo;{vendorToDelete.name}&rdquo;.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel onClick={() => setVendorToDelete(null)}>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={confirmDeleteVendor}>
-                Yes, delete vendor
-              </AlertDialogAction>
+              <AlertDialogAction onClick={confirmDeleteVendor}>Yes, delete vendor</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

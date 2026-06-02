@@ -1,136 +1,97 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
-import type { UserProfile } from "@/types/userTypes";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge"; // For roles
+import type { ColumnDef } from '@tanstack/react-table';
+import type { UserProfile } from '@/types/userTypes';
+import { Button } from '@/components/ui/button';
+
+const getDisplayName = (user: UserProfile) => {
+  if (user.displayName) return user.displayName;
+  if (user.firstName || user.lastName) {
+    return `${user.firstName || ''} ${user.lastName || ''}`.trim();
+  }
+  return user.email || user.userId;
+};
+
+const getInitials = (name: string) =>
+  name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 
 export const getAdminUserColumns = (
-  onEditUser: (user: UserProfile) => void,
-  onViewUser: (user: UserProfile) => void,
+  onEditUser: (user: UserProfile) => void
 ): ColumnDef<UserProfile>[] => [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    id: "name", // Added id
-    header: ({ column }) => (
-      <Button variant="ghost" className="text-foreground hover:text-primary" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-        Name <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    accessorFn: (user) => { // Added accessorFn
-      let nameToDisplay = user.displayName;
-      if (!nameToDisplay && (user.firstName || user.lastName)) {
-        nameToDisplay = `${user.firstName || ''} ${user.lastName || ''}`.trim();
-      }
-      return nameToDisplay || user.userId;
-    },
+    id: 'name',
+    header: 'Name',
+    accessorFn: (user) => getDisplayName(user),
     cell: ({ row }) => {
-      // The accessorFn now provides the value, or we can re-calculate for display consistency
       const user = row.original;
-      let nameToDisplay = user.displayName;
-      if (!nameToDisplay && (user.firstName || user.lastName)) {
-        nameToDisplay = `${user.firstName || ''} ${user.lastName || ''}`.trim();
-      }
-      return <div className="font-medium text-foreground">{nameToDisplay || user.userId}</div>;
-    },
-    sortingFn: (rowA, rowB) => { // Removed columnId
-      // Value from accessorFn is available via row.getValue("name")
-      const nameA = rowA.getValue("name") as string;
-      const nameB = rowB.getValue("name") as string;
-      return nameA.localeCompare(nameB);
-    },
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
-    cell: ({ row }) => (
-      <span className="text-muted-foreground">{row.getValue("email") as string}</span>
-    ),
-  },
-  {
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => {
-      const role = row.getValue("role") as UserProfile['role'];
-      if (!role) {
-        return <span className="text-muted-foreground">N/A</span>;
-      }
+      const name = getDisplayName(user);
       return (
-        <div className="flex space-x-1">
-          <Badge
-            variant={role === 'admin' ? 'default' : 'secondary'}
-            className="capitalize"
-          >
-            {role}
-          </Badge>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-secondary/20 text-secondary text-xs font-bold flex items-center justify-center flex-shrink-0">
+            {getInitials(name)}
+          </div>
+          <div>
+            <p className="font-semibold text-[#5D2413] text-sm">{name}</p>
+            <p className="text-xs text-muted-foreground">{user.email}</p>
+          </div>
         </div>
       );
     },
   },
   {
-    accessorKey: "createdAt",
-    header: ({ column }) => (
-      <Button variant="ghost" className="text-foreground hover:text-primary" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-        Joined Date <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    accessorKey: 'role',
+    header: 'Role',
     cell: ({ row }) => {
-      const date = new Date(row.getValue("createdAt"));
-      return <div>{date.toLocaleDateString()}</div>;
+      const role = (row.getValue('role') as string) || 'user';
+      return (
+        <span className="inline-flex px-3 py-1 rounded-full text-xs font-medium bg-[#F5EFE8] text-[#5D2413] capitalize">
+          {role}
+        </span>
+      );
     },
   },
   {
-    id: "actions",
+    id: 'eventsCreated',
+    header: 'Events Created',
+    cell: () => <span className="text-sm text-[#5D2413]">—</span>,
+  },
+  {
+    id: 'status',
+    header: 'Status',
+    cell: () => (
+      <span className="inline-flex px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+        Active
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'createdAt',
+    header: 'Joined',
     cell: ({ row }) => {
-      const user = row.original;
+      const date = new Date(row.getValue('createdAt') as string);
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0 text-primary hover:bg-primary/10">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => onViewUser(user)}>View details</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onEditUser(user)}>Edit user</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive focus:text-destructive">Delete User</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <span className="text-sm text-muted-foreground">
+          {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+        </span>
       );
     },
+  },
+  {
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row }) => (
+      <Button
+        variant="link"
+        className="text-secondary p-0 h-auto font-medium"
+        onClick={() => onEditUser(row.original)}
+      >
+        Edit
+      </Button>
+    ),
   },
 ];

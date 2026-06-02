@@ -89,7 +89,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           onProfileDropdownToggle={setIsProfileDropdownOpen}
           unreadCount={unreadCount}
         />
-        <main className={clsx("flex-1 p-4 md:p-6 overflow-y-auto", isContentBlurred && "pointer-events-none")}>
+        <main className={clsx('flex-1 p-4 md:p-6 overflow-y-auto bg-[#F5EFE8]', isContentBlurred && 'pointer-events-none')}>
           {children || <Outlet />}
         </main>
       </div>

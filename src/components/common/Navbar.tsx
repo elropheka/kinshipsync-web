@@ -1,13 +1,14 @@
 import React, { forwardRef, useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { useAppTheme } from '@/hooks/useAppTheme'; // Corrected import
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { firestore } from '@/services/firebaseConfig'; // For Firestore access
-import { collection, query, where, getDocs, limit } from 'firebase/firestore'; // Re-added 'where'
+import { firestore } from '@/services/firebaseConfig';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Bell,  Search, ChevronDown, User, Settings, LogOut, Sun, Moon } from 'lucide-react'; // Added Sun and Moon
+import { Bell, Search, ChevronDown, User, Settings, LogOut, Sun, Moon, Plus } from 'lucide-react';
+import tealLogoOnly from '@/assets/branding/teal-logo-only.png';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -215,6 +216,11 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
   };
 
   const pageTitle = getPageTitle(location.pathname);
+  const isAdminRoute = location.pathname.startsWith('/dashboard/admin');
+  const isUserAppRoute =
+    !isAdminRoute &&
+    !location.pathname.startsWith('/dashboard/vendor') &&
+    !location.pathname.startsWith('/dashboard/settings');
 
   const getAvatarFallback = (name?: string | null) => {
     if (name) {
@@ -228,20 +234,21 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
   };
 
     return (
-              <header className="h-16 flex items-center px-4 sm:px-6 bg-background border-b border-primary/15 sticky top-0 z-10 shadow-sm">
-        {/* Left section: Toggle Button and Page Title */}
-        <div className="flex items-center gap-3 min-w-0">
-          <Button variant="ghost" size="icon" onClick={onToggleSidebar} className="mr-1 text-primary hover:bg-primary/10" title={isSidebarOpen ? "Close sidebar" : "Open sidebar"}>
+              <header className="h-16 flex items-center px-4 sm:px-6 bg-white border-b border-[#D6C8AF]/30 sticky top-0 z-10">
+        <div className="flex items-center gap-3 min-w-0 flex-shrink-0">
+          <Button variant="ghost" size="icon" onClick={onToggleSidebar} className="text-[#5D2413] hover:bg-[#F5EFE8]" title={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}>
             {isSidebarOpen ? <DoorClosed className="h-6 w-6" /> : <DoorOpen className="h-6 w-6" />}
           </Button>
-          {pageTitle ? (
-            <h1 className="text-xl font-semibold text-primary truncate">
-              {pageTitle}
-            </h1>
+          {isUserAppRoute ? (
+            <Link to="/dashboard/events" className="flex-shrink-0">
+              <img src={tealLogoOnly} alt="Kinship Sync" className="h-8 w-8 object-contain" />
+            </Link>
+          ) : pageTitle && !isAdminRoute ? (
+            <h1 className="text-xl font-semibold text-[#5D2413] truncate hidden sm:block">{pageTitle}</h1>
           ) : null}
         </div>
 
-      {/* Center section: Search Bar */}
+      {isAdminRoute ? (
       <div className="flex-1 flex justify-center px-4" ref={searchContainerRef}>
         <div className="relative w-full max-w-md">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -280,17 +287,29 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
           )}
         </div>
       </div>
+      ) : (
+        <div className="flex-1" />
+      )}
 
-      {/* Right section: Notifications and User Dropdown Menu */}
+      {/* Right section */}
         <div className="flex items-center space-x-3 sm:space-x-4 flex-shrink-0">
-          <Button ref={ref} variant="ghost" size="icon" title="Notifications" onClick={onToggleNotificationDrawer} className="relative">
+          {isUserAppRoute && (
+            <Button asChild className="rounded-full bg-secondary hover:bg-secondary/90 text-white h-9 px-4 hidden sm:inline-flex">
+              <Link to="/dashboard/events/create">
+                <Plus className="w-4 h-4 mr-1" />
+                New Event
+              </Link>
+            </Button>
+          )}
+
+          <Button ref={ref} variant="ghost" size="icon" title="Notifications" onClick={onToggleNotificationDrawer} className="relative text-[#5D2413]">
             <Bell className="h-6 w-6" />
             {props.unreadCount && props.unreadCount > 0 && (
-              <span className="absolute top-1 right-1 block h-3 w-3 rounded-full ring-2 ring-background bg-destructive" />
+              <span className="absolute top-1.5 right-1.5 block h-2.5 w-2.5 rounded-full bg-secondary ring-2 ring-white" />
             )}
           </Button>
 
-          {currentUser && (
+          {!isUserAppRoute && currentUser && (
             <DropdownMenu onOpenChange={onProfileDropdownToggle}> {/* Call onProfileDropdownToggle on open/close */}
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center space-x-1 p-1 rounded-full focus-visible:ring-0 focus-visible:ring-offset-0 h-auto">
@@ -336,6 +355,29 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
                   <span>{themeMode === 'light' ? 'Dark mode' : 'Light mode'}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
+          {isUserAppRoute && currentUser && (
+            <DropdownMenu onOpenChange={onProfileDropdownToggle}>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center p-1 rounded-full h-auto sm:hidden">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={(userProfile?.avatarUrl || currentUser?.photoURL) ?? undefined} alt={currentUser.displayName || 'User'} />
+                    <AvatarFallback>{getAvatarFallback(currentUser.displayName)}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuItem onClick={() => navigate('/dashboard/user/profile')}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>

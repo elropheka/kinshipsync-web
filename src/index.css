@@ -20,8 +20,9 @@
     background-color: hsl(var(--card));
   }
   :root {
-    --font-heading: 'Poppins', sans-serif;
-    --font-body: 'Poppins', sans-serif;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-heading: 'Inter', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
 
     /* Kinship Sync brand — docs/branding.md */
     --background: 34 33% 93%; /* #F5EFE8 cream */

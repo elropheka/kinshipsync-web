@@ -1,35 +1,23 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import {
-  Users,
-  Briefcase,
-  CalendarDays,
-  UserPlus,
-  Activity,
-  Server,
-  Database,
-  ShieldCheck,
-} from 'lucide-react';
+  FiUsers,
+  FiBriefcase,
+  FiCalendar,
+  FiDollarSign,
+  FiChevronRight,
+} from 'react-icons/fi';
 import { useAllUsers } from '@/hooks/useAllUsers';
 import { useAllVendors } from '@/hooks/useAllVendors';
 import { useAllEvents } from '@/hooks/useAllEvents';
 import { AdminDashboardSkeleton } from '@/components/common/skeletons';
-
-const brandCardClass = 'rounded-xl border border-border bg-card shadow-sm';
-
-const getNewCountsLast30Days = (items: Array<{ createdAt: string } | undefined>): number => {
-  if (!items) return 0;
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-  return items.filter(item => {
-    if (!item || !item.createdAt) return false;
-    const itemDate = new Date(item.createdAt);
-    return itemDate >= thirtyDaysAgo;
-  }).length;
-};
+import { DashboardCard, dashboardSectionTitleClass } from '@/components/dashboard/DashboardCard';
+import {
+  adminDashboardMockMetrics,
+  adminRecentActivity,
+  adminQuickActions,
+  adminSystemHealth,
+} from '@/constants/mock/adminDashboard';
 
 const AdminDashboard: React.FC = () => {
   const { users, isLoading: isLoadingUsers, error: usersError } = useAllUsers();
@@ -38,239 +26,183 @@ const AdminDashboard: React.FC = () => {
 
   const isLoading = isLoadingUsers || isLoadingVendors || isLoadingEvents;
 
-  const userCount = isLoadingUsers ? "..." : usersError ? "Error" : users.length;
-  const vendorCount = isLoadingVendors ? "..." : vendorsError ? "Error" : vendors.length;
-  const eventCount = isLoadingEvents ? "..." : eventsError ? "Error" : allEvents.length;
-
-  const newUsersLast30Days = isLoadingUsers ? "..." : usersError ? "Error" : getNewCountsLast30Days(users);
-  const newVendorsLast30Days = isLoadingVendors ? "..." : vendorsError ? "Error" : getNewCountsLast30Days(vendors);
-  const newEventsLast30Days = isLoadingEvents ? "..." : eventsError ? "Error" : getNewCountsLast30Days(allEvents);
-
   const topEvents = useMemo(() => {
     if (!allEvents?.length) return [];
     return [...allEvents]
       .sort((a, b) => (b.totalAttendees ?? 0) - (a.totalAttendees ?? 0))
-      .slice(0, 5);
+      .slice(0, 4);
   }, [allEvents]);
 
-  const systemHealthy = !usersError && !vendorsError && !eventsError && !isLoading;
+  const metrics = [
+    {
+      label: 'Total Users',
+      value: isLoadingUsers ? '...' : usersError ? '—' : users.length || adminDashboardMockMetrics.totalUsers.value,
+      change: adminDashboardMockMetrics.totalUsers.change,
+      positive: adminDashboardMockMetrics.totalUsers.positive,
+      icon: FiUsers,
+      iconBg: 'bg-secondary/15',
+      iconColor: 'text-secondary',
+    },
+    {
+      label: 'Active Vendors',
+      value: isLoadingVendors ? '...' : vendorsError ? '—' : vendors.length || adminDashboardMockMetrics.activeVendors.value,
+      change: adminDashboardMockMetrics.activeVendors.change,
+      positive: adminDashboardMockMetrics.activeVendors.positive,
+      icon: FiBriefcase,
+      iconBg: 'bg-primary/15',
+      iconColor: 'text-primary',
+    },
+    {
+      label: 'Total Events',
+      value: isLoadingEvents ? '...' : eventsError ? '—' : allEvents.length || adminDashboardMockMetrics.totalEvents.value,
+      change: adminDashboardMockMetrics.totalEvents.change,
+      positive: adminDashboardMockMetrics.totalEvents.positive,
+      icon: FiCalendar,
+      iconBg: 'bg-secondary/15',
+      iconColor: 'text-secondary',
+    },
+    {
+      label: 'Revenue',
+      value: adminDashboardMockMetrics.revenue.value,
+      change: adminDashboardMockMetrics.revenue.change,
+      positive: adminDashboardMockMetrics.revenue.positive,
+      icon: FiDollarSign,
+      iconBg: 'bg-primary/15',
+      iconColor: 'text-primary',
+    },
+  ];
 
-  if (isLoading && (userCount === "..." || vendorCount === "..." || eventCount === "...")) {
+  if (isLoading && users.length === 0 && vendors.length === 0) {
     return <AdminDashboardSkeleton />;
   }
 
+  const statusColors: Record<string, string> = {
+    upcoming: 'bg-yellow-100 text-yellow-800',
+    ongoing: 'bg-green-100 text-green-800',
+    completed: 'bg-blue-100 text-blue-800',
+    active: 'bg-green-100 text-green-800',
+  };
+
   return (
-    <div className="container mx-auto py-4 sm:py-6 md:py-10 space-y-8 bg-background">
-      <p className="text-lg text-muted-foreground">
-        Overview of the platform and quick access to management sections.
-      </p>
-
-      {/* KPI cards */}
+    <div className="max-w-4xl mx-auto space-y-8 pb-8">
       <div>
-        <h2 className="text-2xl font-semibold text-foreground mb-4">Platform Totals</h2>
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
-          <Card className={brandCardClass}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-foreground">Total Users</CardTitle>
-              <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Users className="h-4 w-4 text-primary" />
+        <h1 className="font-display text-3xl text-[#5D2413] mb-1">Admin Dashboard</h1>
+        <p className="text-muted-foreground text-sm">Overview of platform activity and metrics</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        {metrics.map((metric) => (
+          <DashboardCard key={metric.label} className="p-5">
+            <div className="flex items-start justify-between mb-3">
+              <div className={`w-10 h-10 rounded-xl ${metric.iconBg} flex items-center justify-center`}>
+                <metric.icon className={`w-5 h-5 ${metric.iconColor}`} />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{userCount}</div>
-              <Link to="/dashboard/admin/users" className="text-xs text-primary hover:underline">
-                View all users
-              </Link>
-            </CardContent>
-          </Card>
-          <Card className={brandCardClass}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-foreground">Total Vendors</CardTitle>
-              <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Briefcase className="h-4 w-4 text-primary" />
+              <span
+                className={`text-xs font-medium ${
+                  metric.positive ? 'text-green-600' : 'text-red-500'
+                }`}
+              >
+                {metric.change}
+              </span>
+            </div>
+            <p className="text-sm text-muted-foreground">{metric.label}</p>
+            <p className="font-display text-2xl text-[#5D2413] font-bold">{metric.value}</p>
+          </DashboardCard>
+        ))}
+      </div>
+
+      <section>
+        <h2 className={`${dashboardSectionTitleClass} mb-4`}>Recent Activity</h2>
+        <DashboardCard className="p-5">
+          <ul className="space-y-4">
+            {adminRecentActivity.map((item) => (
+              <li key={item.id} className="flex items-start gap-3">
+                <div
+                  className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${
+                    item.color === 'green'
+                      ? 'bg-primary/20 text-primary'
+                      : item.color === 'orange'
+                        ? 'bg-secondary/20 text-secondary'
+                        : 'bg-[#5D2413]/10 text-[#5D2413]'
+                  }`}
+                >
+                  {item.initial}
+                </div>
+                <div>
+                  <p className="text-sm text-[#5D2413]">{item.text}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{item.timeAgo}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </DashboardCard>
+      </section>
+
+      <section>
+        <h2 className={`${dashboardSectionTitleClass} mb-4`}>Top Events</h2>
+        <DashboardCard className="divide-y divide-[#D6C8AF]/30">
+          {(topEvents.length ? topEvents : []).map((event) => (
+            <div key={event.id} className="flex items-center justify-between p-5 gap-4">
+              <div>
+                <p className="font-semibold text-[#5D2413]">{event.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {event.totalAttendees ?? 0} attendees •{' '}
+                  {event.date ? new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'TBD'}
+                </p>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{vendorCount}</div>
-              <Link to="/dashboard/admin/vendors" className="text-xs text-primary hover:underline">
-                View all vendors
-              </Link>
-            </CardContent>
-          </Card>
-          <Card className={brandCardClass}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-foreground">Total Events</CardTitle>
-              <div className="h-9 w-9 rounded-lg bg-secondary/15 flex items-center justify-center">
-                <CalendarDays className="h-4 w-4 text-secondary" />
+              <span
+                className={`text-xs font-medium px-3 py-1 rounded-full capitalize ${
+                  statusColors[event.status || 'active'] || statusColors.active
+                }`}
+              >
+                {event.status || 'Active'}
+              </span>
+            </div>
+          ))}
+          {!topEvents.length && (
+            <p className="p-5 text-sm text-muted-foreground">No events to display yet.</p>
+          )}
+        </DashboardCard>
+      </section>
+
+      <section>
+        <h2 className={`${dashboardSectionTitleClass} mb-4`}>Quick Actions</h2>
+        <DashboardCard className="divide-y divide-[#D6C8AF]/30">
+          {adminQuickActions.map((action) => (
+            <Link
+              key={action.id}
+              to={action.href}
+              className="flex items-center justify-between p-5 hover:bg-[#F5EFE8]/50 transition-colors"
+            >
+              <div>
+                <p className="font-medium text-[#5D2413]">{action.title}</p>
+                <p className="text-xs text-muted-foreground">{action.description}</p>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{eventCount}</div>
-              <Link to="/dashboard/admin/events" className="text-xs text-primary hover:underline">
-                View all events
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+              <FiChevronRight className="w-5 h-5 text-muted-foreground" />
+            </Link>
+          ))}
+        </DashboardCard>
+      </section>
 
-      {/* Activity (last 30 days) */}
-      <div>
-        <h2 className="text-2xl font-semibold text-foreground mb-4">Activity (Last 30 Days)</h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Card className={brandCardClass}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-foreground">New Users</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{newUsersLast30Days}</div>
-              <p className="text-xs text-muted-foreground">Registered in the last 30 days</p>
-            </CardContent>
-          </Card>
-          <Card className={brandCardClass}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-foreground">New Vendors</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{newVendorsLast30Days}</div>
-              <p className="text-xs text-muted-foreground">Joined in the last 30 days</p>
-            </CardContent>
-          </Card>
-          <Card className={brandCardClass}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-foreground">New Events</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{newEventsLast30Days}</div>
-              <p className="text-xs text-muted-foreground">Created in the last 30 days</p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Top events */}
-        <Card className={brandCardClass}>
-          <CardHeader>
-            <CardTitle className="text-foreground flex items-center gap-2">
-              <CalendarDays className="h-5 w-5 text-primary" />
-              Top Events
-            </CardTitle>
-            <CardDescription>By reported attendee count</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {topEvents.length > 0 ? (
-              <ul className="space-y-3">
-                {topEvents.map((event, index) => (
-                  <li
-                    key={event.id}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background/60 px-4 py-3"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="text-sm font-semibold text-primary w-6">#{index + 1}</span>
-                      <span className="font-medium text-foreground truncate">{event.name}</span>
-                    </div>
-                    <Badge variant="secondary">{event.totalAttendees ?? 0} guests</Badge>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-muted-foreground">No events to rank yet.</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* System health */}
-        <Card className={brandCardClass}>
-          <CardHeader>
-            <CardTitle className="text-foreground flex items-center gap-2">
-              <Server className="h-5 w-5 text-primary" />
-              System Health
-            </CardTitle>
-            <CardDescription>Data layer status for admin modules</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
-              <span className="flex items-center gap-2 text-sm text-foreground">
-                <Users className="h-4 w-4 text-primary" />
-                Users API
-              </span>
-              <Badge variant={usersError ? 'destructive' : isLoadingUsers ? 'outline' : 'default'}>
-                {usersError ? 'Error' : isLoadingUsers ? 'Loading' : 'Healthy'}
-              </Badge>
+      <section>
+        <h2 className={`${dashboardSectionTitleClass} mb-4`}>System Health</h2>
+        <DashboardCard className="p-5 space-y-5">
+          {adminSystemHealth.map((item) => (
+            <div key={item.id}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-[#5D2413]">{item.label}</span>
+                <span className="flex items-center gap-1.5 text-xs text-green-600 font-medium">
+                  <span className="w-2 h-2 rounded-full bg-green-500" />
+                  {item.status}
+                </span>
+              </div>
+              <div className="h-2 bg-[#F5EFE8] rounded-full overflow-hidden">
+                <div className="h-full bg-green-500 rounded-full" style={{ width: `${item.percent}%` }} />
+              </div>
             </div>
-            <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
-              <span className="flex items-center gap-2 text-sm text-foreground">
-                <Briefcase className="h-4 w-4 text-primary" />
-                Vendors API
-              </span>
-              <Badge variant={vendorsError ? 'destructive' : isLoadingVendors ? 'outline' : 'default'}>
-                {vendorsError ? 'Error' : isLoadingVendors ? 'Loading' : 'Healthy'}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
-              <span className="flex items-center gap-2 text-sm text-foreground">
-                <Database className="h-4 w-4 text-primary" />
-                Events API
-              </span>
-              <Badge variant={eventsError ? 'destructive' : isLoadingEvents ? 'outline' : 'default'}>
-                {eventsError ? 'Error' : isLoadingEvents ? 'Loading' : 'Healthy'}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between rounded-xl bg-primary/5 border border-primary/20 px-4 py-3 mt-2">
-              <span className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <ShieldCheck className="h-4 w-4 text-primary" />
-                Overall
-              </span>
-              <Badge variant={systemHealthy ? 'default' : 'destructive'}>
-                {systemHealthy ? 'All systems operational' : 'Needs attention'}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick actions */}
-      <div>
-        <h2 className="text-2xl font-semibold text-foreground mb-4">Management Sections</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Link
-            to="/dashboard/admin/users"
-            className={`block p-6 ${brandCardClass} hover:shadow-md transition-shadow group`}
-          >
-            <Users className="h-8 w-8 mb-2 text-primary group-hover:scale-105 transition-transform" />
-            <h3 className="text-lg font-semibold text-foreground">User Management</h3>
-            <p className="text-sm text-muted-foreground">View and manage user profiles.</p>
-          </Link>
-          <Link
-            to="/dashboard/admin/vendors"
-            className={`block p-6 ${brandCardClass} hover:shadow-md transition-shadow group`}
-          >
-            <Briefcase className="h-8 w-8 mb-2 text-primary group-hover:scale-105 transition-transform" />
-            <h3 className="text-lg font-semibold text-foreground">Vendor Management</h3>
-            <p className="text-sm text-muted-foreground">View and manage vendor listings.</p>
-          </Link>
-          <Link
-            to="/dashboard/admin/events"
-            className={`block p-6 ${brandCardClass} hover:shadow-md transition-shadow group`}
-          >
-            <CalendarDays className="h-8 w-8 mb-2 text-secondary group-hover:scale-105 transition-transform" />
-            <h3 className="text-lg font-semibold text-foreground">Event Management</h3>
-            <p className="text-sm text-muted-foreground">Oversee all platform events.</p>
-          </Link>
-          <Link
-            to="/dashboard/admin/register-vendor"
-            className={`block p-6 ${brandCardClass} hover:shadow-md transition-shadow group`}
-          >
-            <UserPlus className="h-8 w-8 mb-2 text-secondary group-hover:scale-105 transition-transform" />
-            <h3 className="text-lg font-semibold text-foreground">Register Vendor</h3>
-            <p className="text-sm text-muted-foreground">Add new vendors to the platform.</p>
-          </Link>
-        </div>
-      </div>
+          ))}
+        </DashboardCard>
+      </section>
     </div>
   );
 };

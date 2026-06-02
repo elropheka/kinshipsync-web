@@ -15,6 +15,7 @@ import UserEventsPage from '@/pages/user/UserEventsPage';
 import ProfilePage from '@/pages/user/ProfilePage';
 import DeleteAccountPage from '@/pages/user/DeleteAccountPage';
 import EventsDashboardPage from '@/pages/dashboard/EventsDashboardPage';
+import CreateEventPage from '@/pages/user/CreateEventPage';
 import VendorDashboard from '@/pages/vendor/Dashboard';
 import VendorProfile from '@/pages/vendor/Profile';
 import VendorItems from '@/pages/vendor/Items';
@@ -41,6 +42,7 @@ function App() {
           </Route>
 
           <Route path="events" element={<EventsDashboardPage />} />
+          <Route path="events/create" element={<CreateEventPage />} />
           <Route path="settings" element={<SettingsPage />} />
 
           {/* Detail Pages */}
