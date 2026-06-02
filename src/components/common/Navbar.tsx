@@ -78,7 +78,7 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
         const lowerCaseSearchQuery = searchQuery.toLowerCase();
 
         // Users search
-        const usersCol = collection(firestore, 'users');
+        const usersCol = collection(firestore, 'profiles');
         const userQueries = [
           query(usersCol, where('displayName_lowercase', '>=', lowerCaseSearchQuery), where('displayName_lowercase', '<=', lowerCaseSearchQuery + '\uf8ff'), limit(5)),
           query(usersCol, where('firstName_lowercase', '>=', lowerCaseSearchQuery), where('firstName_lowercase', '<=', lowerCaseSearchQuery + '\uf8ff'), limit(5)),
@@ -97,7 +97,7 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
                 type: 'user',
                 name: data.displayName || `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'Unknown User',
                 description: data.email,
-                path: `/user/user-detail/${doc.id}`
+                path: `/dashboard/users/${doc.id}`
               });
             }
           });
@@ -207,6 +207,7 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
     // Fallback for parameterized routes or general sections
     if (pathname.startsWith('/dashboard/admin')) return 'Admin Panel';
     if (pathname.startsWith('/dashboard/vendor')) return 'Vendor Portal';
+    if (pathname.startsWith('/dashboard/users/')) return 'User details';
     if (pathname.startsWith('/dashboard/user')) return 'User Space';
     if (pathname.startsWith('/dashboard/events')) return 'Events';
     return '';

@@ -1,4 +1,5 @@
 import React, { useMemo, useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DataTable } from '@/components/common/DataTable';
 import { getAdminUserColumns } from './adminUserColumns';
 import { useAllUsers } from '@/hooks/useAllUsers';
@@ -9,6 +10,7 @@ import { useErrorToast } from '@/hooks/useErrorToast';
 import { ErrorState } from '@/components/common/ErrorState';
 
 const AdminUsersPage: React.FC = () => {
+  const navigate = useNavigate();
   const { users, isLoading, error, adminUpdateUserProfile, fetchAllUsers } = useAllUsers();
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -18,6 +20,13 @@ const AdminUsersPage: React.FC = () => {
     setEditingUser(user);
     setIsEditModalOpen(true);
   }, []);
+
+  const handleViewUser = useCallback(
+    (user: UserProfile) => {
+      navigate(`/dashboard/users/${user.userId}`);
+    },
+    [navigate]
+  );
 
   const handleModalClose = () => {
     setIsEditModalOpen(false);
@@ -42,8 +51,8 @@ const AdminUsersPage: React.FC = () => {
   };
 
   const columns = useMemo(() => {
-    return getAdminUserColumns(handleEditUser);
-  }, [handleEditUser]);
+    return getAdminUserColumns(handleEditUser, handleViewUser);
+  }, [handleEditUser, handleViewUser]);
 
   useErrorToast(error, { title: 'Unable to load users' });
 

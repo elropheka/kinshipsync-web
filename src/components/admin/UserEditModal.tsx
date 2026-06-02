@@ -3,9 +3,17 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { showValidationErrors } from '@/lib/formValidationUtils';
+import { ProfileDisplayNameResolver } from '@/lib/profileDisplayName';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -17,12 +25,25 @@ import {
 } from '@/components/ui/dialog';
 import type { UserProfile, AdminUpdateUserProfilePayload } from '@/types/userTypes';
 
-const userEditFormSchema = z.object({
-  displayName: z.string().min(1, "Display name is required.").max(100),
-  firstName: z.string().max(50).optional().or(z.literal('')),
-  lastName: z.string().max(50).optional().or(z.literal('')),
-  // Add other fields like roles, isAdmin, isVendor if needed for admin edit
-});
+const userRoles = ['organizer', 'admin', 'vendor', 'member'] as const;
+
+const userEditFormSchema = z
+  .object({
+    displayName: z.string().max(100).optional().or(z.literal('')),
+    firstName: z.string().max(50).optional().or(z.literal('')),
+    lastName: z.string().max(50).optional().or(z.literal('')),
+    role: z.enum(userRoles),
+  })
+  .refine(
+    (data) =>
+      Boolean(
+        data.displayName?.trim() || data.firstName?.trim() || data.lastName?.trim()
+      ),
+    {
+      message: 'Provide a display name or at least a first or last name.',
+      path: ['displayName'],
+    }
+  );
 
 export type UserEditFormData = z.infer<typeof userEditFormSchema>;
 
@@ -34,47 +55,53 @@ interface UserEditModalProps {
   isUpdating?: boolean;
 }
 
-const UserEditModal: React.FC<UserEditModalProps> = ({ user, isOpen, onClose, onSubmit, isUpdating }) => {
+const UserEditModal: React.FC<UserEditModalProps> = ({
+  user,
+  isOpen,
+  onClose,
+  onSubmit,
+  isUpdating,
+}) => {
   const form = useForm<UserEditFormData>({
     resolver: zodResolver(userEditFormSchema),
     defaultValues: {
       displayName: '',
       firstName: '',
       lastName: '',
+      role: 'organizer',
     },
   });
 
   useEffect(() => {
-    if (user) {
+    if (user && isOpen) {
       form.reset({
         displayName: user.displayName || '',
         firstName: user.firstName || '',
         lastName: user.lastName || '',
-      });
-    } else {
-      form.reset({
-        displayName: '',
-        firstName: '',
-        lastName: '',
+        role: user.role || 'organizer',
       });
     }
-  }, [user, form, isOpen]); // Reset form when user or isOpen changes
+  }, [user, form, isOpen]);
 
   const handleFormSubmit = async (data: UserEditFormData) => {
     if (!user) return;
 
+    const trimmedFirst = data.firstName?.trim() ?? '';
+    const trimmedLast = data.lastName?.trim() ?? '';
+    let displayName = data.displayName?.trim() ?? '';
+
+    if (!displayName && (trimmedFirst || trimmedLast)) {
+      displayName = [trimmedFirst, trimmedLast].filter(Boolean).join(' ');
+    }
+
     const payload: AdminUpdateUserProfilePayload = {
-      // We only send fields that are part of AdminUpdateUserProfilePayload
-      // and are present in our form.
-      displayName: data.displayName,
+      displayName,
+      firstName: trimmedFirst,
+      lastName: trimmedLast,
+      role: data.role,
+      isAdmin: data.role === 'admin',
+      isVendor: data.role === 'vendor',
     };
-    if (data.firstName || data.firstName === '') { // Allow clearing the field
-        payload.firstName = data.firstName;
-    }
-    if (data.lastName || data.lastName === '') { // Allow clearing the field
-        payload.lastName = data.lastName;
-    }
-    // If roles, isAdmin, isVendor were part of the form, they'd be added here.
 
     await onSubmit(user.userId, payload);
   };
@@ -83,66 +110,103 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ user, isOpen, onClose, on
     return null;
   }
 
+  const userLabel = ProfileDisplayNameResolver.fromProfile(user, user.email);
+
   return (
     <Dialog open={isOpen} onOpenChange={(openState) => !openState && onClose()}>
-      <DialogContent className="w-full max-w-md sm:max-w-lg">
+      <DialogContent className="w-full max-w-lg sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>Edit User: {user.displayName}</DialogTitle>
+          <DialogTitle>Edit user</DialogTitle>
           <DialogDescription>
-            Make changes to the user's profile. Click save when you're done.
+            Update profile details for {userLabel}. Email cannot be changed here.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleFormSubmit, (errors) => {
-            showValidationErrors(errors, 'Please correct the form errors:');
-          })} className="space-y-4 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="displayName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Display Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="User's display name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name (Optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="User's first name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last Name (Optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="User's last name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
+          <form
+            onSubmit={form.handleSubmit(handleFormSubmit, (errors) => {
+              showValidationErrors(errors, 'Please correct the form errors:');
+            })}
+            className="space-y-6"
+          >
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="First name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Last name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="displayName"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-2">
+                    <FormLabel>Display name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Shown across the app" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormItem className="sm:col-span-2">
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input value={user.email} disabled readOnly className="bg-muted" />
+                </FormControl>
+              </FormItem>
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-2">
+                    <FormLabel>Role</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {userRoles.map((role) => (
+                          <SelectItem key={role} value={role} className="capitalize">
+                            {role}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <DialogFooter className="gap-2 sm:gap-0">
               <DialogClose asChild>
                 <Button type="button" variant="outline" onClick={onClose}>
                   Cancel
                 </Button>
               </DialogClose>
               <Button type="submit" disabled={isUpdating}>
-                {isUpdating ? 'Saving...' : 'Save Changes'}
+                {isUpdating ? 'Saving...' : 'Save changes'}
               </Button>
             </DialogFooter>
           </form>

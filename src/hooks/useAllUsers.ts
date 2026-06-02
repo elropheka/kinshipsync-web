@@ -100,14 +100,18 @@ export const useAllUsers = () => {
         updatedAt: serverTimestamp() 
       };
 
-      if (profileData.displayName) {
+      if (profileData.displayName !== undefined) {
         dataToUpdate.displayName_lowercase = profileData.displayName.toLowerCase();
       }
-      if (profileData.firstName) {
+      if (profileData.firstName !== undefined) {
         dataToUpdate.firstName_lowercase = profileData.firstName.toLowerCase();
       }
-      if (profileData.lastName) {
+      if (profileData.lastName !== undefined) {
         dataToUpdate.lastName_lowercase = profileData.lastName.toLowerCase();
+      }
+      if (profileData.role !== undefined) {
+        dataToUpdate.isAdmin = profileData.role === 'admin';
+        dataToUpdate.isVendor = profileData.role === 'vendor';
       }
 
       await updateDoc(userDocRef, dataToUpdate);

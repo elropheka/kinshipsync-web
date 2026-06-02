@@ -5,7 +5,6 @@ import type { UserProfile } from "@/types/userTypes";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,9 +16,8 @@ import {
 import { Badge } from "@/components/ui/badge"; // For roles
 
 export const getAdminUserColumns = (
-  onEditUser: (user: UserProfile) => void, // Uncommented
-  // onDeleteUser: (userId: string) => void,
-  // onChangeRole: (userId: string, newRole: UserProfile['role']) => void,
+  onEditUser: (user: UserProfile) => void,
+  onViewUser: (user: UserProfile) => void,
 ): ColumnDef<UserProfile>[] => [
   {
     id: "select",
@@ -126,9 +124,8 @@ export const getAdminUserColumns = (
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => toast.info('View details', { description: `Details for ${user.displayName} — coming soon.` })}>View Details</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onEditUser(user)}>Edit User</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => toast.info('Change role', { description: `Role change for ${user.displayName} — use Edit User.` })}>Change Role</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onViewUser(user)}>View details</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onEditUser(user)}>Edit user</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-destructive focus:text-destructive">Delete User</DropdownMenuItem>
           </DropdownMenuContent>

@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useErrorToast } from '@/hooks/useErrorToast';
 import { ErrorState } from '@/components/common/ErrorState';
 import { DetailPageSkeleton } from '@/components/common/skeletons';
-import { doc, getDoc, Timestamp } from 'firebase/firestore'; // Added Timestamp
-import { firestore } from '../../services/firebaseConfig'; // Adjust path as necessary
-import type { UserProfile } from '../../types/userTypes'; // Use type-only import
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'; // For avatar display
+import { doc, getDoc } from 'firebase/firestore';
+import { firestore } from '@/services/firebaseConfig';
+import type { UserProfile } from '@/types/userTypes';
+import { mapFirestoreProfileDoc } from '@/lib/mapFirestoreProfile';
+import { ProfileDisplayNameResolver } from '@/lib/profileDisplayName';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Mail, Phone } from 'lucide-react';
+
+const PROFILES_COLLECTION = 'profiles';
 
 const UserDetailPage: React.FC = () => {
-  const { userId } = useParams<{ userId: string }>();
+  const { id: userId } = useParams<{ id: string }>();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,39 +32,16 @@ const UserDetailPage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const userDocRef = doc(firestore, 'users', userId);
+        const userDocRef = doc(firestore, PROFILES_COLLECTION, userId);
         const userDocSnap = await getDoc(userDocRef);
 
         if (userDocSnap.exists()) {
-          const rawData = userDocSnap.data();
-          // Type assertion for rawData, assuming createdAt/updatedAt might be Timestamps
-          const userData = rawData as Omit<UserProfile, 'userId' | 'createdAt' | 'updatedAt'> & { 
-            createdAt?: Timestamp | string; 
-            updatedAt?: Timestamp | string;
-          };
-          
-          setUser({
-            userId: userDocSnap.id,
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            displayName: userData.displayName,
-            email: userData.email,
-            bio: userData.bio,
-            avatarUrl: userData.avatarUrl,
-            dateOfBirth: userData.dateOfBirth,
-            phoneNumber: userData.phoneNumber,
-            address: userData.address,
-            role: userData.role || 'organizer',
-            isAdmin: userData.isAdmin,
-            isVendor: userData.isVendor,
-            createdAt: userData.createdAt instanceof Timestamp ? userData.createdAt.toDate().toISOString() : String(userData.createdAt || ''),
-            updatedAt: userData.updatedAt instanceof Timestamp ? userData.updatedAt.toDate().toISOString() : String(userData.updatedAt || ''),
-          });
+          setUser(mapFirestoreProfileDoc(userDocSnap));
         } else {
           setError('User not found.');
         }
       } catch (err) {
-        console.error("Error fetching user data:", err);
+        console.error('Error fetching user data:', err);
         setError('Failed to fetch user data.');
       } finally {
         setLoading(false);
@@ -75,95 +59,131 @@ const UserDetailPage: React.FC = () => {
 
   if (error) {
     return (
-      <ErrorState error={error} title="Unable to load user details" className="p-6" />
+      <ErrorState
+        error={error}
+        title="Unable to load user details"
+        className="p-6"
+      />
     );
   }
 
   if (!user) {
-    return <div className="p-6 text-center">No user data found.</div>;
+    return <div className="p-6 text-center text-muted-foreground">No user data found.</div>;
   }
-  
-  const getAvatarFallback = (name?: string | null) => {
-    if (name) {
-      const initials = name
-        .split(' ')
-        .map((n) => n[0])
-        .join('');
-      return initials.toUpperCase() || 'U';
-    }
-    return 'U';
+
+  const displayName = ProfileDisplayNameResolver.fromProfile(user, user.email);
+
+  const getAvatarFallback = (name: string) => {
+    const initials = name
+      .split(' ')
+      .map((n) => n[0])
+      .join('');
+    return initials.toUpperCase() || 'U';
   };
 
   return (
-    <div className="container mx-auto py-4 sm:py-6 md:py-10">
-      <h1 className="text-2xl font-semibold mb-6">User Profile</h1>
-      <div className="bg-background shadow-xl rounded-lg p-4 sm:p-6 md:p-8">
-        <div className="flex flex-col md:flex-row items-center md:items-start">
-          <Avatar className="w-24 h-24 md:w-32 md:h-32 text-4xl md:text-5xl mb-4 md:mb-0 md:mr-8">
-            <AvatarImage src={user.avatarUrl} alt={user.displayName} />
-            <AvatarFallback>{getAvatarFallback(user.displayName)}</AvatarFallback>
+    <div className="container mx-auto py-4 sm:py-6 md:py-10 bg-background">
+      <Button variant="ghost" asChild className="mb-4 -ml-2 text-primary hover:bg-primary/10">
+        <Link to="/dashboard/admin/users">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to users
+        </Link>
+      </Button>
+
+      <div className="rounded-xl border border-border bg-card shadow-sm p-4 sm:p-6 md:p-8">
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+          <Avatar className="h-24 w-24 md:h-28 md:w-28">
+            <AvatarImage src={user.avatarUrl ?? undefined} alt={displayName} />
+            <AvatarFallback className="text-2xl">{getAvatarFallback(displayName)}</AvatarFallback>
           </Avatar>
-          <div className="text-center md:text-left">
-                      <h2 className="text-3xl font-bold text-foreground">{user.displayName}</h2>
-          <p className="text-md text-muted-foreground">{user.email}</p>
-          <p className="text-sm text-primary mt-1">
-              Role: {user.role}
+          <div className="text-center md:text-left flex-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{displayName}</h1>
+            <p className="text-muted-foreground mt-1 flex items-center justify-center md:justify-start gap-2">
+              <Mail className="h-4 w-4 shrink-0" />
+              {user.email}
             </p>
+            {user.phoneNumber && (
+              <p className="text-muted-foreground mt-1 flex items-center justify-center md:justify-start gap-2">
+                <Phone className="h-4 w-4 shrink-0" />
+                {user.phoneNumber}
+              </p>
+            )}
+            <div className="mt-3 flex flex-wrap gap-2 justify-center md:justify-start">
+              <Badge variant="secondary" className="capitalize">
+                {user.role}
+              </Badge>
+              {user.isAdmin && <Badge>Admin</Badge>}
+              {user.isVendor && <Badge variant="outline">Vendor</Badge>}
+            </div>
           </div>
         </div>
 
         <div className="mt-8 border-t border-border pt-6">
-          <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+          <dl className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
+            <div>
+              <dt className="text-sm font-medium text-muted-foreground">User ID</dt>
+              <dd className="mt-1 text-sm text-foreground font-mono break-all">{user.userId}</dd>
+            </div>
             {user.firstName && (
-              <div className="sm:col-span-1">
-                                  <dt className="text-sm font-medium text-muted-foreground">First Name</dt>
-                  <dd className="mt-1 text-sm text-foreground">{user.firstName}</dd>
+              <div>
+                <dt className="text-sm font-medium text-muted-foreground">First name</dt>
+                <dd className="mt-1 text-sm text-foreground">{user.firstName}</dd>
               </div>
             )}
             {user.lastName && (
-              <div className="sm:col-span-1">
-                                  <dt className="text-sm font-medium text-muted-foreground">Last Name</dt>
-                  <dd className="mt-1 text-sm text-foreground">{user.lastName}</dd>
+              <div>
+                <dt className="text-sm font-medium text-muted-foreground">Last name</dt>
+                <dd className="mt-1 text-sm text-foreground">{user.lastName}</dd>
               </div>
             )}
-            {user.phoneNumber && (
-              <div className="sm:col-span-1">
-                                  <dt className="text-sm font-medium text-muted-foreground">Phone Number</dt>
-                  <dd className="mt-1 text-sm text-foreground">{user.phoneNumber}</dd>
+            {user.displayName && (
+              <div>
+                <dt className="text-sm font-medium text-muted-foreground">Display name</dt>
+                <dd className="mt-1 text-sm text-foreground">{user.displayName}</dd>
               </div>
             )}
             {user.dateOfBirth && (
-              <div className="sm:col-span-1">
-                                  <dt className="text-sm font-medium text-muted-foreground">Date of Birth</dt>
-                  <dd className="mt-1 text-sm text-foreground">{new Date(user.dateOfBirth).toLocaleDateString()}</dd>
+              <div>
+                <dt className="text-sm font-medium text-muted-foreground">Date of birth</dt>
+                <dd className="mt-1 text-sm text-foreground">
+                  {new Date(user.dateOfBirth).toLocaleDateString()}
+                </dd>
               </div>
             )}
             {user.bio && (
               <div className="sm:col-span-2">
-                                  <dt className="text-sm font-medium text-muted-foreground">Bio</dt>
-                  <dd className="mt-1 text-sm text-foreground whitespace-pre-wrap">{user.bio}</dd>
+                <dt className="text-sm font-medium text-muted-foreground">Bio</dt>
+                <dd className="mt-1 text-sm text-foreground whitespace-pre-wrap">{user.bio}</dd>
               </div>
             )}
             {user.address && (
               <div className="sm:col-span-2">
-                                  <dt className="text-sm font-medium text-muted-foreground">Address</dt>
-                  <dd className="mt-1 text-sm text-foreground">
+                <dt className="text-sm font-medium text-muted-foreground">Address</dt>
+                <dd className="mt-1 text-sm text-foreground">
                   {user.address.street && <div>{user.address.street}</div>}
-                  {user.address.city && <span>{user.address.city}, </span>}
-                  {user.address.state && <span>{user.address.state} </span>}
-                  {user.address.postalCode && <span>{user.address.postalCode}</span>}
+                  {(user.address.city || user.address.state || user.address.postalCode) && (
+                    <div>
+                      {[user.address.city, user.address.state, user.address.postalCode]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </div>
+                  )}
                   {user.address.country && <div>{user.address.country}</div>}
                 </dd>
               </div>
             )}
-             <div className="sm:col-span-1">
-                                  <dt className="text-sm font-medium text-muted-foreground">Member Since</dt>
-                  <dd className="mt-1 text-sm text-foreground">{new Date(user.createdAt).toLocaleDateString()}</dd>
-              </div>
-                              <div className="sm:col-span-1">
-                  <dt className="text-sm font-medium text-muted-foreground">Last Updated</dt>
-                  <dd className="mt-1 text-sm text-foreground">{new Date(user.updatedAt).toLocaleDateString()}</dd>
-                </div>
+            <div>
+              <dt className="text-sm font-medium text-muted-foreground">Member since</dt>
+              <dd className="mt-1 text-sm text-foreground">
+                {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '—'}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-muted-foreground">Last updated</dt>
+              <dd className="mt-1 text-sm text-foreground">
+                {user.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : '—'}
+              </dd>
+            </div>
           </dl>
         </div>
       </div>
