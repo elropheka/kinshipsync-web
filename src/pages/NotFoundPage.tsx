@@ -21,7 +21,7 @@ const NotFoundPage: React.FC<NotFoundPageProps> = ({ compact = false }) => {
     const role = userProfile?.role ?? currentUser.role;
     if (role === 'admin') return '/dashboard/admin';
     if (role === 'vendor') return '/dashboard/vendor';
-    return '/dashboard/events';
+    return '/dashboard/user';
   };
 
   const handleGoHome = () => {

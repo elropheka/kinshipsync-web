@@ -15,6 +15,8 @@ import tealTextLogo from '@/assets/branding/teal-text-logo.png';
 
 interface SidebarProps {
   isOpen: boolean;
+  /** When true, closed sidebar is fully off-screen (user app design). */
+  hideWhenClosed?: boolean;
 }
 
 const SidebarNavLink: React.FC<{ 
@@ -31,8 +33,8 @@ const SidebarNavLink: React.FC<{
       end={exact} // Use NavLink's 'end' prop for exact matching if needed
       className={({ isActive }) =>
         clsx(
-                  "flex items-center space-x-3 p-2 rounded-md hover:bg-primary/5",
-        isActive ? "bg-primary/15 text-primary font-semibold border-l-2 border-primary" : "text-foreground",
+                  "flex items-center space-x-3 p-2 rounded-xl hover:bg-[#D6C8AF]/30 transition-colors",
+        isActive ? "bg-white text-[#5D2413] font-semibold shadow-sm" : "text-[#5D2413]/80",
           !isOpen && "justify-center",
           isOpen && isSubItem && "pl-8" 
         )
@@ -56,7 +58,7 @@ const SidebarDropdownTrigger: React.FC<{
     <button
       onClick={onClick}
       className={clsx(
-        "flex items-center w-full space-x-3 p-2 rounded-md hover:bg-primary/5 text-foreground",
+        "flex items-center w-full space-x-3 p-2 rounded-xl hover:bg-[#D6C8AF]/30 text-[#5D2413]/80 transition-colors",
         !isOpen && "justify-center" // Center icon when sidebar is closed
       )}
       title={label}
@@ -68,7 +70,7 @@ const SidebarDropdownTrigger: React.FC<{
   </li>
 );
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, hideWhenClosed = false }) => {
   const { currentUser, isAdmin, isVendor } = useAuth();
   const [isEventsDropdownOpen, setIsEventsDropdownOpen] = useState(false);
   const [isVendorsDropdownOpen, setIsVendorsDropdownOpen] = useState(false); // State for vendors dropdown
@@ -100,11 +102,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   return (
     <aside
       className={clsx(
-        "bg-background border-r border-primary/15 flex flex-col transition-all duration-300 ease-in-out fixed inset-y-0 left-0 z-40 md:static",
-        isOpen ? "w-64 p-4 space-y-6 translate-x-0" : "w-20 p-4 space-y-6 items-center -translate-x-full md:translate-x-0"
+        "bg-[#F5EFE8] border-r border-[#D6C8AF]/50 flex flex-col transition-all duration-300 ease-in-out fixed inset-y-0 left-0 z-40 md:static",
+        isOpen
+          ? "w-64 p-4 space-y-6 translate-x-0"
+          : hideWhenClosed
+            ? "w-64 p-4 -translate-x-full pointer-events-none md:pointer-events-auto md:fixed"
+            : "w-20 p-4 space-y-6 items-center -translate-x-full md:translate-x-0"
       )}
     >
-      {currentUser && (
+      {currentUser && (isAdmin || isVendor) && (
         <button className={clsx("flex flex-col items-center", isOpen ? "space-y-3" : "space-y-2")} onClick={
           () => navigate(homes[isAdmin ? 'admin' : isVendor ? 'vendor' : 'user'])
         }>
@@ -181,9 +187,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
           
           {!isAdmin && !isVendor && currentUser && (
             <>
-              {isOpen && <h3 className="px-2 pt-3 pb-1 text-xs font-semibold text-primary uppercase tracking-wider">User Menu</h3>}
-              <SidebarNavLink to="/dashboard/user" icon={CalendarClock} label="My Events" isOpen={isOpen} />
-              <SidebarNavLink to="/dashboard/user/profile" icon={UserCog} label="My Profile" isOpen={isOpen} />
+              {isOpen && <h3 className="px-2 pt-3 pb-1 text-xs font-semibold text-[#5D2413]/60 uppercase tracking-wider">User Menu</h3>}
+              <SidebarNavLink to="/dashboard/user" icon={LayoutDashboard} label="Dashboard" isOpen={isOpen} exact />
+              <SidebarNavLink to="/dashboard/user/events" icon={CalendarClock} label="All Events" isOpen={isOpen} />
+              <SidebarNavLink to="/dashboard/user/profile" icon={UserCog} label="Profile & Settings" isOpen={isOpen} />
               <SidebarNavLink to="/dashboard/user/delete-my-account" icon={Trash2} label="Delete Account" isOpen={isOpen} />
             </>
           )}

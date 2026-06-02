@@ -28,7 +28,7 @@ function App() {
     <Routes>
         <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
           {/* Default redirect for authenticated users */}
-          <Route index element={<Navigate to="/dashboard/events" replace />} />
+          <Route index element={<Navigate to="/dashboard/user" replace />} />
 
           {/* Admin Routes */}
           <Route path="admin">
@@ -41,8 +41,9 @@ function App() {
             <Route path="create-vendor-category" element={<CreateVendorCategoryPage />} />
           </Route>
 
-          <Route path="events" element={<EventsDashboardPage />} />
-          <Route path="events/create" element={<CreateEventPage />} />
+          {/* Legacy redirects */}
+          <Route path="events" element={<Navigate to="/dashboard/user" replace />} />
+          <Route path="events/create" element={<Navigate to="/dashboard/user/events/create" replace />} />
           <Route path="settings" element={<SettingsPage />} />
 
           {/* Detail Pages */}
@@ -52,7 +53,9 @@ function App() {
 
           {/* User Routes */}
           <Route path="user">
-            <Route index element={<UserEventsPage />} />
+            <Route index element={<EventsDashboardPage />} />
+            <Route path="events" element={<UserEventsPage />} />
+            <Route path="events/create" element={<CreateEventPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="delete-my-account" element={<DeleteAccountPage />} />
           </Route>

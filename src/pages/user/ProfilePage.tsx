@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -6,7 +7,6 @@ import {
   FiUser,
   FiBell,
   FiShield,
-  FiGlobe,
   FiMoon,
   FiCamera,
   FiChevronRight,
@@ -14,9 +14,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { ThemeSwitch } from '@/components/ui/switch';
 import ImageUploadInput from '@/components/common/ImageUploadInput';
 import { deleteFileFromStorage } from '@/services/storageService';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useUserSettings } from '@/hooks/useUserSettings';
+import { useUserVisibleEvents } from '@/hooks/useUserVisibleEvents';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/lib/errorUtils';
@@ -26,11 +29,6 @@ import { ProfileFormSkeleton } from '@/components/common/skeletons';
 import { showValidationErrors } from '@/lib/formValidationUtils';
 import type { UpdateUserProfilePayload } from '@/types/userTypes';
 import { DashboardCard, dashboardInputClass, dashboardSectionTitleClass } from '@/components/dashboard/DashboardCard';
-import {
-  profileNotificationSettings,
-  profilePrivacyLinks,
-  profilePreferenceFields,
-} from '@/constants/mock/profileSettings';
 
 const profileFormSchema = z
   .object({
@@ -42,8 +40,6 @@ const profileFormSchema = z
     location: z.string().max(100).optional().or(z.literal('')),
     avatarUrl: z.string().url().optional().or(z.literal('')),
     language: z.string().optional(),
-    timezone: z.string().optional(),
-    dateFormat: z.string().optional(),
   })
   .refine(
     (data) => Boolean(data.displayName?.trim() || data.firstName?.trim() || data.lastName?.trim()),
@@ -52,11 +48,27 @@ const profileFormSchema = z
 
 type ProfileFormData = z.infer<typeof profileFormSchema>;
 
-const privacyIconMap = {
-  shield: FiShield,
-  globe: FiGlobe,
-  user: FiUser,
-} as const;
+type EmailNotificationKey = 'eventInvites' | 'eventUpdates' | 'messageAlerts' | 'newsletter';
+type PushNotificationKey = 'eventInvites' | 'eventUpdates' | 'messageAlerts' | 'taskAlerts';
+
+const emailNotificationOptions: { key: EmailNotificationKey; title: string; description: string }[] = [
+  { key: 'eventInvites', title: 'Event Invites', description: 'Get notified when you receive event invitations' },
+  { key: 'eventUpdates', title: 'Event Updates', description: 'Changes to events you are part of' },
+  { key: 'messageAlerts', title: 'Message Alerts', description: 'New messages and replies' },
+  { key: 'newsletter', title: 'Newsletter', description: 'Product updates and tips from Kinship Sync' },
+];
+
+const pushNotificationOptions: { key: PushNotificationKey; title: string; description: string }[] = [
+  { key: 'eventInvites', title: 'Event Invites', description: 'Push alerts for new invitations' },
+  { key: 'eventUpdates', title: 'Event Updates', description: 'Push alerts when event details change' },
+  { key: 'messageAlerts', title: 'Message Alerts', description: 'Push alerts for new messages' },
+  { key: 'taskAlerts', title: 'Task Alerts', description: 'Reminders for assigned tasks' },
+];
+
+const formatMemberSince = (createdAt?: string) => {
+  if (!createdAt) return '—';
+  return new Date(createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+};
 
 const ProfilePage: React.FC = () => {
   const { currentUser } = useAuth();
@@ -68,9 +80,10 @@ const ProfilePage: React.FC = () => {
     fetchUserProfile,
     updateCurrentUserProfile,
   } = useUserProfile();
+  const { settings, isUpdating: isUpdatingSettings, updateSettings } = useUserSettings();
+  const { groupedEvents } = useUserVisibleEvents();
 
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-  const [notifications, setNotifications] = useState<Record<string, boolean>>({});
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
@@ -83,17 +96,8 @@ const ProfilePage: React.FC = () => {
       location: '',
       avatarUrl: '',
       language: '',
-      timezone: '',
-      dateFormat: '',
     },
   });
-
-  useEffect(() => {
-    const defaults = Object.fromEntries(
-      profileNotificationSettings.map((s) => [s.key, s.defaultEnabled])
-    );
-    setNotifications(defaults);
-  }, []);
 
   useEffect(() => {
     if (currentUser?.uid && !initialLoadComplete) {
@@ -103,20 +107,48 @@ const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     if (userProfile && initialLoadComplete) {
+      const city = userProfile.address?.city;
+      const state = userProfile.address?.state;
+      const location = [city, state].filter(Boolean).join(', ');
+
       form.reset({
         displayName: userProfile.displayName || '',
         firstName: userProfile.firstName || '',
         lastName: userProfile.lastName || '',
         email: userProfile.email || currentUser?.email || '',
-        phone: '',
-        location: '',
+        phone: userProfile.phoneNumber || '',
+        location,
         avatarUrl: userProfile.avatarUrl || '',
-        language: 'English',
-        timezone: 'America/New_York',
-        dateFormat: 'MM/DD/YYYY',
+        language: settings?.language || 'en',
       });
     }
-  }, [userProfile, form, initialLoadComplete, currentUser?.email]);
+  }, [userProfile, form, initialLoadComplete, currentUser?.email, settings?.language]);
+
+  const profileStats = useMemo(() => {
+    const uid = currentUser?.uid;
+    if (!uid) {
+      return { eventsCreated: 0, eventsAttended: 0, memberSince: '—' };
+    }
+
+    const allEvents = [
+      ...(groupedEvents.upcoming || []),
+      ...(groupedEvents.ongoing || []),
+      ...(groupedEvents.completed || []),
+      ...(groupedEvents.other || []),
+    ];
+
+    const uniqueEvents = Array.from(new Map(allEvents.map((e) => [e.id, e])).values());
+    const eventsCreated = uniqueEvents.filter((e) => e.organizerId === uid).length;
+    const eventsAttended = uniqueEvents.filter(
+      (e) => e.organizerId !== uid && e.allowedUserIds?.includes(uid)
+    ).length;
+
+    return {
+      eventsCreated,
+      eventsAttended,
+      memberSince: formatMemberSince(userProfile?.createdAt),
+    };
+  }, [currentUser?.uid, groupedEvents, userProfile?.createdAt]);
 
   const handleAvatarUploaded = async (newUrl: string) => {
     form.setValue('avatarUrl', newUrl, { shouldValidate: true, shouldDirty: true });
@@ -149,16 +181,49 @@ const ProfilePage: React.FC = () => {
       displayName = [trimmedFirst, trimmedLast].filter(Boolean).join(' ');
     }
 
+    const [city, state] = (data.location || '').split(',').map((part) => part.trim());
+
     const payload: UpdateUserProfilePayload = {
       displayName,
       firstName: trimmedFirst,
       lastName: trimmedLast,
       avatarUrl: data.avatarUrl,
+      phoneNumber: data.phone?.trim() || undefined,
+      address: data.location
+        ? {
+            city: city || data.location.trim(),
+            state: state || undefined,
+          }
+        : undefined,
     };
 
-    const success = await updateCurrentUserProfile(payload);
-    if (success) toast.success('Profile updated successfully.');
+    const profileSuccess = await updateCurrentUserProfile(payload);
+
+    let settingsSuccess = true;
+    if (settings && data.language && data.language !== settings.language) {
+      settingsSuccess = await updateSettings({ language: data.language });
+    }
+
+    if (profileSuccess && settingsSuccess) toast.success('Profile updated successfully.');
     else toast.error(getErrorMessage(profileError) || 'Failed to update profile.');
+  };
+
+  const handleEmailNotificationToggle = async (key: EmailNotificationKey, enabled: boolean) => {
+    if (!settings) return;
+    const success = await updateSettings({
+      emailNotifications: { ...settings.emailNotifications, [key]: enabled },
+    });
+    if (success) toast.success('Notification preference saved.');
+    else toast.error('Failed to update notification preference.');
+  };
+
+  const handlePushNotificationToggle = async (key: PushNotificationKey, enabled: boolean) => {
+    if (!settings) return;
+    const success = await updateSettings({
+      pushNotifications: { ...settings.pushNotifications, [key]: enabled },
+    });
+    if (success) toast.success('Notification preference saved.');
+    else toast.error('Failed to update notification preference.');
   };
 
   useErrorToast(profileError && !userProfile ? profileError : null, {
@@ -238,9 +303,9 @@ const ProfilePage: React.FC = () => {
 
         <div className="mt-6 space-y-2 text-left">
           {[
-            { label: 'Events Created', value: '12' },
-            { label: 'Events Attended', value: '34' },
-            { label: 'Member Since', value: '2024' },
+            { label: 'Events Created', value: String(profileStats.eventsCreated) },
+            { label: 'Events Attended', value: String(profileStats.eventsAttended) },
+            { label: 'Member Since', value: profileStats.memberSince },
           ].map((row) => (
             <div
               key={row.label}
@@ -319,7 +384,7 @@ const ProfilePage: React.FC = () => {
                   <FormItem>
                     <FormLabel className="text-[#5D2413]">Location</FormLabel>
                     <FormControl>
-                      <Input className={dashboardInputClass} placeholder="San Francisco, CA" {...field} />
+                      <Input className={dashboardInputClass} placeholder="City, State" {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -328,7 +393,7 @@ const ProfilePage: React.FC = () => {
             <div className="flex justify-end mt-6">
               <Button
                 type="button"
-                disabled={isUpdating}
+                disabled={isUpdating || isUpdatingSettings}
                 onClick={form.handleSubmit(saveProfile, (errors) =>
                   showValidationErrors(errors, 'Please correct the form errors:')
                 )}
@@ -339,94 +404,115 @@ const ProfilePage: React.FC = () => {
             </div>
           </DashboardCard>
 
-      <DashboardCard className="p-6 md:p-8">
-        <h2 className={`${dashboardSectionTitleClass} flex items-center gap-2 mb-6`}>
-          <FiBell className="w-5 h-5" /> Notifications
-        </h2>
-        <div className="space-y-5">
-          {profileNotificationSettings.map((setting) => (
-            <div key={setting.id} className="flex items-center justify-between gap-4">
-              <div>
-                <p className="font-medium text-[#5D2413] text-sm">{setting.title}</p>
-                <p className="text-xs text-muted-foreground">{setting.description}</p>
-              </div>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={notifications[setting.key]}
-                onClick={() =>
-                  setNotifications((prev) => ({ ...prev, [setting.key]: !prev[setting.key] }))
-                }
-                className={`relative w-11 h-6 rounded-full transition-colors ${
-                  notifications[setting.key] ? 'bg-primary' : 'bg-[#D6C8AF]'
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
-                    notifications[setting.key] ? 'translate-x-5' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
+          <DashboardCard className="p-6 md:p-8">
+            <h2 className={`${dashboardSectionTitleClass} flex items-center gap-2 mb-6`}>
+              <FiBell className="w-5 h-5" /> Email Notifications
+            </h2>
+            <div className="space-y-5">
+              {emailNotificationOptions.map((setting) => (
+                <div key={setting.key} className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="font-medium text-[#5D2413] text-sm">{setting.title}</p>
+                    <p className="text-xs text-muted-foreground">{setting.description}</p>
+                  </div>
+                  <ThemeSwitch
+                    checked={!!settings?.emailNotifications?.[setting.key]}
+                    onCheckedChange={(enabled) => void handleEmailNotificationToggle(setting.key, enabled)}
+                    disabled={!settings || isUpdatingSettings}
+                    aria-label={setting.title}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </DashboardCard>
+          </DashboardCard>
 
-      <DashboardCard className="p-6 md:p-8">
-        <h2 className={`${dashboardSectionTitleClass} flex items-center gap-2 mb-4`}>
-          <FiShield className="w-5 h-5" /> Privacy & Security
-        </h2>
-        <div className="divide-y divide-[#D6C8AF]/30">
-          {profilePrivacyLinks.map((link) => {
-            const Icon = privacyIconMap[link.icon];
-            return (
-              <a
-                key={link.id}
-                href={link.href}
+          <DashboardCard className="p-6 md:p-8">
+            <h2 className={`${dashboardSectionTitleClass} flex items-center gap-2 mb-6`}>
+              <FiBell className="w-5 h-5" /> Push Notifications
+            </h2>
+            <div className="space-y-5">
+              {pushNotificationOptions.map((setting) => (
+                <div key={setting.key} className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="font-medium text-[#5D2413] text-sm">{setting.title}</p>
+                    <p className="text-xs text-muted-foreground">{setting.description}</p>
+                  </div>
+                  <ThemeSwitch
+                    checked={!!settings?.pushNotifications?.[setting.key]}
+                    onCheckedChange={(enabled) => void handlePushNotificationToggle(setting.key, enabled)}
+                    disabled={!settings || isUpdatingSettings}
+                    aria-label={setting.title}
+                  />
+                </div>
+              ))}
+            </div>
+          </DashboardCard>
+
+          <DashboardCard className="p-6 md:p-8">
+            <h2 className={`${dashboardSectionTitleClass} flex items-center gap-2 mb-4`}>
+              <FiShield className="w-5 h-5" /> Privacy & Security
+            </h2>
+            <div className="divide-y divide-[#D6C8AF]/30">
+              <Link
+                to="/auth/forgot-password"
                 className="flex items-center justify-between py-4 text-[#5D2413] hover:text-secondary transition-colors"
               >
                 <span className="flex items-center gap-3 text-sm font-medium">
-                  <Icon className="w-4 h-4" />
-                  {link.title}
+                  <FiShield className="w-4 h-4" />
+                  Change Password
                 </span>
                 <FiChevronRight className="w-4 h-4 text-muted-foreground" />
-              </a>
-            );
-          })}
-        </div>
-      </DashboardCard>
+              </Link>
+              <Link
+                to="/dashboard/settings"
+                className="flex items-center justify-between py-4 text-[#5D2413] hover:text-secondary transition-colors"
+              >
+                <span className="flex items-center gap-3 text-sm font-medium">
+                  <FiMoon className="w-4 h-4" />
+                  App Settings
+                </span>
+                <FiChevronRight className="w-4 h-4 text-muted-foreground" />
+              </Link>
+              <Link
+                to="/dashboard/user/delete-my-account"
+                className="flex items-center justify-between py-4 text-[#5D2413] hover:text-secondary transition-colors"
+              >
+                <span className="flex items-center gap-3 text-sm font-medium">
+                  <FiUser className="w-4 h-4" />
+                  Delete Account
+                </span>
+                <FiChevronRight className="w-4 h-4 text-muted-foreground" />
+              </Link>
+            </div>
+          </DashboardCard>
 
-      <DashboardCard className="p-6 md:p-8">
-        <h2 className={`${dashboardSectionTitleClass} flex items-center gap-2 mb-6`}>
-          <FiMoon className="w-5 h-5" /> Preferences
-        </h2>
-        <div className="space-y-4">
-          {profilePreferenceFields.map((field) => (
+          <DashboardCard className="p-6 md:p-8">
+            <h2 className={`${dashboardSectionTitleClass} flex items-center gap-2 mb-6`}>
+              <FiMoon className="w-5 h-5" /> Preferences
+            </h2>
             <FormField
-              key={field.id}
               control={form.control}
-              name={field.key}
-              render={({ field: formField }) => (
+              name="language"
+              render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[#5D2413]">{field.label}</FormLabel>
+                  <FormLabel className="text-[#5D2413]">Language</FormLabel>
                   <FormControl>
-                    <Input className={dashboardInputClass} placeholder={field.placeholder} {...formField} />
+                    <Input className={dashboardInputClass} placeholder="en" {...field} />
                   </FormControl>
                 </FormItem>
               )}
             />
-          ))}
-        </div>
-        <div className="flex justify-end mt-6">
-          <Button
-            type="button"
-            onClick={form.handleSubmit(saveProfile)}
-            className="rounded-xl bg-secondary hover:bg-secondary/90 text-white px-6"
-          >
-            Save Preferences
-          </Button>
-        </div>
-      </DashboardCard>
+            <div className="flex justify-end mt-6">
+              <Button
+                type="button"
+                disabled={isUpdating || isUpdatingSettings}
+                onClick={form.handleSubmit(saveProfile)}
+                className="rounded-xl bg-secondary hover:bg-secondary/90 text-white px-6"
+              >
+                Save Preferences
+              </Button>
+            </div>
+          </DashboardCard>
         </div>
       </Form>
     </div>

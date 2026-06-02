@@ -5,25 +5,30 @@ import Navbar from '@/components/common/Navbar';
 import Sidebar from '@/components/common/Sidebar';
 import NotificationDrawer from '@/components/common/NotificationDrawer'; // Import NotificationDrawer
 import { useNotifications } from '@/hooks/useNotifications'; // Import useNotifications
+import { useAuth } from '@/context/AuthContext';
 
 interface MainLayoutProps {
   children?: React.ReactNode; // Make children prop optional
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  // State for sidebar visibility
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024); // Default open on lg screens
+  const { isAdmin, isVendor } = useAuth();
+  const isRegularUser = !isAdmin && !isVendor;
+
+  // State for sidebar visibility — user app keeps sidebar collapsed by default (design uses header nav)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(
+    () => !isRegularUser && window.innerWidth >= 1024
+  );
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) { // lg breakpoint
+      if (window.innerWidth >= 1024 && !isRegularUser) {
         setIsSidebarOpen(true);
       }
-      // For smaller screens, the state is managed by the toggleSidebar function
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [isRegularUser]);
   const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
@@ -66,8 +71,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const isContentBlurred = isNotificationDrawerOpen || isProfileDropdownOpen;
 
   return (
-    <div className="flex h-screen bg-background">
-      <Sidebar isOpen={isSidebarOpen} />
+    <div className="flex h-screen bg-[#F5EFE8]">
+      <Sidebar isOpen={isSidebarOpen} hideWhenClosed={isRegularUser} />
       {/* Backdrop for mobile sidebar */}
       {isSidebarOpen && window.innerWidth < 1024 && (
         <div

@@ -1,27 +1,19 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  FiCalendar,
-  FiUsers,
-  FiTrendingUp,
-  FiArrowRight,
-  FiHeart,
-  FiMessageCircle,
-} from 'react-icons/fi';
+import { FiCalendar, FiUsers, FiTrendingUp, FiArrowRight } from 'react-icons/fi';
 import { useUserVisibleEvents } from '@/hooks/useUserVisibleEvents';
 import { useAllEvents } from '@/hooks/useAllEvents';
 import { useAuth } from '@/context/AuthContext';
+import { useNotifications } from '@/hooks/useNotifications';
 import { ProfileDisplayNameResolver } from '@/lib/profileDisplayName';
-import type { Event, CreateEventPayload, UpdateEventPayload } from '@/types/eventTypes';
+import { formatRelativeTime } from '@/lib/formatRelativeTime';
+import type { CreateEventPayload, UpdateEventPayload } from '@/types/eventTypes';
 import UserEventFormModal from '@/components/user/UserEventFormModal';
 import { toast } from 'sonner';
 import { useErrorToast } from '@/hooks/useErrorToast';
 import { ErrorState } from '@/components/common/ErrorState';
 import { EventsDashboardSkeleton } from '@/components/common/skeletons';
 import { DashboardCard, dashboardSectionTitleClass } from '@/components/dashboard/DashboardCard';
-import { dashboardActivityFallback, dashboardQuickActions } from '@/constants/mock/userDashboard';
-
-const eventIcons = ['🍽️', '🎂', '🏖️'] as const;
 
 const formatEventDate = (date?: string) => {
   if (!date) return 'Date TBD';
@@ -44,6 +36,7 @@ const EventsDashboardPage: React.FC = () => {
   const { userProfile, currentUser } = useAuth();
   const { groupedEvents, isLoading, error, refetchEvents } = useUserVisibleEvents();
   const { addEvent, isLoading: isProcessingEvent } = useAllEvents();
+  const { notifications, loading: notificationsLoading } = useNotifications();
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
 
   useErrorToast(error, { title: 'Unable to load events' });
@@ -58,14 +51,14 @@ const EventsDashboardPage: React.FC = () => {
     [groupedEvents.upcoming]
   );
 
-  const upcomingCount = groupedEvents.upcoming?.length || 0;
+  const upcomingCount = groupedEvents.upcoming?.length ?? 0;
 
   const totalAttendees = useMemo(
     () =>
       [...(groupedEvents.upcoming || []), ...(groupedEvents.ongoing || [])].reduce(
         (sum, e) => sum + (e.totalAttendees ?? 0),
         0
-      ) || 82,
+      ),
     [groupedEvents]
   );
 
@@ -76,14 +69,17 @@ const EventsDashboardPage: React.FC = () => {
       ...(groupedEvents.ongoing || []),
       ...(groupedEvents.completed || []),
     ];
-    return (
-      all.filter((e) => {
-        if (!e.date) return false;
-        const d = new Date(e.date);
-        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-      }).length || 2
-    );
+    return all.filter((e) => {
+      if (!e.date) return false;
+      const d = new Date(e.date);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }).length;
   }, [groupedEvents]);
+
+  const recentNotifications = useMemo(
+    () => notifications.slice(0, 5),
+    [notifications]
+  );
 
   const handleModalSubmit = async (data: CreateEventPayload | UpdateEventPayload) => {
     const eventData = data as CreateEventPayload;
@@ -114,7 +110,7 @@ const EventsDashboardPage: React.FC = () => {
   const statCards = [
     {
       label: 'Upcoming Events',
-      value: upcomingCount || 3,
+      value: upcomingCount,
       icon: FiCalendar,
       iconBg: 'bg-secondary/15',
       iconColor: 'text-secondary',
@@ -142,7 +138,9 @@ const EventsDashboardPage: React.FC = () => {
           Welcome back, {greetingName} 👋
         </h1>
         <p className="text-muted-foreground">
-          You have {upcomingCount || 3} upcoming gatherings planned
+          {upcomingCount === 0
+            ? 'No upcoming gatherings planned yet'
+            : `You have ${upcomingCount} upcoming gathering${upcomingCount === 1 ? '' : 's'} planned`}
         </p>
       </div>
 
@@ -165,101 +163,97 @@ const EventsDashboardPage: React.FC = () => {
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className={dashboardSectionTitleClass}>Upcoming Events</h2>
-          <Link to="/dashboard/user" className="text-secondary text-sm font-medium flex items-center gap-1">
-            View all <FiArrowRight className="w-4 h-4" />
-          </Link>
+          {upcomingCount > 0 && (
+            <Link
+              to="/dashboard/user/events"
+              className="text-secondary text-sm font-medium flex items-center gap-1"
+            >
+              View all <FiArrowRight className="w-4 h-4" />
+            </Link>
+          )}
         </div>
 
-        <div className="space-y-4">
-          {(upcomingEvents.length ? upcomingEvents : getPlaceholderEvents()).map((event, index) => {
-            const confirmed = event.totalAttendees ?? 8;
-            const total = 12;
-            const progress = Math.min(100, Math.round((confirmed / total) * 100) || [67, 83, 50][index]);
-            const progressColor = index === 1 ? 'bg-primary' : 'bg-secondary';
+        {upcomingEvents.length === 0 ? (
+          <DashboardCard className="p-8 text-center">
+            <p className="text-muted-foreground text-sm mb-4">No upcoming events yet.</p>
+            <Link
+              to="/dashboard/user/events/create"
+              className="inline-flex items-center gap-2 rounded-full bg-[#E08433] hover:bg-[#CC742B] text-white text-sm font-semibold px-5 py-2.5 transition-colors"
+            >
+              Create your first event
+            </Link>
+          </DashboardCard>
+        ) : (
+          <div className="space-y-4">
+            {upcomingEvents.map((event) => {
+              const confirmed = event.totalAttendees ?? 0;
 
-            return (
-              <DashboardCard key={event.id} className="p-5">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#F5EFE8] flex items-center justify-center text-xl flex-shrink-0">
-                    {eventIcons[index % eventIcons.length]}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-display text-lg text-[#5D2413] font-semibold">{event.name}</h3>
-                      <FiArrowRight className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-1" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1.5">
-                        <FiCalendar className="w-3.5 h-3.5" />
-                        {formatEventDate(event.date)}
-                      </span>
-                      <span>{formatEventTime(event.time)}</span>
-                      <span className="col-span-2">{event.location || "Grandma's House"}</span>
-                      <span className="col-span-2 text-[#5D2413]/80">
-                        {confirmed} of {total} confirmed
-                      </span>
-                    </div>
-                    <div className="mt-4">
-                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
-                        <span>RSVP Progress</span>
-                        <span>{progress}%</span>
+              return (
+                <Link key={event.id} to={`/dashboard/events/${event.id}`}>
+                  <DashboardCard className="p-5 hover:shadow-md transition-shadow">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-[#F5EFE8] flex items-center justify-center flex-shrink-0">
+                        <FiCalendar className="w-5 h-5 text-primary" />
                       </div>
-                      <div className="h-1.5 bg-[#F5EFE8] rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${progressColor}`}
-                          style={{ width: `${progress}%` }}
-                        />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-display text-lg text-[#5D2413] font-semibold">
+                            {event.name}
+                          </h3>
+                          <FiArrowRight className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-1" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1.5">
+                            <FiCalendar className="w-3.5 h-3.5" />
+                            {formatEventDate(event.date)}
+                          </span>
+                          <span>{formatEventTime(event.time)}</span>
+                          {event.location && (
+                            <span className="col-span-2">{event.location}</span>
+                          )}
+                          {confirmed > 0 && (
+                            <span className="col-span-2 text-[#5D2413]/80">
+                              {confirmed} confirmed
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </DashboardCard>
-            );
-          })}
-        </div>
+                  </DashboardCard>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       <section>
         <h2 className={`${dashboardSectionTitleClass} mb-4`}>Recent Activity</h2>
         <DashboardCard className="p-5">
-          <ul className="space-y-4">
-            {dashboardActivityFallback.map((item) => (
-              <li key={item.id} className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-full bg-secondary/20 text-secondary font-semibold text-sm flex items-center justify-center flex-shrink-0">
-                  {item.initial}
-                </div>
-                <div>
-                  <p className="text-sm text-[#5D2413]">
-                    <span className="font-bold">{item.name}</span> {item.action}{' '}
-                    <span className="font-medium">{item.eventName}</span>
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{item.timeAgo}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </DashboardCard>
-      </section>
-
-      <section>
-        <h2 className={`${dashboardSectionTitleClass} mb-4`}>Quick Actions</h2>
-        <DashboardCard className="divide-y divide-[#D6C8AF]/30">
-          {dashboardQuickActions.map((action) => (
-            <button
-              key={action.id}
-              type="button"
-              className="w-full flex items-center gap-4 p-5 text-left hover:bg-[#F5EFE8]/50 transition-colors first:rounded-t-2xl last:rounded-b-2xl"
-            >
-              <div className="w-10 h-10 rounded-full bg-[#F5EFE8] flex items-center justify-center">
-                {action.icon === 'heart' ? (
-                  <FiHeart className="w-5 h-5 text-secondary" />
-                ) : (
-                  <FiMessageCircle className="w-5 h-5 text-secondary" />
-                )}
-              </div>
-              <span className="font-medium text-[#5D2413]">{action.title}</span>
-            </button>
-          ))}
+          {notificationsLoading ? (
+            <p className="text-sm text-muted-foreground">Loading activity...</p>
+          ) : recentNotifications.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No recent activity yet.</p>
+          ) : (
+            <ul className="space-y-4">
+              {recentNotifications.map((item) => (
+                <li key={item.id} className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-full bg-secondary/20 text-secondary font-semibold text-sm flex items-center justify-center flex-shrink-0">
+                    {item.title.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-sm text-[#5D2413]">
+                      <span className="font-bold">{item.title}</span>
+                      {item.body ? ` — ${item.body}` : ''}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {formatRelativeTime(item.createdAt)}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </DashboardCard>
       </section>
 
@@ -273,34 +267,5 @@ const EventsDashboardPage: React.FC = () => {
     </div>
   );
 };
-
-function getPlaceholderEvents(): Event[] {
-  return [
-    {
-      id: '11111111-1111-1111-1111-111111111111',
-      name: 'Sunday Family Dinner',
-      date: '2026-03-30',
-      time: '17:00',
-      location: "Grandma's House",
-      totalAttendees: 8,
-    } as Event,
-    {
-      id: '22222222-2222-2222-2222-222222222222',
-      name: 'Birthday Celebration',
-      date: '2026-04-15',
-      time: '14:00',
-      location: 'Community Center',
-      totalAttendees: 10,
-    } as Event,
-    {
-      id: '33333333-3333-3333-3333-333333333333',
-      name: 'Summer Reunion',
-      date: '2026-06-20',
-      time: '11:00',
-      location: 'Lake House',
-      totalAttendees: 6,
-    } as Event,
-  ];
-}
 
 export default EventsDashboardPage;

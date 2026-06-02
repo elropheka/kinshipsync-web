@@ -59,7 +59,7 @@ const CreateEventPage: React.FC = () => {
     const success = !!(await addEvent(payload));
     if (success) {
       toast.success('Event created successfully.');
-      navigate('/dashboard/events');
+      navigate('/dashboard/user');
     } else {
       toast.error('Failed to create event.');
     }
@@ -68,7 +68,7 @@ const CreateEventPage: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto pb-10">
       <Link
-        to="/dashboard/events"
+        to="/dashboard/user"
         className="inline-flex items-center gap-2 text-sm text-[#5D2413]/70 hover:text-[#5D2413] mb-6"
       >
         <FiArrowLeft className="w-4 h-4" />
@@ -214,7 +214,7 @@ const CreateEventPage: React.FC = () => {
                 type="button"
                 variant="outline"
                 className="flex-1 rounded-xl border-[#D6C8AF] h-12"
-                onClick={() => navigate('/dashboard/events')}
+                onClick={() => navigate('/dashboard/user')}
               >
                 Cancel
               </Button>
