@@ -1,8 +1,22 @@
 import { useState, useEffect, useCallback } from 'react';
-import { collection, query, where, orderBy, onSnapshot, doc, updateDoc, writeBatch, getDocs, type QueryDocumentSnapshot, type DocumentData, Timestamp } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  doc,
+  updateDoc,
+  writeBatch,
+  getDocs,
+  type QueryDocumentSnapshot,
+  type DocumentData,
+  Timestamp,
+  type FirestoreError,
+} from 'firebase/firestore';
 import { firestore } from '../services/firebaseConfig';
 import type { InAppNotification } from '../types/notificationTypes';
-import { useUserProfile } from './useUserProfile'; // Assuming this hook provides the current user's profile
+import { useAuth } from '@/context/AuthContext';
 
 interface UseNotificationsResult {
   notifications: InAppNotification[];
@@ -11,81 +25,127 @@ interface UseNotificationsResult {
   error: string | null;
   markAsRead: (notificationId: string) => Promise<boolean>;
   markAllAsRead: () => Promise<boolean>;
-  // Optionally, add a refresh function if needed, though onSnapshot handles real-time
 }
 
 const IN_APP_NOTIFICATIONS_COLLECTION = 'inAppNotifications';
 
+const getTimestampInMs = (timestamp: Timestamp | number | undefined): number | undefined => {
+  if (timestamp instanceof Timestamp) {
+    return timestamp.toMillis();
+  }
+  return typeof timestamp === 'number' ? timestamp : undefined;
+};
+
+const mapSnapshotToNotifications = (
+  querySnapshot: { forEach: (fn: (doc: QueryDocumentSnapshot<DocumentData>) => void) => void }
+): { notifications: InAppNotification[]; unreadCount: number } => {
+  const fetchedNotifications: InAppNotification[] = [];
+  let currentUnreadCount = 0;
+
+  querySnapshot.forEach((docSnapshot: QueryDocumentSnapshot<DocumentData>) => {
+    const data = docSnapshot.data();
+    if (data.isDeleted === true) {
+      return;
+    }
+
+    const notification: InAppNotification = {
+      id: docSnapshot.id,
+      ...data,
+      createdAt: getTimestampInMs(data.createdAt) ?? Date.now(),
+      updatedAt: getTimestampInMs(data.updatedAt),
+    } as InAppNotification;
+
+    fetchedNotifications.push(notification);
+    if (!notification.isRead) {
+      currentUnreadCount++;
+    }
+  });
+
+  fetchedNotifications.sort((a, b) => b.createdAt - a.createdAt);
+
+  return { notifications: fetchedNotifications, unreadCount: currentUnreadCount };
+};
+
+const isIndexError = (err: FirestoreError): boolean =>
+  err.code === 'failed-precondition' ||
+  (typeof err.message === 'string' && err.message.includes('index'));
+
 export const useNotifications = (): UseNotificationsResult => {
-  const { userProfile, isLoading: userLoading, error: userError } = useUserProfile();
-  const userId = userProfile?.userId;
+  const { currentUser, loading: authLoading } = useAuth();
+  const userId = currentUser?.uid ?? null;
 
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Real-time listener for notifications
   useEffect(() => {
+    if (authLoading) {
+      return;
+    }
+
     if (!userId) {
-      if (!userLoading) {
-        setLoading(false);
-        setError(userError?.message || "User not authenticated.");
-      }
+      setNotifications([]);
+      setUnreadCount(0);
+      setLoading(false);
+      setError(null);
       return;
     }
 
     setLoading(true);
     setError(null);
 
-    const q = query(
-      collection(firestore, IN_APP_NOTIFICATIONS_COLLECTION),
-      where('recipientId', '==', userId),
-      orderBy('createdAt', 'desc')
-    );
+    let unsubscribe: (() => void) | undefined;
 
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const fetchedNotifications: InAppNotification[] = [];
-      let currentUnreadCount = 0;
-
-      querySnapshot.forEach((docSnapshot: QueryDocumentSnapshot<DocumentData>) => {
-        const data = docSnapshot.data();
-        const notification: InAppNotification = {
-          id: docSnapshot.id,
-          ...data,
-          createdAt: getTimestampInMs(data.createdAt) || Date.now(),
-          updatedAt: getTimestampInMs(data.updatedAt),
-        } as InAppNotification; // Cast to ensure correct type, especially for timestamps
-
-        fetchedNotifications.push(notification);
-        if (!notification.isRead) {
-          currentUnreadCount++;
-        }
-      });
-
-      setNotifications(fetchedNotifications);
-      setUnreadCount(currentUnreadCount);
+    const handleSuccess = (querySnapshot: Parameters<typeof mapSnapshotToNotifications>[0]) => {
+      const { notifications: next, unreadCount: count } =
+        mapSnapshotToNotifications(querySnapshot);
+      setNotifications(next);
+      setUnreadCount(count);
       setLoading(false);
-    }, (err) => {
-      console.error("Error fetching real-time notifications:", err);
-      setError("Failed to load notifications.");
+      setError(null);
+    };
+
+    const handleFailure = (err: FirestoreError, usedOrderBy: boolean) => {
+      if (usedOrderBy && isIndexError(err)) {
+        unsubscribe?.();
+        unsubscribe = subscribe(false);
+        return;
+      }
+      console.error('Error fetching real-time notifications:', err);
+      setError('Unable to load notifications. Please try again.');
       setLoading(false);
-    });
+    };
 
-    // Cleanup listener on component unmount or userId change
-    return () => unsubscribe();
-  }, [userId, userLoading, userError]);
+    const subscribe = (withOrderBy: boolean) =>
+      onSnapshot(
+        withOrderBy
+          ? query(
+              collection(firestore, IN_APP_NOTIFICATIONS_COLLECTION),
+              where('recipientId', '==', userId),
+              orderBy('createdAt', 'desc')
+            )
+          : query(
+              collection(firestore, IN_APP_NOTIFICATIONS_COLLECTION),
+              where('recipientId', '==', userId)
+            ),
+        (querySnapshot) => handleSuccess(querySnapshot),
+        (err) => handleFailure(err as FirestoreError, withOrderBy)
+      );
 
-  // Function to mark a single notification as read
+    unsubscribe = subscribe(true);
+
+    return () => unsubscribe?.();
+  }, [userId, authLoading]);
+
   const markAsRead = useCallback(async (notificationId: string): Promise<boolean> => {
     if (!notificationId) return false;
     try {
       const notificationRef = doc(firestore, IN_APP_NOTIFICATIONS_COLLECTION, notificationId);
       await updateDoc(notificationRef, {
         isRead: true,
-        updatedAt: Date.now(), // Use client timestamp for immediate UI update, serverTimestamp for consistency
+        updatedAt: Date.now(),
       });
-      // UI will update automatically via onSnapshot listener
       return true;
     } catch (err) {
       console.error('Error marking notification as read:', err);
@@ -93,7 +153,6 @@ export const useNotifications = (): UseNotificationsResult => {
     }
   }, []);
 
-  // Function to mark all unread notifications as read
   const markAllAsRead = useCallback(async (): Promise<boolean> => {
     if (!userId) return false;
     try {
@@ -102,10 +161,9 @@ export const useNotifications = (): UseNotificationsResult => {
         where('recipientId', '==', userId),
         where('isRead', '==', false)
       );
-      const querySnapshot = await getDocs(unreadQuery); // Use getDocs for a one-time fetch for batch
+      const querySnapshot = await getDocs(unreadQuery);
 
       if (querySnapshot.empty) {
-        console.log('No unread notifications to mark as read.');
         return true;
       }
 
@@ -114,7 +172,6 @@ export const useNotifications = (): UseNotificationsResult => {
         batch.update(docSnapshot.ref, { isRead: true, updatedAt: Date.now() });
       });
       await batch.commit();
-      // UI will update automatically via onSnapshot listener
       return true;
     } catch (err) {
       console.error('Error marking all notifications as read:', err);
@@ -123,13 +180,4 @@ export const useNotifications = (): UseNotificationsResult => {
   }, [userId]);
 
   return { notifications, unreadCount, loading, error, markAsRead, markAllAsRead };
-};
-
-// Helper function to safely convert Firestore Timestamp to milliseconds
-const getTimestampInMs = (timestamp: Timestamp | number): number | undefined => {
-  if (timestamp instanceof Timestamp) {
-    return timestamp.toMillis();
-  }
-  // If it's already a number, or null/undefined, return it directly
-  return typeof timestamp === 'number' ? timestamp : undefined;
 };

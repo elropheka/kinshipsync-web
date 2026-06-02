@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { ProfileFormSkeleton } from '@/components/common/skeletons';
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errorUtils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,11 +52,7 @@ const DeleteAccountPage: React.FC = () => {
   };
 
   if (isLoadingProfile) {
-    return (
-      <div className="container mx-auto py-4 sm:py-6 md:py-10">
-        <div className="text-center">Loading account information...</div>
-      </div>
-    );
+    return <ProfileFormSkeleton />;
   }
 
   return (

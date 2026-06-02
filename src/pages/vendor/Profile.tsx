@@ -7,6 +7,7 @@ import { useVendorProfile } from '@/hooks/useVendorProfile';
 import type { UpdateVendorProfilePayload } from '@/types/vendorTypes'; 
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errorUtils";
+import { ProfileFormSkeleton } from '@/components/common/skeletons';
 import { showValidationErrors } from "@/lib/formValidationUtils";
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -157,7 +158,7 @@ const VendorProfilePage: React.FC = () => {
   const prevStep = () => setCurrentStep((prev) => prev - 1);
 
   if (isLoadingProfile && !profile) {
-    return <div className="p-4 text-center">Loading profile...</div>;
+    return <ProfileFormSkeleton />;
   }
 
   // If profile is explicitly null after loading and no error, it implies vendor profile doesn't exist.

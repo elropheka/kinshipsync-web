@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { AuthCheckingSkeleton } from '@/components/common/skeletons';
 import type { UserProfile } from '@/types/userTypes';
 
 interface ProtectedRouteProps {
@@ -14,7 +15,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRole, children, 
   const location = useLocation();
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Checking authorization...</div>;
+    return <AuthCheckingSkeleton />;
   }
 
   if (!userProfile) {

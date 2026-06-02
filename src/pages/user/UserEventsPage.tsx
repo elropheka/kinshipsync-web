@@ -17,6 +17,7 @@ import { PlusCircle, Edit3, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useEventWebsite } from '@/hooks/useEventWebsite';
 import { getEventWebsiteUrl } from '@/utils/eventWebsiteUtils';
+import { PageLoadingSkeleton, EventCardsListSkeleton } from '@/components/common/skeletons';
 
 interface EventCardProps {
   event: Event;
@@ -176,7 +177,14 @@ const UserEventsPage: React.FC = () => {
 
   useErrorToast(userEventsError, { title: 'Unable to load events' });
 
-  if (isLoadingUserEvents) return <div className="flex justify-center items-center h-full"><p>Loading events...</p></div>;
+  if (isLoadingUserEvents) {
+    return (
+      <div className="container mx-auto py-6 space-y-6">
+        <PageLoadingSkeleton className="min-h-[120px]" />
+        <EventCardsListSkeleton rows={4} />
+      </div>
+    );
+  }
 
   if (userEventsError) {
     return (

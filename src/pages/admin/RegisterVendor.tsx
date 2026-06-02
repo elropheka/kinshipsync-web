@@ -19,6 +19,7 @@ import {
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errorUtils";
 import { useErrorToast } from '@/hooks/useErrorToast';
+import { PageLoadingSkeleton } from '@/components/common/skeletons';
 import { showValidationErrors } from "@/lib/formValidationUtils";
 // import { uploadFileToStorage } from '@/services/storageService'; // Will be handled by ImageUploadInput in step components
 
@@ -261,7 +262,7 @@ const AdminRegisterVendorPage: React.FC = () => {
         {/* Link to Existing User Section */}
         <div className="mb-6 space-y-2">
           <Label htmlFor="selectedUserId" className="text-foreground">Select User to Register as Vendor</Label>
-          {(isLoadingUsers || isLoadingVendors) && <p>Loading users and vendors...</p>}
+          {(isLoadingUsers || isLoadingVendors) && <PageLoadingSkeleton className="py-8" />}
           {usersError && (
             <p className="text-sm text-destructive">{getErrorMessage(usersError)}</p>
           )}

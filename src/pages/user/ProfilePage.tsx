@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errorUtils";
 import { useErrorToast } from '@/hooks/useErrorToast';
 import { ErrorState } from '@/components/common/ErrorState';
+import { ProfileFormSkeleton } from '@/components/common/skeletons';
 import { showValidationErrors } from "@/lib/formValidationUtils";
 import type { UpdateUserProfilePayload } from '@/types/userTypes';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -109,11 +110,7 @@ const ProfilePage: React.FC = () => {
   });
 
   if (isLoadingProfile && !initialLoadComplete) {
-    return (
-      <div className="container mx-auto p-4 text-center bg-background">
-        <p className="text-muted-foreground">Loading profile...</p>
-      </div>
-    );
+    return <ProfileFormSkeleton />;
   }
 
   if (profileError && !userProfile) {

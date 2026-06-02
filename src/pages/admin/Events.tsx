@@ -10,7 +10,8 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle, Trash2 } from 'lucide-react'; // Added Trash2 icon
 import { toast } from "sonner";
 import { useErrorToast } from '@/hooks/useErrorToast';
-import { ErrorState } from '@/components/common/ErrorState'; 
+import { ErrorState } from '@/components/common/ErrorState';
+import { PageLoadingSkeleton } from '@/components/common/skeletons'; 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from 'react-router-dom';
 import {
@@ -174,7 +175,7 @@ const AdminEventsPage: React.FC = () => {
   useErrorToast(errorUsers, { title: 'Unable to load users' });
 
   if (isLoadingEvents || isLoadingUsers) {
-    return <div className="p-4">Loading data...</div>;
+    return <PageLoadingSkeleton className="p-4 md:p-6" />;
   }
 
   if (errorEvents) {

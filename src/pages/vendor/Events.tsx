@@ -14,6 +14,7 @@ import { PlusCircle, Edit3 } from 'lucide-react';
 import EventCreateEditModal from '@/components/common/EventCreateEditModal';
 import { useAuth } from '@/context/AuthContext';
 import { OrganizerDisplay } from '@/components/common/OrganizerDisplay';
+import { PageLoadingSkeleton, EventCardsListSkeleton } from '@/components/common/skeletons';
 
 interface EventCardProps {
   event: Event;
@@ -136,7 +137,14 @@ const VendorEventsPage: React.FC = () => {
 
   useErrorToast(userEventsError, { title: 'Unable to load events' });
 
-  if (isLoadingUserEvents) return <div className="flex justify-center items-center h-full"><p>Loading events...</p></div>;
+  if (isLoadingUserEvents) {
+    return (
+      <div className="container mx-auto py-6 space-y-6">
+        <PageLoadingSkeleton className="min-h-[120px]" />
+        <EventCardsListSkeleton rows={4} />
+      </div>
+    );
+  }
 
   if (userEventsError) {
     return (

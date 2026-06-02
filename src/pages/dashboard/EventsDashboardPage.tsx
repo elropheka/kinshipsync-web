@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { useErrorToast } from '@/hooks/useErrorToast';
 import { ErrorState } from '@/components/common/ErrorState';
 import { OrganizerDisplay } from '@/components/common/OrganizerDisplay';
+import { EventsDashboardSkeleton } from '@/components/common/skeletons';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   PlusCircle,
   TrendingUp,
@@ -179,11 +181,7 @@ const EventsDashboardPage: React.FC = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full bg-background">
-        <p className="text-muted-foreground">Loading events...</p>
-      </div>
-    );
+    return <EventsDashboardSkeleton />;
   }
 
   if (error) {
@@ -326,8 +324,12 @@ const EventsDashboardPage: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <p className="text-xs text-muted-foreground">Loading themes...</p>
+            {isLoadingThemes ? (
+              <div className="space-y-2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-4 w-full" />
+                ))}
+              </div>
             ) : popularThemes.length > 0 ? (
               <ul className="space-y-2">
                 {popularThemes.map(theme => (

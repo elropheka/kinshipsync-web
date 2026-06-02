@@ -34,6 +34,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ChevronDown, Inbox } from 'lucide-react';
+import { TableRowsSkeleton } from '@/components/common/skeletons';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -176,14 +177,7 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-32 text-center text-sm text-muted-foreground"
-                >
-                  Loading...
-                </TableCell>
-              </TableRow>
+              <TableRowsSkeleton columns={columns.length} rows={6} />
             ) : data.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-48 p-0">

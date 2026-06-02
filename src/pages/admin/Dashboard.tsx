@@ -15,6 +15,7 @@ import {
 import { useAllUsers } from '@/hooks/useAllUsers';
 import { useAllVendors } from '@/hooks/useAllVendors';
 import { useAllEvents } from '@/hooks/useAllEvents';
+import { AdminDashboardSkeleton } from '@/components/common/skeletons';
 
 const brandCardClass = 'rounded-xl border border-border bg-card shadow-sm';
 
@@ -55,11 +56,7 @@ const AdminDashboard: React.FC = () => {
   const systemHealthy = !usersError && !vendorsError && !eventsError && !isLoading;
 
   if (isLoading && (userCount === "..." || vendorCount === "..." || eventCount === "...")) {
-    return (
-      <div className="p-4 text-center bg-background text-muted-foreground">
-        Loading dashboard data...
-      </div>
-    );
+    return <AdminDashboardSkeleton />;
   }
 
   return (

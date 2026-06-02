@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useErrorToast } from '@/hooks/useErrorToast';
 import { ErrorState } from '@/components/common/ErrorState';
+import { AdminDashboardSkeleton } from '@/components/common/skeletons';
 import { useVendorProfile } from '@/hooks/useVendorProfile'; // To get profile name
 import { useVendorItems } from '@/hooks/useVendorItems'; // Import useVendorItems
 import type { Vendor } from '@/types/vendorTypes';
@@ -56,8 +57,8 @@ const VendorDashboard: React.FC = () => {
   useErrorToast(profileError, { title: 'Unable to load profile' });
   useErrorToast(itemsError, { title: 'Unable to load items' });
 
-  if (isLoading && !profile && !vendorItems.length) { // Show general loading if primary data isn't there yet
-    return <div className="p-4 text-center">Loading dashboard data...</div>;
+  if (isLoading && !profile && !vendorItems.length) {
+    return <AdminDashboardSkeleton />;
   }
 
   if (profileError) {

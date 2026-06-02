@@ -3,6 +3,7 @@ import { useErrorToast } from '@/hooks/useErrorToast';
 import { useEventWebsite } from '@/hooks/useEventWebsite';
 import { EventSitePage } from '@/components/eventSite/EventSitePage';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { PageLoadingSkeleton } from '@/components/common/skeletons';
 
 export const EventSiteDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -11,11 +12,7 @@ export const EventSiteDetailPage = () => {
   useErrorToast(error, { title: 'Unable to load event' });
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <PageLoadingSkeleton className="min-h-screen" />;
   }
 
   if (error || !event || !websiteDetails) {

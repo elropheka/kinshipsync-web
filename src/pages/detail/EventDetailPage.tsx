@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { getErrorMessage } from '@/lib/errorUtils';
 import { useErrorToast } from '@/hooks/useErrorToast';
 import { ErrorState } from '@/components/common/ErrorState';
+import { DetailPageSkeleton } from '@/components/common/skeletons';
+import { Skeleton } from '@/components/ui/skeleton';
 import { doc, getDoc, Timestamp } from 'firebase/firestore';
 import { firestore } from '../../services/firebaseConfig';
 import type { Event as EventType } from '../../types/eventTypes';
@@ -81,7 +83,7 @@ const EventDetailPage: React.FC = () => {
   useErrorToast(websiteError, { title: 'Website error' });
 
   if (loading) {
-    return <div className="p-6 text-center">Loading event details...</div>;
+    return <DetailPageSkeleton />;
   }
 
   if (error) {
@@ -203,7 +205,11 @@ const EventDetailPage: React.FC = () => {
               <Globe className="w-5 h-5 mr-2" /> Event Website
             </h2>
             {websiteLoading ? (
-              <div className="text-center py-4">Loading website details...</div>
+              <div className="space-y-3 py-4">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+                <Skeleton className="h-24 w-full rounded-lg" />
+              </div>
             ) : websiteError ? (
               <div className="text-muted-foreground py-4 text-center">
                 {getErrorMessage(websiteError)}
