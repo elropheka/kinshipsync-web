@@ -101,7 +101,7 @@ const CallToActionSection: React.FC = () => {
                   `}></div>
                   <div className={`
                     relative flex items-center justify-center gap-3
-                    bg-background text-primary font-semibold py-4 px-10 rounded-xl
+                    bg-secondary text-secondary-foreground font-semibold py-4 px-10 rounded-xl
                     transform transition-all duration-500
                     ${hoveredButton === 'trial' ? '-translate-y-2 shadow-xl scale-105' : ''}
                   `}>

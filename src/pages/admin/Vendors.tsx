@@ -5,10 +5,11 @@ import { useAllVendors } from '@/hooks/useAllVendors';
 import { useAllUsers } from '@/hooks/useAllUsers'; // Import useAllUsers
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errorUtils";
+import { useErrorToast } from '@/hooks/useErrorToast';
+import { ErrorState } from '@/components/common/ErrorState';
 import type { Vendor, UpdateVendorProfilePayload } from "@/types/vendorTypes";
 // import type { UserProfile } from '@/types/userTypes'; // Import UserProfile - Removed as it might be unused
 import VendorEditModal from '@/components/admin/VendorEditModal';
-import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,7 +37,7 @@ const AdminVendorsPage: React.FC = () => {
       toast.success(`Vendor feature status ${currentStatus ? "removed" : "added"}.`);
       // fetchAllVendors(); // Already handled by optimistic update in useAllVendors
     } else {
-      toast.error("Failed to update vendor feature status.");
+      toast.error(getErrorMessage(error) || "Failed to update vendor feature status.");
     }
   }, [adminToggleVendorFeature]);
 
@@ -62,7 +63,7 @@ const AdminVendorsPage: React.FC = () => {
       handleVendorModalClose();
       // fetchAllVendors(); // Already handled by adminUpdateVendorProfile in useAllVendors
     } else {
-      toast.error("Failed to update vendor profile.");
+      toast.error(getErrorMessage(error) || "Failed to update vendor profile.");
     }
     setIsUpdatingVendor(false);
   };
@@ -124,28 +125,30 @@ const AdminVendorsPage: React.FC = () => {
     setVendorToDelete(null);
   };
 
+  useErrorToast(error, { title: 'Unable to load vendors' });
+
   if (error) {
-    toast.error(getErrorMessage(error));
     return (
-      <div className="flex flex-col justify-center items-center h-full p-4">
-        <p className="text-muted-foreground mb-4">Unable to load vendors. Please try again.</p>
-        <Button onClick={() => window.location.reload()}>Reload Page</Button>
-      </div>
+      <ErrorState
+        error={error}
+        title="Unable to load vendors"
+        onRetry={() => window.location.reload()}
+        retryLabel="Reload Page"
+      />
     );
   }
 
   return (
-    <div className="container mx-auto py-4 sm:py-6 md:py-10">
-      <div className="flex justify-between items-center mb-6">
-        {/* Page title moved to Navbar */}
-      </div>
-      
+    <div className="container mx-auto py-4 sm:py-6 md:py-10 bg-background">
+      <div className="rounded-xl border border-border bg-card shadow-sm p-4 sm:p-6">
       <DataTable
         columns={columns}
         data={vendors}
         isLoading={isLoading}
+        emptyMessage="No vendors found."
         globalFilterPlaceholder="Search all vendors..."
       />
+      </div>
       <VendorEditModal
         vendor={editingVendor}
         isOpen={isVendorEditModalOpen}

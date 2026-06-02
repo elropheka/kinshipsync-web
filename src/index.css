@@ -17,60 +17,64 @@
   }
   input {
     font-family: var(--font-body);
-    background-color: '#FFFFFF';
+    background-color: hsl(var(--card));
   }
   :root {
-    --font-heading: 'Poppins', sans-serif; /* Default heading font */
-    --font-body: 'Poppins', sans-serif;    /* Default body font */
+    --font-heading: 'Poppins', sans-serif;
+    --font-body: 'Poppins', sans-serif;
 
-    /* Light theme colors - using the new teal and nude palette */
-    --background: 45 67% 94%; /* #F5EBDD (baseNude) */
-    --foreground: 210 20% 7%; /* #11181C */
-    --card: 0 0% 100%; /* #FFFFFF */
-    --card-foreground: 210 20% 7%; /* #11181C */
-    --popover: 0 0% 100%; /* #FFFFFF */
-    --popover-foreground: 210 20% 7%; /* #11181C */
-    --primary: 180 100% 25%; /* #008080 (teal) */
-    --primary-foreground: 0 0% 100%; /* #FFFFFF */
-    --secondary: 30 33% 54%; /* #A47551 (brown) */
-    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
-    --muted: 45 67% 94%; /* #F5EBDD (baseNude) */
-    --muted-foreground: 210 8% 46%; /* #687076 */
-    --accent: 30 33% 54%; /* #A47551 (brown) */
-    --accent-foreground: 0 0% 100%; /* #FFFFFF */
-    --destructive: 0 84% 60%; /* #F44336 */
-    --destructive-foreground: 0 0% 100%; /* #FFFFFF */
-    --border: 220 13% 91%; /* #D1D5DB */
-    --input: 220 13% 91%; /* #D1D5DB */
-    --ring: 180 100% 25%; /* #008080 (teal) */
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+    /* Kinship Sync brand — docs/branding.md */
+    --background: 34 33% 93%; /* #F5EFE8 cream */
+    --foreground: 15 66% 22%; /* #5D2413 rust */
+    --card: 0 0% 100%;
+    --card-foreground: 15 66% 22%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 15 66% 22%;
+    --primary: 74 28% 34%; /* #5F6E3D heritage green */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 28 74% 54%; /* #E08433 orange */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 34 33% 93%;
+    --muted-foreground: 0 0% 48%; /* #7A7A7A */
+    --accent: 40 81% 60%; /* #ECAB47 golden */
+    --accent-foreground: 15 66% 22%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 34 28% 76%; /* #D6C8AF sand */
+    --input: 34 28% 76%;
+    --ring: 28 74% 54%; /* orange focus ring for CTAs */
+    --brand-cream: 34 33% 93%;
+    --brand-green: 74 28% 34%;
+    --brand-orange: 28 74% 54%;
+    --brand-rust: 15 66% 22%;
+    --brand-sand: 34 28% 76%;
+    --chart-1: 28 74% 54%;
+    --chart-2: 74 28% 34%;
+    --chart-3: 40 81% 60%;
+    --chart-4: 15 66% 22%;
+    --chart-5: 34 28% 76%;
+    --radius: 0.75rem;
   }
   .dark {
-    /* Dark theme colors */
-    --background: 0 0% 7%; /* #121212 */
-    --foreground: 220 9% 93%; /* #ECEDEE */
-    --card: 0 0% 7%; /* #121212 */
-    --card-foreground: 220 9% 93%; /* #ECEDEE */
-    --popover: 0 0% 7%; /* #121212 */
-    --popover-foreground: 220 9% 93%; /* #ECEDEE */
-    --primary: 160 84% 39%; /* #0EA175 */
-    --primary-foreground: 0 0% 100%; /* #FFFFFF */
-    --secondary: 30 33% 54%; /* #A47551 */
-    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
-    --muted: 0 0% 7%; /* #121212 */
-    --muted-foreground: 220 9% 64%; /* #9BA1A6 */
-    --accent: 30 33% 54%; /* #A47551 */
-    --accent-foreground: 0 0% 100%; /* #FFFFFF */
-    --destructive: 0 84% 60%; /* #EF5350 */
-    --destructive-foreground: 0 0% 7%; /* #121212 */
-    --border: 0 0% 26%; /* #424242 */
-    --input: 0 0% 26%; /* #424242 */
-    --ring: 160 84% 39%; /* #0EA175 */
+    --background: 30 12% 10%; /* warm dark */
+    --foreground: 34 33% 93%; /* cream text */
+    --card: 30 12% 14%;
+    --card-foreground: 34 33% 93%;
+    --popover: 30 12% 14%;
+    --popover-foreground: 34 33% 93%;
+    --primary: 74 22% 45%; /* lighter heritage green */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 28 74% 54%; /* orange */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 30 12% 18%;
+    --muted-foreground: 34 20% 70%;
+    --accent: 40 81% 60%; /* golden */
+    --accent-foreground: 15 66% 22%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 10% 26%;
+    --input: 30 10% 26%;
+    --ring: 28 74% 54%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;

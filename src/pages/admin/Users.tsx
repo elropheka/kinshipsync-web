@@ -4,9 +4,9 @@ import { getAdminUserColumns } from './adminUserColumns';
 import { useAllUsers } from '@/hooks/useAllUsers';
 import type { UserProfile, AdminUpdateUserProfilePayload } from '@/types/userTypes';
 import UserEditModal from '@/components/admin/UserEditModal'; // Import the modal
-import { Button } from '@/components/ui/button';
 import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/errorUtils";
+import { useErrorToast } from '@/hooks/useErrorToast';
+import { ErrorState } from '@/components/common/ErrorState';
 
 const AdminUsersPage: React.FC = () => {
   const { users, isLoading, error, adminUpdateUserProfile, fetchAllUsers } = useAllUsers();
@@ -45,28 +45,30 @@ const AdminUsersPage: React.FC = () => {
     return getAdminUserColumns(handleEditUser);
   }, [handleEditUser]);
 
+  useErrorToast(error, { title: 'Unable to load users' });
+
   if (error) {
-    toast.error(getErrorMessage(error));
     return (
-      <div className="flex flex-col justify-center items-center h-full p-4">
-        <p className="text-muted-foreground mb-4">Unable to load users. Please try again.</p>
-        <Button onClick={() => window.location.reload()}>Reload Page</Button>
-      </div>
+      <ErrorState
+        error={error}
+        title="Unable to load users"
+        onRetry={() => window.location.reload()}
+        retryLabel="Reload Page"
+      />
     );
   }
 
   return (
-    <div className="container mx-auto py-4 sm:py-6 md:py-10">
-      <div className="flex justify-between items-center mb-6">
-        {/* Page title moved to Navbar */}
-      </div>
-      
+    <div className="container mx-auto py-4 sm:py-6 md:py-10 bg-background">
+      <div className="rounded-xl border border-border bg-card shadow-sm p-4 sm:p-6">
       <DataTable
         columns={columns}
         data={users}
         isLoading={isLoading}
+        emptyMessage="No users found."
         globalFilterPlaceholder="Search all users..."
       />
+      </div>
       <UserEditModal
         user={editingUser}
         isOpen={isEditModalOpen}

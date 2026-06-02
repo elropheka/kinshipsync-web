@@ -37,7 +37,7 @@ const CallToActionTwoSection: React.FC = () => {
   ];
 
   return (
-    <section id="call-to-action-2" className="call-to-action-2 section relative py-20 md:py-28 lg:py-36 bg-gray-900 overflow-hidden">
+    <section id="call-to-action-2" className="call-to-action-2 section relative py-20 md:py-28 lg:py-36 bg-foreground overflow-hidden">
       {/* Decorative background elements */}
       <div className={`
         absolute inset-0 bg-gradient-to-br from-primary to-primary/80 opacity-0
@@ -82,7 +82,7 @@ const CallToActionTwoSection: React.FC = () => {
             
             {/* Heading */}
             <h3 className={`
-              text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight
+              text-3xl md:text-4xl lg:text-5xl font-bold text-background mb-6 leading-tight
               transform transition-all duration-700 delay-500
               ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
             `}>
@@ -91,7 +91,7 @@ const CallToActionTwoSection: React.FC = () => {
             
             {/* Description */}
             <p className={`
-              text-lg md:text-xl text-gray-300 mb-12 leading-relaxed max-w-3xl mx-auto
+              text-lg md:text-xl text-background/80 mb-12 leading-relaxed max-w-3xl mx-auto
               transform transition-all duration-700 delay-700
               ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
             `}>
@@ -109,7 +109,7 @@ const CallToActionTwoSection: React.FC = () => {
                 className="group relative w-full sm:w-auto overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                <div className="relative flex items-center justify-center gap-3 bg-primary text-primaryContrastText px-10 py-4 rounded-xl font-medium transform hover:-translate-y-2 transition-all duration-300 hover:shadow-xl text-lg">
+                <div className="relative flex items-center justify-center gap-3 bg-secondary text-secondary-foreground px-10 py-4 rounded-xl font-medium transform hover:-translate-y-2 transition-all duration-300 hover:shadow-xl text-lg">
                   <span>Start Your Free Trial</span>
                   <ArrowRight className="w-5 h-5 transform group-hover:translate-x-2 transition-transform" />
                 </div>
@@ -118,7 +118,7 @@ const CallToActionTwoSection: React.FC = () => {
 
             {/* Trust badges */}
             <div className={`
-              mt-16 pt-16 border-t border-gray-800
+              mt-16 pt-16 border-t border-background/20
               transform transition-all duration-700 delay-1000
               ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
             `}>
@@ -138,7 +138,7 @@ const CallToActionTwoSection: React.FC = () => {
                       `}></div>
                       <div className={`
                         relative w-16 h-16 mx-auto mb-4
-                        rounded-2xl bg-gray-800 overflow-hidden
+                        rounded-xl bg-background/10 overflow-hidden border border-background/20
                         flex items-center justify-center
                         transform transition-all duration-500
                         ${hoveredBadge === index ? 'rotate-12 scale-110 shadow-lg' : ''}
@@ -158,9 +158,9 @@ const CallToActionTwoSection: React.FC = () => {
                       </div>
                     </div>
                     <p className={`
-                      text-gray-400 text-sm font-medium
+                      text-background/70 text-sm font-medium
                       transform transition-all duration-300
-                      ${hoveredBadge === index ? 'text-primary scale-105' : ''}
+                      ${hoveredBadge === index ? 'text-secondary scale-105' : ''}
                     `}>
                       {badge.text}
                     </p>

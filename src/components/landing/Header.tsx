@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Grid, Tag, Layers, Info, Mail, ArrowRight, Menu, X } from 'lucide-react';
+import tealLogoOnly from '@/assets/branding/teal-logo-only.png';
+import beigeLogo from '@/assets/branding/beige-logo.png';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -52,8 +54,8 @@ const Header: React.FC = () => {
       fixed top-0 left-0 right-0 z-50
       transition-all duration-500
       ${isScrolled 
-        ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100' 
-        : 'bg-gradient-to-b from-black/30 to-transparent'}
+        ? 'bg-background/95 backdrop-blur-md shadow-lg border-b border-border' 
+        : 'bg-gradient-to-b from-primary/40 to-transparent'}
     `}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
@@ -63,29 +65,23 @@ const Header: React.FC = () => {
             className="logo flex items-center space-x-3 group"
           >
             <div className={`
-              w-12 h-12 rounded-xl bg-primary/10 
-              flex items-center justify-center
+              w-12 h-12 rounded-xl flex items-center justify-center
               transform transition-all duration-500
-              group-hover:rotate-12 group-hover:scale-110
-              ${isScrolled ? 'shadow-lg' : ''}
+              group-hover:rotate-6 group-hover:scale-105
+              ${isScrolled ? 'bg-primary/10 shadow-sm' : 'bg-primary-foreground/10'}
             `}>
-              {/* <span className={`
-                text-primary text-2xl font-bold
-                transform transition-all duration-500
-                group-hover:scale-110
-              `}>K</span> */}
               <img 
-                src="/logo.png" 
+                src={isScrolled ? tealLogoOnly : beigeLogo}
                 alt="KinshipSync Logo" 
-                className="w-8 h-8 object-cover rounded-full"
+                className="h-9 w-9 object-contain"
               />
             </div>
             <h1 className={`
-              sitename text-2xl font-bold
+              sitename text-2xl font-bold tracking-tight
               transition-colors duration-300
-              ${isScrolled ? 'text-gray-800' : 'text-white'}
+              ${isScrolled ? 'text-foreground' : 'text-primary-foreground'}
             `}>
-              Kinship<span className="text-primary">Sync</span>
+              Kinship<span className={isScrolled ? 'text-primary' : 'text-accent'}>Sync</span>
             </h1>
           </Link>
 
@@ -103,9 +99,9 @@ const Header: React.FC = () => {
                       flex items-center space-x-2
                       ${isScrolled 
                         ? 'text-foreground hover:text-primary' 
-                        : 'text-white hover:text-white'}
+                        : 'text-primary-foreground hover:text-accent'}
                       ${activeSection === item.href.slice(1) 
-                        ? isScrolled ? 'text-primary bg-primary/10' : 'text-white bg-white/20' 
+                        ? isScrolled ? 'text-primary bg-primary/10' : 'text-primary-foreground bg-primary-foreground/15' 
                         : ''}
                       ${hoveredItem === item.href ? 'scale-105' : ''}
                     `}
@@ -149,19 +145,16 @@ const Header: React.FC = () => {
               to="/auth" 
               className={`
                 hidden sm:inline-flex items-center gap-2
-                px-6 py-3 rounded-xl font-medium text-sm
+                px-6 py-3 rounded-xl font-semibold text-sm
                 transform transition-all duration-500
                 hover:-translate-y-1 hover:shadow-lg
                 group relative overflow-hidden
-                ${isScrolled 
-                  ? 'bg-primary text-primaryContrastText hover:bg-primary/80' 
-                  : 'bg-white/90 text-primary hover:bg-white'}
+                bg-secondary text-secondary-foreground hover:bg-secondary/90
               `}
             >
-              {/* Button Background Animation */}
-              <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-accent opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
               
-              <span className="relative z-10">Start Free Trial</span>
+              <span className="relative z-10">Get Started</span>
               <ArrowRight className="w-5 h-5 relative z-10 transform group-hover:translate-x-1 transition-transform" />
             </Link>
 
@@ -174,8 +167,8 @@ const Header: React.FC = () => {
                 transform transition-all duration-300
                 hover:scale-105
                 ${isScrolled 
-                  ? 'hover:bg-gray-100 text-gray-800' 
-                  : 'hover:bg-white/10 text-white'}
+                  ? 'hover:bg-muted text-foreground' 
+                  : 'hover:bg-primary-foreground/10 text-primary-foreground'}
               `}
             >
               {isMobileMenuOpen ? (
@@ -195,7 +188,7 @@ const Header: React.FC = () => {
 
         {/* Mobile Navigation */}
         <div className={`
-          xl:hidden fixed inset-0 bg-white/95 backdrop-blur-lg
+          xl:hidden fixed inset-0 bg-background/98 backdrop-blur-lg
           transition-all duration-500 z-50
           ${isMobileMenuOpen 
             ? 'opacity-100 visible translate-y-0' 
@@ -240,14 +233,14 @@ const Header: React.FC = () => {
               <li className="sm:hidden px-4 pt-8">
                 <Link 
                   to="/auth"
-                  className="group relative overflow-hidden block w-full text-center px-6 py-4 rounded-xl bg-primary text-primaryContrastText font-medium hover:bg-primary/80 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                  className="group relative overflow-hidden block w-full text-center px-6 py-4 rounded-xl bg-secondary text-secondary-foreground font-semibold hover:bg-secondary/90 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     document.body.style.overflow = 'unset';
                   }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                  <span className="relative z-10">Start Free Trial</span>
+                  <span className="relative z-10">Get Started</span>
                 </Link>
               </li>
             </ul>

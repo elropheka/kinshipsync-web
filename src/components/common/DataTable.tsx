@@ -33,12 +33,13 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Inbox } from 'lucide-react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading?: boolean;
+  emptyMessage?: string;
   onRowClick?: (row: TData) => void;
   toolbarActions?: React.ReactNode;
   enableRowSelection?: boolean;
@@ -54,6 +55,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   isLoading = false,
+  emptyMessage = 'No records yet.',
   onRowClick,
   toolbarActions,
   enableRowSelection = false,
@@ -152,7 +154,7 @@ export function DataTable<TData, TValue>({
           </DropdownMenu>
         </div>
       </div>
-      <div className="rounded-md border overflow-x-auto">
+      <div className="rounded-xl border border-border overflow-x-auto bg-background/50">
         <Table className="w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -177,9 +179,23 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-32 text-center text-sm text-muted-foreground"
                 >
                   Loading...
+                </TableCell>
+              </TableRow>
+            ) : data.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-48 p-0">
+                  <div className="flex flex-col items-center justify-center gap-3 py-12 px-6 text-center">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
+                      <Inbox className="h-7 w-7 text-primary" />
+                    </div>
+                    <p className="text-base font-medium text-foreground">{emptyMessage}</p>
+                    <p className="text-sm text-muted-foreground max-w-sm">
+                      Records will appear here once they are added to the platform.
+                    </p>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
@@ -204,9 +220,9 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-sm text-muted-foreground"
                 >
-                  No results.
+                  No results match your search.
                 </TableCell>
               </TableRow>
             )}

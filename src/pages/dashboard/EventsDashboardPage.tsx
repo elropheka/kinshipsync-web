@@ -1,21 +1,38 @@
-import React, { useState, useMemo } from 'react'; // Added useMemo
+import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useUserVisibleEvents } from '@/hooks/useUserVisibleEvents';
-import { useAllEvents } from '@/hooks/useAllEvents'; // For addEvent
-import { useAllThemes } from '@/hooks/useAllThemes'; // Import useAllThemes
-import type { Event, CreateEventPayload, UpdateEventPayload } from '@/types/eventTypes'; // Added CreateEventPayload, UpdateEventPayload
+import { useAllEvents } from '@/hooks/useAllEvents';
+import { useAllThemes } from '@/hooks/useAllThemes';
+import { useAuth } from '@/context/AuthContext';
+import type { Event, CreateEventPayload, UpdateEventPayload } from '@/types/eventTypes';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from '@/components/ui/button';
-import UserEventFormModal from '@/components/user/UserEventFormModal'; // Import the modal
+import UserEventFormModal from '@/components/user/UserEventFormModal';
 import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/errorUtils";
-import { PlusCircle, TrendingUp, CheckCircle, CalendarClock, ListChecks, Palette } from 'lucide-react'; // Added icons
+import { useErrorToast } from '@/hooks/useErrorToast';
+import { ErrorState } from '@/components/common/ErrorState';
+import {
+  PlusCircle,
+  TrendingUp,
+  CheckCircle,
+  CalendarClock,
+  ListChecks,
+  Palette,
+  Sparkles,
+  Activity,
+  ArrowRight,
+  User,
+} from 'lucide-react';
+
+const brandCardClass =
+  'rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md';
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   return (
-    <Card className="mb-4">
+    <Card className={`mb-4 ${brandCardClass}`}>
       <CardHeader>
-        <CardTitle>{event?.name || 'Unnamed Event'}</CardTitle>
+        <CardTitle className="text-foreground">{event?.name || 'Unnamed Event'}</CardTitle>
         <CardDescription>
           {event?.date ? new Date(event.date).toLocaleDateString() : 'Date not set'}
           {event?.location && ` - ${event.location}`}
@@ -52,25 +69,31 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
 
 const EventGroup: React.FC<{ title: string; events: Event[] }> = ({ title, events }) => {
   if (events.length === 0) {
-    return null; // Don't render the group if there are no events
+    return null;
   }
   return (
     <div className="mb-8">
-      <h2 className="text-2xl font-semibold mb-4">{title}</h2>
+      <h2 className="text-2xl font-semibold text-foreground mb-4">{title}</h2>
       {events.map(event => <EventCard key={event.id} event={event} />)}
     </div>
   );
 };
 
 const EventsDashboardPage: React.FC = () => {
+  const { userProfile } = useAuth();
   const { groupedEvents, isLoading: isLoadingEventsData, error: eventsError, refetchEvents } = useUserVisibleEvents();
-  const { addEvent, isLoading: isProcessingEvent } = useAllEvents(); // For creating events
-  const { allThemes: themes, isLoading: isLoadingThemes, error: themesError } = useAllThemes(); // Corrected destructuring
+  const { addEvent, isLoading: isProcessingEvent } = useAllEvents();
+  const { allThemes: themes, isLoading: isLoadingThemes, error: themesError } = useAllThemes();
 
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
 
   const isLoading = isLoadingEventsData || isLoadingThemes;
   const error = eventsError || themesError;
+
+  const welcomeName =
+    userProfile?.displayName ||
+    [userProfile?.firstName, userProfile?.lastName].filter(Boolean).join(' ') ||
+    'there';
 
   const eventCounts = useMemo(() => {
     const ongoing = groupedEvents.ongoing?.length || 0;
@@ -81,21 +104,37 @@ const EventsDashboardPage: React.FC = () => {
     return { total, ongoing, upcoming, completed, other };
   }, [groupedEvents]);
 
-  const popularThemes = useMemo(() => {
-    if (isLoadingThemes || !themes || !themes.length || isLoadingEventsData) return []; // Added check for themes itself
-
-    const allUserEvents = [
+  const allUserEvents = useMemo(
+    () => [
       ...(groupedEvents.ongoing || []),
       ...(groupedEvents.upcoming || []),
       ...(groupedEvents.completed || []),
       ...(groupedEvents.other || []),
-    ];
+    ],
+    [groupedEvents]
+  );
+
+  const upcomingPreview = useMemo(
+    () => (groupedEvents.upcoming || []).slice(0, 4),
+    [groupedEvents.upcoming]
+  );
+
+  const recentActivity = useMemo(
+    () =>
+      [...allUserEvents]
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+        .slice(0, 5),
+    [allUserEvents]
+  );
+
+  const popularThemes = useMemo(() => {
+    if (isLoadingThemes || !themes || !themes.length || isLoadingEventsData) return [];
 
     const themeCounts: Record<string, { name: string; count: number }> = {};
 
     allUserEvents.forEach(event => {
       if (event.themeId) {
-        const themeDetail = themes.find((t: { id: string; name: string }) => t.id === event.themeId); // Added type for t
+        const themeDetail = themes.find((t: { id: string; name: string }) => t.id === event.themeId);
         if (themeDetail) {
           if (themeCounts[event.themeId]) {
             themeCounts[event.themeId].count++;
@@ -107,12 +146,10 @@ const EventsDashboardPage: React.FC = () => {
     });
     return Object.values(themeCounts)
       .sort((a, b) => b.count - a.count)
-      .slice(0, 3); // Show top 3
-  }, [groupedEvents, themes, isLoadingThemes, isLoadingEventsData]);
+      .slice(0, 3);
+  }, [allUserEvents, themes, isLoadingThemes, isLoadingEventsData]);
 
   const handleOpenCreateModal = () => {
-    // setEditingEvent(null); // Not needed for create-only on this page
-    // setModalMode('create'); // Always create from this page's button
     setIsEventModalOpen(true);
   };
 
@@ -121,128 +158,261 @@ const EventsDashboardPage: React.FC = () => {
   };
 
   const handleModalSubmit = async (data: CreateEventPayload | UpdateEventPayload) => {
-    // This page's modal is only for creation
     const eventData = data as CreateEventPayload;
     const websiteData = eventData.website;
-    
-    // Remove website from eventData since addEvent expects it as separate parameter
     const { ...cleanEventData } = eventData;
-    
+
     const success = !!(await addEvent(cleanEventData, websiteData));
     if (success) {
       toast.success("Event created successfully.");
       handleModalClose();
-      refetchEvents(); // Refetch events to include the new one
+      refetchEvents();
     } else {
       toast.error("Failed to create event.");
     }
   };
 
-
   if (isLoading) {
-    return <div className="flex justify-center items-center h-full"><p>Loading events...</p></div>;
-  }
-
-  if (error) {
-    toast.error(getErrorMessage(error));
     return (
-      <div className="flex flex-col justify-center items-center h-full p-4">
-        <p className="text-muted-foreground mb-4">Unable to load events. Please try again.</p>
-        <Button onClick={refetchEvents} className="mt-4">Try Again</Button>
+      <div className="flex justify-center items-center h-full bg-background">
+        <p className="text-muted-foreground">Loading events...</p>
       </div>
     );
   }
-  
+
+  useErrorToast(error, { title: 'Unable to load events' });
+
+  if (error) {
+    return (
+      <ErrorState
+        error={error}
+        title="Unable to load events"
+        onRetry={refetchEvents}
+        retryLabel="Try Again"
+        className="bg-background"
+      />
+    );
+  }
+
   const hasEvents = Object.values(groupedEvents).some(group => group.length > 0);
 
   return (
-    <div className="container mx-auto py-4 sm:py-6 md:py-10">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Events Dashboard</h1>
-        <Button onClick={handleOpenCreateModal}>
-          <PlusCircle className="mr-2 h-4 w-4" /> Create Event
-        </Button>
+    <div className="container mx-auto py-4 sm:py-6 md:py-10 space-y-8 bg-background">
+      {/* Welcome */}
+      <div className={`${brandCardClass} overflow-hidden`}>
+        <div className="bg-gradient-to-r from-primary/10 via-background to-accent/10 p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium text-primary mb-1 flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                Welcome back
+              </p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+                Hello, {welcomeName}
+              </h1>
+              <p className="text-muted-foreground mt-2 max-w-xl">
+                Plan family gatherings, track RSVPs, and keep everyone in sync from one warm, organized place.
+              </p>
+            </div>
+            <Button
+              onClick={handleOpenCreateModal}
+              className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full shrink-0"
+            >
+              <PlusCircle className="mr-2 h-4 w-4" /> Create Event
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* Event Stats Overview & Popular Themes */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-        {/* Total Events Card */}
-        <Card className="lg:col-span-1">
+      {/* Stat cards */}
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <Card className={brandCardClass}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Events</CardTitle>
-            <ListChecks className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground">Total Events</CardTitle>
+            <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+              <ListChecks className="h-4 w-4 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{isLoadingEventsData ? "..." : eventCounts.total}</div>
+            <div className="text-2xl font-bold text-foreground">{isLoadingEventsData ? "..." : eventCounts.total}</div>
             <p className="text-xs text-muted-foreground">All your visible events</p>
           </CardContent>
         </Card>
-
-        {/* Popular Themes Card */}
-        <Card className="lg:col-span-2">
+        <Card className={brandCardClass}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Popular Themes</CardTitle>
-            <Palette className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-foreground">Ongoing</CardTitle>
+            <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+              <TrendingUp className="h-4 w-4 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            {isLoading ? ( 
+            <div className="text-2xl font-bold text-foreground">{isLoadingEventsData ? "..." : eventCounts.ongoing}</div>
+            <p className="text-xs text-muted-foreground">Currently active</p>
+          </CardContent>
+        </Card>
+        <Card className={brandCardClass}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-foreground">Upcoming</CardTitle>
+            <div className="h-9 w-9 rounded-lg bg-secondary/15 flex items-center justify-center">
+              <CalendarClock className="h-4 w-4 text-secondary" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{isLoadingEventsData ? "..." : eventCounts.upcoming}</div>
+            <p className="text-xs text-muted-foreground">Planned for the future</p>
+          </CardContent>
+        </Card>
+        <Card className={brandCardClass}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-foreground">Completed</CardTitle>
+            <div className="h-9 w-9 rounded-lg bg-accent/20 flex items-center justify-center">
+              <CheckCircle className="h-4 w-4 text-accent-foreground" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{isLoadingEventsData ? "..." : eventCounts.completed}</div>
+            <p className="text-xs text-muted-foreground">Successfully concluded</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Upcoming events */}
+        <Card className={`lg:col-span-2 ${brandCardClass}`}>
+          <CardHeader>
+            <CardTitle className="text-foreground flex items-center gap-2">
+              <CalendarClock className="h-5 w-5 text-primary" />
+              Upcoming Events
+            </CardTitle>
+            <CardDescription>Your next gatherings on the calendar</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {upcomingPreview.length > 0 ? (
+              <ul className="space-y-3">
+                {upcomingPreview.map(event => (
+                  <li
+                    key={event.id}
+                    className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background/60 px-4 py-3"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground truncate">{event.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {event.date ? new Date(event.date).toLocaleDateString() : 'Date TBD'}
+                        {event.location ? ` · ${event.location}` : ''}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="capitalize shrink-0 border-primary/30 text-primary">
+                      {event.status || 'upcoming'}
+                    </Badge>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground">No upcoming events yet. Create one to get started.</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Popular themes */}
+        <Card className={brandCardClass}>
+          <CardHeader>
+            <CardTitle className="text-foreground flex items-center gap-2">
+              <Palette className="h-5 w-5 text-primary" />
+              Popular Themes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
               <p className="text-xs text-muted-foreground">Loading themes...</p>
             ) : popularThemes.length > 0 ? (
-              <ul className="space-y-1">
+              <ul className="space-y-2">
                 {popularThemes.map(theme => (
-                  <li key={theme.name} className="text-sm flex justify-between">
+                  <li key={theme.name} className="text-sm flex justify-between text-foreground">
                     <span>{theme.name}</span>
                     <Badge variant="secondary">{theme.count} use{theme.count > 1 ? 's' : ''}</Badge>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-muted-foreground">No themes used yet or themes data not available.</p>
+              <p className="text-xs text-muted-foreground">No themes used yet.</p>
             )}
           </CardContent>
         </Card>
       </div>
-      
-      {/* Event Status Specific Cards - moved below popular themes for better layout */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
-         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ongoing Events</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Recent activity */}
+        <Card className={brandCardClass}>
+          <CardHeader>
+            <CardTitle className="text-foreground flex items-center gap-2">
+              <Activity className="h-5 w-5 text-primary" />
+              Recent Activity
+            </CardTitle>
+            <CardDescription>Latest updates across your events</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{isLoadingEventsData ? "..." : eventCounts.ongoing}</div>
-             <p className="text-xs text-muted-foreground">Currently active</p>
+            {recentActivity.length > 0 ? (
+              <ul className="space-y-3">
+                {recentActivity.map(event => (
+                  <li key={event.id} className="flex justify-between gap-2 text-sm border-b border-border pb-3 last:border-0 last:pb-0">
+                    <span className="font-medium text-foreground truncate">{event.name}</span>
+                    <span className="text-muted-foreground shrink-0">
+                      {new Date(event.updatedAt).toLocaleDateString()}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground">No recent activity yet.</p>
+            )}
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Upcoming Events</CardTitle>
-            <CalendarClock className="h-4 w-4 text-muted-foreground" />
+
+        {/* Quick actions */}
+        <Card className={brandCardClass}>
+          <CardHeader>
+            <CardTitle className="text-foreground">Quick Actions</CardTitle>
+            <CardDescription>Jump to common tasks</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{isLoadingEventsData ? "..." : eventCounts.upcoming}</div>
-            <p className="text-xs text-muted-foreground">Planned for the future</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed Events</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{isLoadingEventsData ? "..." : eventCounts.completed}</div>
-            <p className="text-xs text-muted-foreground">Successfully concluded</p>
+          <CardContent className="flex flex-col gap-3">
+            <Button
+              onClick={handleOpenCreateModal}
+              className="w-full justify-between bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-xl"
+            >
+              Create new event
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-between rounded-xl border-primary/30 text-primary hover:bg-primary/5">
+              <Link to="/dashboard/user">
+                View all my events
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-between rounded-xl border-border hover:bg-muted/50">
+              <Link to="/dashboard/user/profile">
+                <span className="flex items-center gap-2">
+                  <User className="h-4 w-4 text-primary" />
+                  Edit profile
+                </span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
 
-      {!hasEvents && !isLoading && ( 
-        <div className="text-center py-10">
-          <h2 className="text-xl font-semibold mb-2">No Events to Display</h2>
-          <p className="text-muted-foreground">
-            It looks like you don't have any events yet. Why not create one?
+      {!hasEvents && !isLoading && (
+        <div className={`text-center py-10 ${brandCardClass}`}>
+          <h2 className="text-xl font-semibold text-foreground mb-2">No Events to Display</h2>
+          <p className="text-muted-foreground mb-4">
+            It looks like you don&apos;t have any events yet. Why not create one?
           </p>
+          <Button
+            onClick={handleOpenCreateModal}
+            className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full"
+          >
+            <PlusCircle className="mr-2 h-4 w-4" /> Create Event
+          </Button>
         </div>
       )}
 
@@ -256,13 +426,13 @@ const EventsDashboardPage: React.FC = () => {
           )}
         </>
       )}
+
       <UserEventFormModal
         isOpen={isEventModalOpen}
         onClose={handleModalClose}
         onSubmit={handleModalSubmit}
         isProcessing={isProcessingEvent}
-        mode="create" // This modal instance is always for creation
-        // event prop is not needed for create mode
+        mode="create"
       />
     </div>
   );

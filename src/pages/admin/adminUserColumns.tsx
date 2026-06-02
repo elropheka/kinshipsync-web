@@ -5,6 +5,7 @@ import type { UserProfile } from "@/types/userTypes";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,7 +46,7 @@ export const getAdminUserColumns = (
   {
     id: "name", // Added id
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button variant="ghost" className="text-foreground hover:text-primary" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
         Name <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
@@ -63,7 +64,7 @@ export const getAdminUserColumns = (
       if (!nameToDisplay && (user.firstName || user.lastName)) {
         nameToDisplay = `${user.firstName || ''} ${user.lastName || ''}`.trim();
       }
-      return <div className="font-medium">{nameToDisplay || user.userId}</div>;
+      return <div className="font-medium text-foreground">{nameToDisplay || user.userId}</div>;
     },
     sortingFn: (rowA, rowB) => { // Removed columnId
       // Value from accessorFn is available via row.getValue("name")
@@ -75,6 +76,9 @@ export const getAdminUserColumns = (
   {
     accessorKey: "email",
     header: "Email",
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">{row.getValue("email") as string}</span>
+    ),
   },
   {
     accessorKey: "role",
@@ -86,7 +90,12 @@ export const getAdminUserColumns = (
       }
       return (
         <div className="flex space-x-1">
-          <Badge variant="secondary">{role}</Badge>
+          <Badge
+            variant={role === 'admin' ? 'default' : 'secondary'}
+            className="capitalize"
+          >
+            {role}
+          </Badge>
         </div>
       );
     },
@@ -94,7 +103,7 @@ export const getAdminUserColumns = (
   {
     accessorKey: "createdAt",
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button variant="ghost" className="text-foreground hover:text-primary" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
         Joined Date <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
@@ -110,18 +119,18 @@ export const getAdminUserColumns = (
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" className="h-8 w-8 p-0 text-primary hover:bg-primary/10">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => alert(`View details for ${user.displayName}`)}>View Details</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => toast.info('View details', { description: `Details for ${user.displayName} — coming soon.` })}>View Details</DropdownMenuItem>
             <DropdownMenuItem onClick={() => onEditUser(user)}>Edit User</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert(`Change role for ${user.displayName}`)}>Change Role</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => toast.info('Change role', { description: `Role change for ${user.displayName} — use Edit User.` })}>Change Role</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600 hover:!text-red-600">Delete User</DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive focus:text-destructive">Delete User</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

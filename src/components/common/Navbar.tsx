@@ -19,6 +19,7 @@ import {
 import { auth } from '@/services/firebaseConfig'; // For logout
 import { signOut as firebaseSignOut } from 'firebase/auth'; // For logout
 import { RiMenuFold3Line as DoorClosed, RiMenuFold4Line as DoorOpen } from "react-icons/ri";
+import tealTextLogo from '@/assets/branding/teal-text-logo.png';
 
 interface SearchResultItem {
   id: string;
@@ -222,13 +223,16 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
   };
 
     return (
-              <header className="h-16 flex items-center px-4 sm:px-6 bg-background border-b border-border sticky top-0 z-10">
+              <header className="h-16 flex items-center px-4 sm:px-6 bg-background border-b border-primary/15 sticky top-0 z-10 shadow-sm">
         {/* Left section: Toggle Button and Page Title */}
-        <div className="flex items-center">
-          <Button variant="ghost" size="icon" onClick={onToggleSidebar} className="mr-2" title={isSidebarOpen ? "Close sidebar" : "Open sidebar"}>
+        <div className="flex items-center gap-3 min-w-0">
+          <Button variant="ghost" size="icon" onClick={onToggleSidebar} className="mr-1 text-primary hover:bg-primary/10" title={isSidebarOpen ? "Close sidebar" : "Open sidebar"}>
             {isSidebarOpen ? <DoorClosed className="h-6 w-6" /> : <DoorOpen className="h-6 w-6" />}
           </Button>
-                      <h1 className="text-xl font-semibold text-foreground hidden sm:block">
+          <Link to="/" className="hidden md:block shrink-0">
+            <img src={tealTextLogo} alt="KinshipSync" className="h-8 w-auto object-contain" />
+          </Link>
+          <h1 className="text-xl font-semibold text-primary truncate hidden sm:block">
             {pageTitle}
           </h1>
         </div>
@@ -242,7 +246,7 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>(
           <Input
             type="search"
             placeholder="Search users, events, vendors..."
-                          className="block w-full pl-10 pr-3 py-2 rounded-full border border-border focus:outline-none focus:ring-primary focus:border-primary text-sm sm:text-base"
+                          className="block w-full pl-10 pr-3 py-2 rounded-full border border-border bg-card focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm sm:text-base"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setIsResultsVisible(true)}

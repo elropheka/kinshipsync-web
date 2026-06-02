@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ChevronRight, Heart, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import beigeLogo from '@/assets/branding/beige-logo.png';
 
 const Footer: React.FC = () => {
   const [hoveredSocial, setHoveredSocial] = useState<number | null>(null);
@@ -38,30 +39,23 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer id="footer" className="footer relative bg-gray-900 pt-20 pb-12 overflow-hidden">
-      {/* Decorative Elements */}
+    <footer id="footer" className="footer relative bg-[hsl(15_66%_14%)] pt-20 pb-12 overflow-hidden text-primary-foreground">
       <div className={`
-        absolute inset-0 bg-gradient-to-br from-[#2ECDB0]/5 to-transparent
+        absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent
         transform transition-opacity duration-1000
         ${isVisible ? 'opacity-100' : 'opacity-0'}
       `}></div>
       <div className={`
-        absolute bottom-0 left-0 w-96 h-96 bg-[#2ECDB0] rounded-full
-        mix-blend-multiply filter blur-3xl opacity-0
+        absolute bottom-0 left-0 w-96 h-96 bg-secondary rounded-full
+        mix-blend-soft-light filter blur-3xl opacity-0
         transition-all duration-1000 delay-300
-        ${isVisible ? 'opacity-5 animate-blob' : ''}
+        ${isVisible ? 'opacity-10 animate-blob' : ''}
       `}></div>
       <div className={`
-        absolute top-0 right-0 w-96 h-96 bg-[#2ECDB0] rounded-full
-        mix-blend-multiply filter blur-3xl opacity-0
+        absolute top-0 right-0 w-96 h-96 bg-primary rounded-full
+        mix-blend-soft-light filter blur-3xl opacity-0
         transition-all duration-1000 delay-500
-        ${isVisible ? 'opacity-5 animate-blob animation-delay-2000' : ''}
-      `}></div>
-      <div className={`
-        absolute top-1/2 left-1/2 w-64 h-64 bg-[#2ECDB0] rounded-full
-        mix-blend-multiply filter blur-3xl opacity-0
-        transition-all duration-1000 delay-700
-        ${isVisible ? 'opacity-5 animate-blob animation-delay-4000' : ''}
+        ${isVisible ? 'opacity-10 animate-blob animation-delay-2000' : ''}
       `}></div>
 
       <div className="container mx-auto px-4 relative z-10">
@@ -75,36 +69,36 @@ const Footer: React.FC = () => {
               to="/" 
               className="logo flex items-center space-x-2 group mb-6"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#DDFBF4] flex items-center justify-center transform group-hover:rotate-12 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-primary-foreground/10 flex items-center justify-center transform group-hover:rotate-12 transition-transform border border-primary-foreground/15">
                 <img 
-                  src="/logo.png" 
+                  src={beigeLogo}
                   alt="KinshipSync Logo" 
-                  className="w-8 h-8 transform group-hover:scale-110 transition-transform"
+                  className="h-9 w-9 object-contain transform group-hover:scale-110 transition-transform"
                 />
               </div>
-              <h1 className="text-2xl font-bold text-white">
-                Kinship<span className="text-[#2ECDB0]">Sync</span>
+              <h1 className="text-2xl font-bold text-primary-foreground">
+                Kinship<span className="text-accent">Sync</span>
               </h1>
             </Link>
             <div className="space-y-6">
-              <p className="text-gray-400 leading-relaxed">
+              <p className="text-primary-foreground/70 leading-relaxed">
                 Bringing families closer together through seamless event planning and coordination.
               </p>
               <div className="space-y-4">
                 <a 
                   href="mailto:support@kinshipsync.com" 
-                  className="flex items-center space-x-3 text-gray-400 hover:text-[#2ECDB0] transition-colors group"
+                  className="flex items-center space-x-3 text-primary-foreground/70 hover:text-accent transition-colors group"
                   onMouseEnter={() => setHoveredLink('email')}
                   onMouseLeave={() => setHoveredLink(null)}
                 >
                   <div className={`
-                    w-10 h-10 rounded-lg bg-gray-800
+                    w-10 h-10 rounded-lg bg-primary-foreground/10
                     flex items-center justify-center
                     transform transition-all duration-300
                     ${hoveredLink === 'email' ? 'rotate-12 scale-110 shadow-lg' : ''}
                   `}>
                     <Mail className={`
-                      text-[#2ECDB0] w-5 h-5
+                      text-accent w-5 h-5
                       transform transition-transform duration-300
                       ${hoveredLink === 'email' ? 'scale-110' : ''}
                     `} />
@@ -120,9 +114,9 @@ const Footer: React.FC = () => {
             transform transition-all duration-700 delay-200
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
           `} data-aos="fade-up" data-aos-delay="100">
-            <h4 className="text-lg font-semibold text-white mb-8 relative group">
+            <h4 className="text-lg font-semibold text-primary-foreground mb-8 relative group">
               <span className="relative z-10">Quick Links</span>
-              <div className="absolute bottom-0 left-0 w-12 h-1 bg-[#2ECDB0] rounded-full transform -translate-y-2 opacity-50 group-hover:w-24 transition-all"></div>
+              <div className="absolute bottom-0 left-0 w-12 h-1 bg-secondary rounded-full transform -translate-y-2 opacity-70 group-hover:w-24 transition-all"></div>
             </h4>
             <ul className="space-y-4">
               {[
@@ -134,12 +128,12 @@ const Footer: React.FC = () => {
                 <li key={link.href}>
                   <a 
                     href={link.href}
-                    className="text-gray-400 hover:text-[#2ECDB0] transition-colors flex items-center group"
+                    className="text-primary-foreground/70 hover:text-accent transition-colors flex items-center group"
                     onMouseEnter={() => setHoveredLink(link.href)}
                     onMouseLeave={() => setHoveredLink(null)}
                   >
                     <ChevronRight className={`
-                      text-[#2ECDB0] w-5 h-5 mr-2
+                      text-accent w-5 h-5 mr-2
                       transform transition-all duration-300
                       ${hoveredLink === link.href ? 'translate-x-2 scale-110' : ''}
                     `} />
@@ -158,9 +152,9 @@ const Footer: React.FC = () => {
             transform transition-all duration-700 delay-400
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
           `} data-aos="fade-up" data-aos-delay="200">
-            <h4 className="text-lg font-semibold text-white mb-8 relative group">
+            <h4 className="text-lg font-semibold text-primary-foreground mb-8 relative group">
               <span className="relative z-10">Our Services</span>
-              <div className="absolute bottom-0 left-0 w-12 h-1 bg-[#2ECDB0] rounded-full transform -translate-y-2 opacity-50 group-hover:w-24 transition-all"></div>
+              <div className="absolute bottom-0 left-0 w-12 h-1 bg-secondary rounded-full transform -translate-y-2 opacity-70 group-hover:w-24 transition-all"></div>
             </h4>
             <ul className="space-y-4">
               {[
@@ -172,12 +166,12 @@ const Footer: React.FC = () => {
                 <li key={service}>
                   <a 
                     href="#" 
-                    className="text-gray-400 hover:text-[#2ECDB0] transition-colors flex items-center group"
+                    className="text-primary-foreground/70 hover:text-accent transition-colors flex items-center group"
                     onMouseEnter={() => setHoveredLink(service)}
                     onMouseLeave={() => setHoveredLink(null)}
                   >
                     <ChevronRight className={`
-                      text-[#2ECDB0] w-5 h-5 mr-2
+                      text-accent w-5 h-5 mr-2
                       transform transition-all duration-300
                       ${hoveredLink === service ? 'translate-x-2 scale-110' : ''}
                     `} />
@@ -196,9 +190,9 @@ const Footer: React.FC = () => {
             transform transition-all duration-700 delay-600
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
           `} data-aos="fade-up" data-aos-delay="300">
-            <h4 className="text-lg font-semibold text-white mb-8 relative group">
+            <h4 className="text-lg font-semibold text-primary-foreground mb-8 relative group">
               <span className="relative z-10">Legal</span>
-              <div className="absolute bottom-0 left-0 w-12 h-1 bg-[#2ECDB0] rounded-full transform -translate-y-2 opacity-50 group-hover:w-24 transition-all"></div>
+              <div className="absolute bottom-0 left-0 w-12 h-1 bg-secondary rounded-full transform -translate-y-2 opacity-70 group-hover:w-24 transition-all"></div>
             </h4>
             <ul className="space-y-4">
               {[
@@ -210,12 +204,12 @@ const Footer: React.FC = () => {
                 <li key={item}>
                   <a 
                     href="#" 
-                    className="text-gray-400 hover:text-[#2ECDB0] transition-colors flex items-center group"
+                    className="text-primary-foreground/70 hover:text-accent transition-colors flex items-center group"
                     onMouseEnter={() => setHoveredLink(item)}
                     onMouseLeave={() => setHoveredLink(null)}
                   >
                     <ChevronRight className={`
-                      text-[#2ECDB0] w-5 h-5 mr-2
+                      text-accent w-5 h-5 mr-2
                       transform transition-all duration-300
                       ${hoveredLink === item ? 'translate-x-2 scale-110' : ''}
                     `} />
@@ -245,18 +239,18 @@ const Footer: React.FC = () => {
               onMouseLeave={() => setHoveredSocial(null)}
             >
               <div className={`
-                absolute inset-0 rounded-xl bg-gradient-to-r from-[#2ECDB0] to-[${social.color}]
+                absolute inset-0 rounded-xl bg-gradient-to-r from-secondary to-[${social.color}]
                 opacity-0 transition-opacity duration-300
                 ${hoveredSocial === index ? 'opacity-20' : ''}
               `}></div>
               <div className={`
-                w-12 h-12 rounded-xl bg-gray-800
+                w-12 h-12 rounded-xl bg-primary-foreground/10 border border-primary-foreground/10
                 flex items-center justify-center
                 transform transition-all duration-300
                 ${hoveredSocial === index ? 'scale-110 rotate-12 shadow-lg' : ''}
               `}>
                 <div className={`
-                  text-[#2ECDB0]
+                  text-accent
                   transform transition-transform duration-300
                   ${hoveredSocial === index ? 'scale-110' : ''}
                 `}>
@@ -269,16 +263,16 @@ const Footer: React.FC = () => {
 
         {/* Copyright */}
         <div className={`
-          text-center border-t border-gray-800 pt-8
+          text-center border-t border-primary-foreground/15 pt-8
           transform transition-all duration-700 delay-1000
           ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
         `} data-aos="fade-up" data-aos-delay="500">
-          <p className="text-gray-400">
-            © {new Date().getFullYear()} <span className="text-[#2ECDB0] font-semibold">Kinship Sync</span>. All Rights Reserved.
+          <p className="text-primary-foreground/70">
+            © {new Date().getFullYear()} <span className="text-accent font-semibold">Kinship Sync</span>. All Rights Reserved.
           </p>
-          <p className="text-gray-500 mt-2 flex items-center justify-center">
+          <p className="text-primary-foreground/50 mt-2 flex items-center justify-center">
             Designed with 
-            <Heart className="text-[#2ECDB0] w-5 h-5 mx-2 animate-pulse" fill="currentColor" /> 
+            <Heart className="text-secondary w-5 h-5 mx-2 animate-pulse" fill="currentColor" /> 
             for modern families
           </p>
         </div>

@@ -60,18 +60,18 @@ const FAQSection: React.FC = () => {
     <section id="faq" className="faq section relative py-16 md:py-24 lg:py-32 overflow-hidden">
       {/* Background Elements */}
       <div className={`
-        absolute inset-0 bg-gradient-to-b from-gray-50 to-white
+        absolute inset-0 bg-gradient-to-b from-background to-card
         transform transition-opacity duration-1000
         ${isVisible ? 'opacity-100' : 'opacity-0'}
       `}></div>
       <div className={`
-        absolute top-1/4 right-0 w-64 h-64 bg-[#9AFFE1] rounded-full
+        absolute top-1/4 right-0 w-64 h-64 bg-primary rounded-full
         mix-blend-multiply filter blur-3xl opacity-0
         transition-all duration-1000 delay-300
         ${isVisible ? 'opacity-5 animate-blob' : ''}
       `}></div>
       <div className={`
-        absolute bottom-1/4 left-0 w-64 h-64 bg-[#9AFFE1] rounded-full
+        absolute bottom-1/4 left-0 w-64 h-64 bg-accent rounded-full
         mix-blend-multiply filter blur-3xl opacity-0
         transition-all duration-1000 delay-500
         ${isVisible ? 'opacity-5 animate-blob animation-delay-2000' : ''}
@@ -85,32 +85,32 @@ const FAQSection: React.FC = () => {
             transform transition-all duration-700
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
           `} data-aos="fade-up">
-            <span className="inline-block mb-4 px-4 py-2 bg-[#E5FFF8] text-[#2ECDB0] rounded-full text-sm uppercase font-semibold tracking-wider transform hover:scale-105 transition-transform">
+            <span className="inline-block mb-4 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm uppercase font-semibold tracking-wider transform hover:scale-105 transition-transform">
               FAQ
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
               Frequently Asked Questions
             </h2>
-            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
               Find answers to common questions about Kinship Sync and how it can help you plan your next family event.
             </p>
             
             {/* Contact Support */}
-            <div className="group bg-[#E5FFF8] rounded-2xl p-6 shadow-lg transform hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
+            <div className="group bg-primary/5 border border-border rounded-xl p-6 shadow-lg transform hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
               <div className="relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#9AFFE1] to-transparent opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Still have questions?</h3>
-                <p className="text-gray-600 mb-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                <h3 className="text-xl font-semibold text-foreground mb-4">Still have questions?</h3>
+                <p className="text-muted-foreground mb-6">
                   Can't find the answer you're looking for? Our support team is here to help.
                 </p>
                 <a 
                   href="mailto:support@kinshipsync.com"
-                  className="inline-flex items-center gap-2 text-[#2ECDB0] hover:text-[#7BCEB4] transition-colors group"
+                  className="inline-flex items-center gap-2 text-secondary hover:text-secondary/80 transition-colors group"
                 >
                   <Mail className="w-5 h-5 transform group-hover:rotate-12 transition-transform" />
                   <span className="font-medium relative">
                     Contact Support
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#7BCEB4] group-hover:w-full transition-all duration-300"></span>
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
                   </span>
                 </a>
               </div>
@@ -130,9 +130,9 @@ const FAQSection: React.FC = () => {
                 onMouseLeave={() => setHoveredIndex(null)}
               >
                 <div className={`
-                  bg-white rounded-2xl shadow-lg overflow-hidden
+                  bg-card border border-border rounded-xl shadow-lg overflow-hidden
                   transform transition-all duration-300
-                  ${activeIndex === index ? 'ring-2 ring-[#9AFFE1] shadow-xl' : ''}
+                  ${activeIndex === index ? 'ring-2 ring-primary/30 shadow-xl' : ''}
                   ${hoveredIndex === index ? 'translate-x-2' : ''}
                 `}>
                   <button
@@ -142,8 +142,8 @@ const FAQSection: React.FC = () => {
                     <div className="flex items-center justify-between gap-4">
                       <h3 className={`
                         font-semibold transition-colors duration-300
-                        ${activeIndex === index ? 'text-[#2ECDB0]' : 'text-gray-800'}
-                        ${hoveredIndex === index ? 'text-[#2ECDB0]' : ''}
+                        ${activeIndex === index ? 'text-primary' : 'text-foreground'}
+                        ${hoveredIndex === index ? 'text-primary' : ''}
                       `}>
                         {faq.question}
                       </h3>
@@ -151,13 +151,13 @@ const FAQSection: React.FC = () => {
                         flex-shrink-0 w-8 h-8 rounded-lg
                         flex items-center justify-center
                         transform transition-all duration-300
-                        ${activeIndex === index ? 'bg-[#E5FFF8] rotate-180' : 'bg-gray-100'}
+                        ${activeIndex === index ? 'bg-primary/10 rotate-180' : 'bg-muted'}
                         ${hoveredIndex === index ? 'scale-110' : ''}
                       `}>
                         <ChevronDown className={`
                           w-5 h-5
                           transition-colors duration-300
-                          ${activeIndex === index || hoveredIndex === index ? 'text-[#2ECDB0]' : 'text-gray-600'}
+                          ${activeIndex === index || hoveredIndex === index ? 'text-primary' : 'text-muted-foreground'}
                         `} />
                       </div>
                     </div>
@@ -168,13 +168,13 @@ const FAQSection: React.FC = () => {
                     ${activeIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
                   `}>
                     <div className="p-6 pt-0">
-                      <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+                      <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
                     </div>
                   </div>
 
                   {/* Background Gradient */}
                   <div className={`
-                    absolute inset-0 bg-gradient-to-br from-[#E5FFF8] to-transparent
+                    absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent
                     rounded-2xl opacity-0 transition-opacity duration-300
                     ${hoveredIndex === index ? 'opacity-5' : ''}
                   `}></div>

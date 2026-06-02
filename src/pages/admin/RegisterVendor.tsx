@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errorUtils";
+import { useErrorToast } from '@/hooks/useErrorToast';
 import { showValidationErrors } from "@/lib/formValidationUtils";
 // import { uploadFileToStorage } from '@/services/storageService'; // Will be handled by ImageUploadInput in step components
 
@@ -77,6 +78,8 @@ const AdminRegisterVendorPage: React.FC = () => {
   });
 
   const { handleSubmit: handleFormSubmit, reset, trigger, formState } = form; // Removed setError
+
+  useErrorToast(usersError, { title: 'Unable to load users' });
 
   // Debug function to log form state
   const debugFormState = () => {
@@ -243,8 +246,8 @@ const AdminRegisterVendorPage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto py-4 sm:py-6 md:py-10">
-      <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 p-4 sm:p-6 md:p-8 rounded-lg shadow-md">
+    <div className="container mx-auto py-4 sm:py-6 md:py-10 bg-background">
+      <div className="max-w-2xl mx-auto rounded-xl border border-border bg-card p-4 sm:p-6 md:p-8 shadow-sm">
         {/* Debug Button */}
         {/* <Button 
           type="button" 
@@ -257,9 +260,11 @@ const AdminRegisterVendorPage: React.FC = () => {
 
         {/* Link to Existing User Section */}
         <div className="mb-6 space-y-2">
-          <Label htmlFor="selectedUserId">Select User to Register as Vendor</Label>
+          <Label htmlFor="selectedUserId" className="text-foreground">Select User to Register as Vendor</Label>
           {(isLoadingUsers || isLoadingVendors) && <p>Loading users and vendors...</p>}
-          {usersError && (() => { toast.error(getErrorMessage(usersError)); return null; })()}
+          {usersError && (
+            <p className="text-sm text-destructive">{getErrorMessage(usersError)}</p>
+          )}
           {!isLoadingUsers && !isLoadingVendors && !usersError && (
             <Select
               value={selectedUserId}
@@ -268,7 +273,7 @@ const AdminRegisterVendorPage: React.FC = () => {
                 setSelectedUserId(value);
               }}
             >
-              <SelectTrigger className="w-full dark:bg-gray-700">
+              <SelectTrigger className="w-full rounded-xl border-border bg-background">
                 <SelectValue placeholder="Select a user to register" />
               </SelectTrigger>
               <SelectContent>
@@ -308,7 +313,7 @@ const AdminRegisterVendorPage: React.FC = () => {
         {/* Stepper UI */}
         <div className="mb-8 flex justify-center space-x-4">
           {[1, 2, 3].map(step => (
-            <div key={step} className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === step ? 'border-blue-500 bg-blue-500 text-white' : currentStep > step ? 'border-green-500 bg-green-500 text-white' : 'border-gray-300'}`}>
+            <div key={step} className={`w-8 h-8 rounded-full flex items-center justify-center border-2 text-sm font-medium ${currentStep === step ? 'border-secondary bg-secondary text-secondary-foreground' : currentStep > step ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground bg-background'}`}>
               {step}
             </div>
           ))}
@@ -327,7 +332,7 @@ const AdminRegisterVendorPage: React.FC = () => {
               </Button>
             )}
             {currentStep < 3 && (
-              <Button type="button" onClick={nextStep} className="ml-auto" disabled={!selectedUserId.trim()}>
+              <Button type="button" onClick={nextStep} className="ml-auto bg-secondary hover:bg-secondary/90" disabled={!selectedUserId.trim()}>
                 Next
               </Button>
             )}
@@ -335,7 +340,7 @@ const AdminRegisterVendorPage: React.FC = () => {
               <Button 
                 type="submit" 
                 disabled={isAddingVendor || !selectedUserId.trim()} 
-                className="ml-auto"
+                className="ml-auto bg-secondary hover:bg-secondary/90"
                 onClick={handleSubmitClick}
               >
                 {isAddingVendor ? 'Registering Vendor...' : 'Register Vendor'}
@@ -343,7 +348,7 @@ const AdminRegisterVendorPage: React.FC = () => {
             )}
             </div>
             {!selectedUserId.trim() && currentStep === 1 && (
-              <p className="mt-4 text-sm text-yellow-600 text-center">Please select a user before proceeding.</p>
+              <p className="mt-4 text-sm text-accent-foreground text-center">Please select a user before proceeding.</p>
             )}
           </form>
         </Form>

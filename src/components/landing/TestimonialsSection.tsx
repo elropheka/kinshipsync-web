@@ -78,7 +78,7 @@ const TestimonialsSection: React.FC = () => {
     <section id="testimonials" className="testimonials section relative py-16 md:py-24 lg:py-32 overflow-hidden">
       {/* Background Elements */}
       <div className={`
-        absolute inset-0 bg-gradient-to-b from-gray-50 to-white
+        absolute inset-0 bg-gradient-to-b from-background to-card
         transform transition-opacity duration-1000
         ${isVisible ? 'opacity-100' : 'opacity-0'}
       `}></div>
@@ -119,7 +119,7 @@ const TestimonialsSection: React.FC = () => {
               <span className="absolute bottom-2 left-0 w-full h-3 bg-primary/10 -z-10 transform -rotate-2 transition-all duration-300 group-hover:h-full group-hover:bottom-0 group-hover:rotate-0"></span>
             </span>
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
             Hear from families who have transformed their event planning experience
           </p>
         </div>
@@ -142,7 +142,7 @@ const TestimonialsSection: React.FC = () => {
             >
               {/* Card */}
               <div className={`
-                bg-white rounded-2xl p-8 relative group
+                bg-card border border-border rounded-xl p-8 relative group
                 shadow-lg transition-all duration-500
                 transform hover:-translate-y-2
                 ${hoveredIndex === index ? 'shadow-2xl ring-2 ring-primary/20' : 'hover:shadow-xl'}
@@ -159,7 +159,7 @@ const TestimonialsSection: React.FC = () => {
                   {/* Image Container */}
                   <div className="relative group/image">
                     <div className={`
-                      absolute inset-0 bg-gradient-to-br from-[#2ECDB0] to-[#1AB89C]
+                      absolute inset-0 bg-gradient-to-br from-primary to-primary/80
                       rounded-full transform transition-all duration-500
                       ${hoveredIndex === index ? '-rotate-12 scale-110' : '-rotate-6'}
                     `}></div>
@@ -179,14 +179,14 @@ const TestimonialsSection: React.FC = () => {
                     <h3 className={`
                       text-xl font-semibold mb-1
                       transition-colors duration-300
-                      ${hoveredIndex === index ? 'text-[#2ECDB0]' : 'text-gray-800'}
+                      ${hoveredIndex === index ? 'text-primary' : 'text-foreground'}
                     `}>{testimonial.name}</h3>
-                    <h4 className="text-sm text-gray-500 mb-1">{testimonial.role}</h4>
-                    <div className="flex items-center text-sm text-gray-400">
+                    <h4 className="text-sm text-muted-foreground mb-1">{testimonial.role}</h4>
+                    <div className="flex items-center text-sm text-muted-foreground">
                       <MapPin className={`
                         w-4 h-4 mr-1
                         transition-colors duration-300
-                        ${hoveredIndex === index ? 'text-[#2ECDB0]' : ''}
+                        ${hoveredIndex === index ? 'text-primary' : ''}
                       `} />
                       {testimonial.location}
                     </div>
@@ -203,11 +203,11 @@ const TestimonialsSection: React.FC = () => {
                         transform transition-all duration-300
                         ${hoveredIndex === index 
                           ? i <= 4 
-                            ? 'text-[#1AB89C] scale-110 rotate-[360deg]' 
-                            : 'text-gray-200'
+                            ? 'text-accent scale-110 rotate-[360deg]' 
+                            : 'text-muted'
                           : i <= 4 
-                            ? 'text-[#2ECDB0]' 
-                            : 'text-gray-200'
+                            ? 'text-secondary' 
+                            : 'text-muted'
                         }
                       `}
                       fill="currentColor"
@@ -219,14 +219,14 @@ const TestimonialsSection: React.FC = () => {
                 <div className="relative">
                   {/* Quote Icons */}
                   <Quote className={`
-                    w-8 h-8 text-[#2ECDB0] absolute -top-4 -left-2 opacity-20
+                    w-8 h-8 text-primary absolute -top-4 -left-2 opacity-20
                     transform transition-all duration-500
                     ${hoveredIndex === index ? 'rotate-12 scale-110' : ''}
                   `} />
                   
                   {/* Testimonial Text */}
                   <p className={`
-                    text-gray-700 leading-relaxed relative z-10 px-2
+                    text-foreground/90 leading-relaxed relative z-10 px-2
                     transform transition-all duration-300
                     ${hoveredIndex === index ? 'scale-102' : ''}
                   `}>
@@ -234,7 +234,7 @@ const TestimonialsSection: React.FC = () => {
                   </p>
                   
                   <Quote className={`
-                    w-8 h-8 text-[#2ECDB0] absolute -bottom-4 -right-2
+                    w-8 h-8 text-primary absolute -bottom-4 -right-2
                     opacity-20 transform scale-[-1] transition-all duration-500
                     ${hoveredIndex === index ? '-rotate-12 scale-110' : ''}
                   `} />
@@ -243,7 +243,7 @@ const TestimonialsSection: React.FC = () => {
                 {/* Decorative Line */}
                 <div className={`
                   mt-6 h-1 mx-auto rounded-full
-                  bg-gradient-to-r from-[#DDFBF4] to-[#2ECDB0]/20
+                  bg-gradient-to-r from-primary/20 to-secondary/30
                   transition-all duration-300
                   ${hoveredIndex === index ? 'w-32 opacity-100' : 'w-16 opacity-50'}
                 `}></div>
@@ -266,8 +266,8 @@ const TestimonialsSection: React.FC = () => {
                 w-3 h-3 rounded-full transition-all duration-300
                 transform hover:scale-110
                 ${activeIndex === index 
-                  ? 'bg-[#2ECDB0] w-8 shadow-lg'
-                  : 'bg-[#DDFBF4] hover:bg-[#2ECDB0]/50'
+                  ? 'bg-secondary w-8 shadow-lg'
+                  : 'bg-primary/20 hover:bg-secondary/50'
                 }
               `}
               aria-label={`Go to testimonial ${index + 1}`}

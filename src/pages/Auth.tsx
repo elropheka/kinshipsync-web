@@ -12,8 +12,8 @@ import {
 } from 'firebase/auth';
 import { firestore } from '@/services/firebaseConfig'; // Import Firestore instance
 import { doc, setDoc, serverTimestamp, getDoc, FieldValue } from 'firebase/firestore'; // Import Firestore functions
-import Logo from '@/assets/logo_l.png'; 
-import GoogleIcon from '@/assets/google.png'; // Assuming you have a Google icon SVG file
+import tealTextLogo from '@/assets/branding/teal-text-logo.png';
+import GoogleIcon from '@/assets/google.png';
 import { useNavigate } from 'react-router-dom'; // For redirecting after auth
 import { Link } from 'react-router-dom'; // For navigation links
 
@@ -204,41 +204,39 @@ const Auth = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-muted w-full overflow-hidden md:h-screen">
-      {/* Left side - Logo */}
-      <div className="hidden md:flex md:w-1/2 items-center justify-center bg-gradient-to-r from-primary/10 to-primary/20">
-        <Link to="/" className="text-4xl font-bold text-primary">
-          <img src={Logo} alt="Kinship Logo" />
-        </Link>
-      </div>
-
-      {/* Right side - Authentication */}
-      <div className="w-full md:w-1/2 flex flex-col items-center justify-center py-8 px-4 sm:px-8 overflow-y-auto">
-        <div className="w-full max-w-md space-y-6">
-          <div className="">
-            <h1 className="text-3xl font-bold text-foreground">
-              {activeTab === 'signup' ? 'Create an Account' : 'Welcome Back'}
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              {activeTab === 'signup'
-                ? 'Sign up to unlock exclusive features and a seamless experience on Kinship'
-                : 'Sign in to continue your seamless experience on Kinship'}
-            </p>
+    <div className="flex min-h-screen w-full items-center justify-center bg-background px-4 py-10">
+      <div className="w-full max-w-md">
+        <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-lg space-y-6">
+          <div className="flex flex-col items-center text-center space-y-4">
+            <Link to="/">
+              <img src={tealTextLogo} alt="KinshipSync" className="h-12 w-auto object-contain" />
+            </Link>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">
+                {activeTab === 'signup' ? 'Create an Account' : 'Welcome Back'}
+              </h1>
+              <p className="text-muted-foreground mt-2 text-sm">
+                {activeTab === 'signup'
+                  ? 'Sign up to plan family events together on KinshipSync'
+                  : 'Sign in to continue planning with your family'}
+              </p>
+            </div>
           </div>
 
-
           {/* Tab buttons */}
-          <div className="flex space-x-2 mb-6 rounded-full bg-gray-100 dark:bg-gray-800 h-16 p-1">
+          <div className="flex rounded-full bg-muted border border-border p-1 h-12">
             <button
+              type="button"
               onClick={() => setActiveTab('signup')}
-              className={`rounded-full py-2 px-6 font-medium flex-1 transition-colors ${activeTab === 'signup' ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+              className={`rounded-full py-2 px-6 text-sm font-semibold flex-1 transition-colors ${activeTab === 'signup' ? 'bg-card text-primary shadow-sm ring-1 ring-primary/20' : 'text-muted-foreground hover:text-foreground'}`}
               disabled={loading || googleLoading}
             >
               Sign Up
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('login')}
-              className={`rounded-full py-2 px-6 font-medium flex-1 transition-colors ${activeTab === 'login' ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+              className={`rounded-full py-2 px-6 text-sm font-semibold flex-1 transition-colors ${activeTab === 'login' ? 'bg-card text-primary shadow-sm ring-1 ring-primary/20' : 'text-muted-foreground hover:text-foreground'}`}
               disabled={loading || googleLoading}
             >
               Sign In
@@ -255,7 +253,7 @@ const Auth = () => {
                   placeholder="Full name"
                   value={signupData.fullName}
                   onChange={handleSignupChange}
-                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 pl-4 pr-10 bg-white text-foreground"
+                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/30 pl-4 pr-10 bg-card text-foreground"
                   required
                 />
                 <User className="absolute right-3 top-4 text-muted-foreground" size={20} />
@@ -268,7 +266,7 @@ const Auth = () => {
                   placeholder="Email"
                   value={signupData.email}
                   onChange={handleSignupChange}
-                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 pl-4 pr-10 bg-white text-foreground"
+                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/30 pl-4 pr-10 bg-card text-foreground"
                   required
                 />
                 <Mail className="absolute right-3 top-4 text-muted-foreground" size={20} />
@@ -281,7 +279,7 @@ const Auth = () => {
                   placeholder="Phone Number"
                   value={signupData.phoneNumber}
                   onChange={handleSignupChange}
-                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 pl-4 pr-10 bg-white text-foreground"
+                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/30 pl-4 pr-10 bg-card text-foreground"
                 />
                 <Hash className="absolute right-3 top-4 text-muted-foreground" size={20} />
               </div>
@@ -293,7 +291,7 @@ const Auth = () => {
                   placeholder="Location"
                   value={signupData.location}
                   onChange={handleSignupChange}
-                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 pl-4 pr-10 bg-white text-foreground"
+                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/30 pl-4 pr-10 bg-card text-foreground"
                   required
                 />
                 <MapPin className="absolute right-3 top-4 text-muted-foreground" size={20} />
@@ -306,7 +304,7 @@ const Auth = () => {
                   placeholder="Password"
                   value={signupData.password}
                   onChange={handleSignupChange}
-                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 pl-4 pr-10 bg-white text-foreground"
+                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/30 pl-4 pr-10 bg-card text-foreground"
                   required
                 />
                 <button
@@ -325,12 +323,12 @@ const Auth = () => {
                   id="acceptTerms"
                   checked={signupData.acceptTerms}
                   onChange={handleSignupChange}
-                  className="h-4 w-4 text-primary focus:ring-primary/20 border-border rounded"
+                  className="h-4 w-4 text-secondary focus:ring-secondary/30 border-border rounded"
                   required
                 />
                 <label htmlFor="acceptTerms" className="ml-2 text-sm text-muted-foreground">
                   Accept{' '}
-                  <a href="#" className="text-primary hover:underline">
+                  <a href="#" className="text-secondary hover:underline">
                     Terms & Conditions
                   </a>
                 </label>
@@ -338,7 +336,7 @@ const Auth = () => {
 
               <button
                 type="submit"
-                className="w-full py-4 bg-primary hover:bg-primary/90 rounded-full text-primary-foreground font-bold transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+                className="w-full py-4 bg-secondary hover:bg-secondary/90 rounded-full text-secondary-foreground font-bold transition-all shadow-md hover:shadow-lg disabled:opacity-50"
                 disabled={loading || googleLoading}
               >
                 {loading ? 'SIGNING UP...' : 'SIGN UP'}
@@ -370,7 +368,7 @@ const Auth = () => {
                   <button 
                     type="button"
                     onClick={() => setActiveTab('login')} 
-                    className="text-primary hover:underline"
+                    className="text-secondary hover:underline"
                   >
                     Sign in
                   </button>
@@ -389,7 +387,7 @@ const Auth = () => {
                   placeholder="Email"
                   value={loginData.email}
                   onChange={handleLoginChange}
-                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 pl-4 pr-10 bg-white text-foreground"
+                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/30 pl-4 pr-10 bg-card text-foreground"
                   required
                 />
                 <Mail className="absolute right-3 top-4 text-muted-foreground" size={20} />
@@ -402,7 +400,7 @@ const Auth = () => {
                   placeholder="Password"
                   value={loginData.password}
                   onChange={handleLoginChange}
-                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 pl-4 pr-10 bg-white text-foreground"
+                  className="w-full p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/30 pl-4 pr-10 bg-card text-foreground"
                   required
                 />
                 <button
@@ -422,20 +420,20 @@ const Auth = () => {
                     id="rememberMe"
                     checked={loginData.rememberMe}
                     onChange={handleLoginChange}
-                    className="h-4 w-4 text-primary focus:ring-primary/20 border-border rounded bg-white"
+                    className="h-4 w-4 text-secondary focus:ring-secondary/30 border-border rounded bg-card"
                   />
                   <label htmlFor="rememberMe" className="ml-2 text-sm text-muted-foreground">
                     Remember me
                   </label>
                 </div>
-                <a href="#" className="text-sm text-primary hover:underline">
+                <a href="#" className="text-sm text-secondary hover:underline">
                   Forgot password?
                 </a>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-4 bg-primary hover:bg-primary/90 rounded-full text-primary-foreground font-bold transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+                className="w-full py-4 bg-secondary hover:bg-secondary/90 rounded-full text-secondary-foreground font-bold transition-all shadow-md hover:shadow-lg disabled:opacity-50"
                 disabled={loading || googleLoading}
               >
                 {loading ? 'SIGNING IN...' : 'SIGN IN'}
@@ -467,7 +465,7 @@ const Auth = () => {
                   <button 
                     type="button"
                     onClick={() => setActiveTab('signup')} 
-                    className="text-primary hover:underline"
+                    className="text-secondary hover:underline"
                   >
                     Sign up
                   </button>

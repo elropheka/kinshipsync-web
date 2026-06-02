@@ -116,7 +116,7 @@ const StatsSection: React.FC = () => {
         ${isVisible ? 'opacity-5 animate-blob animation-delay-4000' : ''}
       `}></div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto max-w-7xl px-4 md:px-8 relative z-10">
         {/* Section Header */}
         <div className={`
           text-center mb-16
@@ -139,7 +139,7 @@ const StatsSection: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 lg:gap-12">
           {stats.map((stat, index) => (
             <div
               key={index}
@@ -152,7 +152,7 @@ const StatsSection: React.FC = () => {
               onMouseLeave={() => setHoveredIndex(null)}
             >
               <div className={`
-                stats-item bg-white rounded-2xl p-8 text-center
+                stats-item bg-card border border-border rounded-xl p-8 text-center
                 shadow-lg transition-all duration-500 relative
                 transform hover:-translate-y-2
                 ${hoveredIndex === index ? 'shadow-xl' : ''}

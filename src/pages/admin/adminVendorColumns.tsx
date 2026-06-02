@@ -5,6 +5,7 @@ import type { Vendor } from "@/types/vendorTypes";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,11 +48,11 @@ export const getAdminVendorColumns = (
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button variant="ghost" className="text-foreground hover:text-primary" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
         Name <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+    cell: ({ row }) => <div className="font-medium text-foreground">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "contactEmail",
@@ -66,13 +67,17 @@ export const getAdminVendorColumns = (
     header: "Featured",
     cell: ({ row }) => {
       const isFeatured = row.getValue("isFeatured") as boolean;
-      return <Badge variant={isFeatured ? "default" : "outline"}>{isFeatured ? "Yes" : "No"}</Badge>;
+      return (
+        <Badge variant={isFeatured ? "default" : "outline"} className={isFeatured ? '' : 'border-border text-muted-foreground'}>
+          {isFeatured ? "Yes" : "No"}
+        </Badge>
+      );
     },
   },
   {
     accessorKey: "createdAt",
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button variant="ghost" className="text-foreground hover:text-primary" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
         Registered On <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
@@ -88,14 +93,14 @@ export const getAdminVendorColumns = (
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" className="h-8 w-8 p-0 text-primary hover:bg-primary/10">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => alert(`View details for ${vendor.name}`)}>View Details</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => toast.info('View details', { description: `Details for ${vendor.name} — coming soon.` })}>View Details</DropdownMenuItem>
             <DropdownMenuItem onClick={() => onEditVendor(vendor)}>Edit Vendor</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={async () => await onToggleFeature(vendor.id, !!vendor.isFeatured)}>
@@ -104,7 +109,7 @@ export const getAdminVendorColumns = (
             {/* Add Approve/Reject if applicable */}
             <DropdownMenuItem 
               onClick={() => onDeleteVendor(vendor)}
-              className="text-red-600 hover:!text-red-600 focus:text-red-600 focus:bg-red-100 dark:focus:bg-red-700/30"
+              className="text-destructive focus:text-destructive"
             >
               Delete Vendor
             </DropdownMenuItem>

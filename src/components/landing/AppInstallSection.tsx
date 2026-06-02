@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Download, Globe, Smartphone, CloudDownload } from 'lucide-react';
 import appImage from '../../assets/img/app.png';
-import appStore from '../../assets/img/App_Store_(iOS).svg.webp';
-import playStore from '../../assets/img/playstore.svg';
 
 const AppInstallSection: React.FC = () => {
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
@@ -50,20 +48,6 @@ const AppInstallSection: React.FC = () => {
 
   const platforms = [
     {
-      icon: appStore,
-      store: "App Store",
-      text: "Download on the",
-      color: "blue",
-      link: "#"
-    },
-    {
-      icon: playStore,
-      store: "Google Play",
-      text: "Get it on",
-      color: "green",
-      link: "#"
-    },
-    {
       icon: <Globe className="w-6 h-6 text-primary" />,
       store: "Web App",
       text: "Install as",
@@ -76,7 +60,7 @@ const AppInstallSection: React.FC = () => {
     {
       icon: <Smartphone className="w-6 h-6 text-primary" />,
       title: "Native Apps",
-      description: "Optimized performance on iOS and Android devices",
+      description: "Optimized performance on your devices",
       color: "indigo"
     },
     {
@@ -174,7 +158,7 @@ const AppInstallSection: React.FC = () => {
 
             {/* App Stores */}
             <div className="app-stores mb-16" data-aos="fade-up" data-aos-delay="100">
-              <h3 className="text-2xl font-semibold text-foreground mb-8 text-center">Available on All Platforms</h3>
+              <h3 className="text-2xl font-semibold text-foreground mb-8 text-center">Available on Web</h3>
               <div className="store-buttons flex flex-wrap justify-center items-center gap-6">
                 {platforms.map((platform, index) => (
                   <a 
@@ -192,26 +176,14 @@ const AppInstallSection: React.FC = () => {
                         : 'border-primary/20 bg-background'
                       }
                     `}>
-                      {React.isValidElement(platform.icon) ? (
-                        <div className={`
-                          w-12 h-12 rounded-xl bg-primary/10
-                          flex items-center justify-center
-                          transform transition-all duration-500
-                          ${hoveredPlatform === index ? 'rotate-12 scale-110' : ''}
-                        `}>
-                          {platform.icon}
-                        </div>
-                      ) : (
-                        <img 
-                          src={platform.icon as string} 
-                          alt={platform.store}
-                          className={`
-                            w-12 h-12 object-contain
-                            transform transition-all duration-500
-                            ${hoveredPlatform === index ? 'scale-110' : ''}
-                          `}
-                        />
-                      )}
+                      <div className={`
+                        w-12 h-12 rounded-xl bg-primary/10
+                        flex items-center justify-center
+                        transform transition-all duration-500
+                        ${hoveredPlatform === index ? 'rotate-12 scale-110' : ''}
+                      `}>
+                        {platform.icon}
+                      </div>
                       <div className="text-left">
                         <div className="text-xs text-muted-foreground">{platform.text}</div>
                         <div className="text-lg font-semibold text-foreground">{platform.store}</div>

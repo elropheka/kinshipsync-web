@@ -127,19 +127,18 @@ const AboutSection: React.FC = () => {
                   onMouseLeave={() => setHoveredFeature(null)}
                 >
                   <div className={`
-                    absolute inset-0 bg-gradient-to-r from-[#DDFBF4] to-transparent
+                    absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent
                     rounded-xl opacity-0 transition-opacity duration-300
                     ${hoveredFeature === index ? 'opacity-50' : ''}
                   `}></div>
                   <div className="relative flex items-center gap-4 p-4 rounded-xl transform transition-all duration-300 hover:translate-x-2">
                     <div className={`
-                      flex-shrink-0 w-12 h-12 rounded-xl bg-[#DDFBF4]
-                      flex items-center justify-center
+                      flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10
+                      flex items-center justify-center text-primary
                       transform transition-all duration-500
                       ${hoveredFeature === index ? 'rotate-12 scale-110 shadow-lg' : ''}
                     `}>
                       <div className={`
-                        text-${feature.color}
                         transform transition-all duration-300
                         ${hoveredFeature === index ? 'scale-110' : ''}
                       `}>
@@ -147,9 +146,9 @@ const AboutSection: React.FC = () => {
                       </div>
                     </div>
                     <span className={`
-                      text-gray-700 font-medium
+                      text-foreground font-medium
                       transition-colors duration-300
-                      ${hoveredFeature === index ? 'text-[#2ECDB0]' : ''}
+                      ${hoveredFeature === index ? 'text-primary' : ''}
                     `}>{feature.text}</span>
                   </div>
                 </div>

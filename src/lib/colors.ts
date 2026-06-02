@@ -1,96 +1,122 @@
-// Color constants from the new teal and nude palette
-export const teal = '#008080';
-export const lightTeal = '#4DB6AC';
-export const baseNude = '#F5EBDD';
+/** Kinship Sync brand tokens — source: docs/branding.md */
+export const BrandTokens = {
+  cream: '#F5EFE8',
+  heritageGreen: '#5F6E3D',
+  heritageGreenHover: '#516036',
+  orange: '#E08433',
+  orangeHover: '#CC742B',
+  sand: '#D6C8AF',
+  rust: '#5D2413',
+  golden: '#ECAB47',
+  goldenHover: '#D9982C',
+  surface: '#FFFFFF',
+  textMuted: '#7A7A7A',
+} as const;
+
+export const cream = BrandTokens.cream;
+export const heritageGreen = BrandTokens.heritageGreen;
+export const orange = BrandTokens.orange;
+export const sand = BrandTokens.sand;
+export const rust = BrandTokens.rust;
+export const golden = BrandTokens.golden;
+
+/** @deprecated use heritageGreen */
+export const teal = heritageGreen;
+export const lightTeal = sand;
+export const baseNude = cream;
 export const lightNude = '#FBF6EF';
-export const brown = '#A47551';
-export const darkBrown = '#7B4E2D';
+export const brown = rust;
+export const darkBrown = '#3D1A0D';
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    textSecondary: '#687076',
-    textLight: '#FFFFFF',
-    textDarkContrast: '#076678',
-
-    background: baseNude,
-    backgroundPrimary: '#FFF8F0',
+    text: rust,
+    textSecondary: heritageGreen,
+    textMuted: BrandTokens.textMuted,
+    textLight: BrandTokens.surface,
+    textDarkContrast: heritageGreen,
+    background: cream,
+    backgroundPrimary: cream,
     backgroundSecondary: lightNude,
-    backgroundLight: '#FFFFFF',
-    backgroundPaper: '#FFFFFF',
+    backgroundLight: BrandTokens.surface,
+    backgroundPaper: BrandTokens.surface,
     neutralBg: '#FFF5EC',
-    buttonPrimary: teal,
-
-    primary: teal,
-    primaryContrastText: '#FFFFFF',
-    accent: brown,
-    accentContrastText: '#FFFFFF',
-    accentHighlight: '#E6C300',
-
-    tint: teal,
-    icon: '#687076',
-    tabIconDefault: '#A47551',
-    tabIconSelected: teal,
-    border: '#D1D5DB',
-    divider: '#E5E7EB',
-
+    buttonPrimary: orange,
+    primary: heritageGreen,
+    primaryContrastText: BrandTokens.surface,
+    accent: golden,
+    accentContrastText: rust,
+    accentHighlight: BrandTokens.goldenHover,
+    tint: heritageGreen,
+    icon: BrandTokens.textMuted,
+    tabIconDefault: sand,
+    tabIconSelected: heritageGreen,
+    border: sand,
+    divider: sand,
     success: '#4CAF50',
-    successContrastText: '#FFFFFF',
+    successContrastText: BrandTokens.surface,
     error: '#F44336',
     danger: '#D32F2F',
-    errorContrastText: '#FFFFFF',
-    warning: '#FFC107',
-    warningContrastText: '#11181C',
+    errorContrastText: BrandTokens.surface,
+    warning: golden,
+    warningContrastText: rust,
     info: '#2196F3',
-    infoContrastText: '#FFFFFF',
-
-    primaryLight: lightTeal,
+    infoContrastText: BrandTokens.surface,
+    primaryLight: sand,
     successLight: '#E8F5E9',
     warningLight: '#FFF8E1',
     infoLight: '#E3F2FD',
     errorLight: '#FFEBEE',
     dangerLight: '#FFCDD2',
-    secondary: brown,
-    secondaryLight: '#D8BFA6',
-    tertiary: '#FF6F00',
-    tertiaryLight: '#FFE0B2',
+    secondary: orange,
+    secondaryLight: '#F5D4B8',
+    tertiary: golden,
+    tertiaryLight: '#FFF3D6',
     grey: '#B0BEC5',
   },
   dark: {
     text: '#ECEDEE',
-    textSecondary: '#9BA1A6',
+    textSecondary: sand,
+    textMuted: '#9BA1A6',
     textLight: '#1E1E1E',
-    textDarkContrast: '#E0F2F7',
-
-    background: '#121212',
-    backgroundPrimary: '#1E1E1E',
-    backgroundSecondary: '#2E2E2E',
-    backgroundLight: '#1A1A1A',
-    backgroundPaper: '#1E1E1E',
+    textDarkContrast: cream,
+    background: '#1A1814',
+    backgroundPrimary: '#1E1C18',
+    backgroundSecondary: '#2A2620',
+    backgroundLight: '#252220',
+    backgroundPaper: '#2E2A24',
     neutralBg: '#2B2B2B',
-    buttonPrimary: darkBrown,
-
-    primary: '#0EA175',
-    primaryContrastText: '#FFFFFF',
-    accent: '#A47551',
-    accentContrastText: '#FFFFFF',
-    accentHighlight: '#FFD700',
-
-    tint: '#0EA175',
+    buttonPrimary: orange,
+    primary: '#7A8F52',
+    primaryContrastText: BrandTokens.surface,
+    accent: golden,
+    accentContrastText: rust,
+    accentHighlight: BrandTokens.goldenHover,
+    tint: '#7A8F52',
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
-    tabIconSelected: '#0EA175',
+    tabIconSelected: '#7A8F52',
     border: '#424242',
-    divider: '#2E2E2E',
-
+    divider: '#3D3830',
     success: '#66BB6A',
     successContrastText: '#121212',
     error: '#EF5350',
     danger: '#E57373',
     errorContrastText: '#121212',
-    warning: '#FFEE58',
+    warning: golden,
     warningContrastText: '#121212',
     info: '#42A5F5',
     infoContrastText: '#121212',
+    primaryLight: sand,
+    successLight: '#E8F5E9',
+    warningLight: '#FFF8E1',
+    infoLight: '#E3F2FD',
+    errorLight: '#FFEBEE',
+    dangerLight: '#FFCDD2',
+    secondary: orange,
+    secondaryLight: '#D8BFA6',
+    tertiary: golden,
+    tertiaryLight: '#FFE0B2',
+    grey: '#B0BEC5',
   },
-}; 
+};

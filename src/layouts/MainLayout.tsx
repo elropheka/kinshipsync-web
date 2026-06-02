@@ -66,7 +66,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const isContentBlurred = isNotificationDrawerOpen || isProfileDropdownOpen;
 
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex h-screen bg-background">
       <Sidebar isOpen={isSidebarOpen} />
       {/* Backdrop for mobile sidebar */}
       {isSidebarOpen && window.innerWidth < 1024 && (

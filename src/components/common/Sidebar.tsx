@@ -9,7 +9,8 @@ import {
   UserCog, Briefcase, FolderPlus, Palette, ChevronDown, ChevronRight, Trash2 
 } from 'lucide-react';
 import clsx from 'clsx';
-import Logo from '@/assets/logo_l.png'; // Assuming you have a logo SVG file
+import tealLogoOnly from '@/assets/branding/teal-logo-only.png';
+import tealTextLogo from '@/assets/branding/teal-text-logo.png';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -29,8 +30,8 @@ const SidebarNavLink: React.FC<{
       end={exact} // Use NavLink's 'end' prop for exact matching if needed
       className={({ isActive }) =>
         clsx(
-                  "flex items-center space-x-3 p-2 rounded-md hover:bg-muted",
-        isActive ? "bg-primary/10 text-primary font-semibold" : "text-foreground",
+                  "flex items-center space-x-3 p-2 rounded-md hover:bg-primary/5",
+        isActive ? "bg-primary/15 text-primary font-semibold border-l-2 border-primary" : "text-foreground",
           !isOpen && "justify-center",
           isOpen && isSubItem && "pl-8" 
         )
@@ -54,7 +55,7 @@ const SidebarDropdownTrigger: React.FC<{
     <button
       onClick={onClick}
       className={clsx(
-        "flex items-center w-full space-x-3 p-2 rounded-md hover:bg-muted text-foreground",
+        "flex items-center w-full space-x-3 p-2 rounded-md hover:bg-primary/5 text-foreground",
         !isOpen && "justify-center" // Center icon when sidebar is closed
       )}
       title={label}
@@ -98,7 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   return (
     <aside
       className={clsx(
-        "bg-background border-r border-border flex flex-col transition-all duration-300 ease-in-out fixed inset-y-0 left-0 z-40 md:static",
+        "bg-background border-r border-primary/15 flex flex-col transition-all duration-300 ease-in-out fixed inset-y-0 left-0 z-40 md:static",
         isOpen ? "w-64 p-4 space-y-6 translate-x-0" : "w-20 p-4 space-y-6 items-center -translate-x-full md:translate-x-0"
       )}
     >
@@ -106,7 +107,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
         <button className={clsx("flex flex-col items-center", isOpen ? "space-y-3" : "space-y-2")} onClick={
           () => navigate(homes[isAdmin ? 'admin' : isVendor ? 'vendor' : 'user'])
         }>
-         <img src={Logo}/>
+         <img
+           src={isOpen ? tealTextLogo : tealLogoOnly}
+           alt="KinshipSync"
+           className={isOpen ? 'h-10 w-auto object-contain' : 'h-9 w-9 object-contain'}
+         />
          
         </button>
       )}
@@ -115,7 +120,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
         <ul className="space-y-1">
           {isAdmin && (
             <>
-              {isOpen && <h3 className="px-2 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Admin Menu</h3>}
+              {isOpen && <h3 className="px-2 pt-3 pb-1 text-xs font-semibold text-primary uppercase tracking-wider">Admin Menu</h3>}
               <SidebarNavLink to="/dashboard/admin" icon={LayoutDashboard} label="Admin Dashboard" isOpen={isOpen} exact />
               <SidebarNavLink to="/dashboard/admin/users" icon={Users} label="Manage Users" isOpen={isOpen} />
               {/* Top-level "Manage Vendors" removed, now in dropdown below */}
@@ -160,7 +165,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
           {/* Vendor specific menu - only if isVendor AND NOT isAdmin */}
           {isVendor && !isAdmin && (
             <>
-              {isOpen && <h3 className="px-2 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">My Vendor Space</h3>}
+              {isOpen && <h3 className="px-2 pt-3 pb-1 text-xs font-semibold text-primary uppercase tracking-wider">My Vendor Space</h3>}
               <SidebarNavLink to="/dashboard/vendor/" icon={LayoutDashboard} label="My Dashboard" isOpen={isOpen} exact />
               <SidebarNavLink to="/dashboard/vendor/items" icon={ListChecks} label="My Items/Services" isOpen={isOpen} />
               <SidebarNavLink to="/dashboard/vendor/profile" icon={UserCog} label="My Profile" isOpen={isOpen} />
@@ -169,7 +174,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
           
           {!isAdmin && !isVendor && currentUser && (
             <>
-              {isOpen && <h3 className="px-2 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">User Menu</h3>}
+              {isOpen && <h3 className="px-2 pt-3 pb-1 text-xs font-semibold text-primary uppercase tracking-wider">User Menu</h3>}
               <SidebarNavLink to="/dashboard/user" icon={CalendarClock} label="My Events" isOpen={isOpen} />
               <SidebarNavLink to="/dashboard/user/profile" icon={UserCog} label="My Profile" isOpen={isOpen} />
               <SidebarNavLink to="/dashboard/user/delete-my-account" icon={Trash2} label="Delete Account" isOpen={isOpen} />
