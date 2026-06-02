@@ -53,13 +53,12 @@ const VendorDashboard: React.FC = () => {
   const isLoading = isLoadingProfile || isLoadingItems;
   const totalItemsCount = isLoadingItems ? "..." : itemsError ? "Error" : vendorItems.length;
 
+  useErrorToast(profileError, { title: 'Unable to load profile' });
+  useErrorToast(itemsError, { title: 'Unable to load items' });
+
   if (isLoading && !profile && !vendorItems.length) { // Show general loading if primary data isn't there yet
     return <div className="p-4 text-center">Loading dashboard data...</div>;
   }
-
-  // Handle individual errors if needed, or a general error display
-  useErrorToast(profileError, { title: 'Unable to load profile' });
-  useErrorToast(itemsError, { title: 'Unable to load items' });
 
   if (profileError) {
     return (

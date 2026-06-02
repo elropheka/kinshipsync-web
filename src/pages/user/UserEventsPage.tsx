@@ -227,9 +227,9 @@ const UserEventsPage: React.FC = () => {
     };
   }, [searchTerm, initialGroupedEvents]);
 
-  if (isLoadingUserEvents) return <div className="flex justify-center items-center h-full"><p>Loading events...</p></div>;
-
   useErrorToast(userEventsError, { title: 'Unable to load events' });
+
+  if (isLoadingUserEvents) return <div className="flex justify-center items-center h-full"><p>Loading events...</p></div>;
 
   if (userEventsError) {
     return (

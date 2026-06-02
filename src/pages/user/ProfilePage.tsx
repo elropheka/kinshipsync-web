@@ -104,6 +104,10 @@ const ProfilePage: React.FC = () => {
     }
   };
 
+  useErrorToast(profileError && !userProfile ? profileError : null, {
+    title: 'Unable to load profile',
+  });
+
   if (isLoadingProfile && !initialLoadComplete) {
     return (
       <div className="container mx-auto p-4 text-center bg-background">
@@ -111,10 +115,6 @@ const ProfilePage: React.FC = () => {
       </div>
     );
   }
-
-  useErrorToast(profileError && !userProfile ? profileError : null, {
-    title: 'Unable to load profile',
-  });
 
   if (profileError && !userProfile) {
     return (

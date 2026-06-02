@@ -90,6 +90,8 @@ const EventsDashboardPage: React.FC = () => {
   const isLoading = isLoadingEventsData || isLoadingThemes;
   const error = eventsError || themesError;
 
+  useErrorToast(error, { title: 'Unable to load events' });
+
   const welcomeName =
     userProfile?.displayName ||
     [userProfile?.firstName, userProfile?.lastName].filter(Boolean).join(' ') ||
@@ -179,8 +181,6 @@ const EventsDashboardPage: React.FC = () => {
       </div>
     );
   }
-
-  useErrorToast(error, { title: 'Unable to load events' });
 
   if (error) {
     return (
