@@ -10,9 +10,9 @@ const FAQSection: React.FC = () => {
   };
 
   return (
-    <section id="faq" className="py-16 md:py-24 bg-white">
+    <section id="faq" className="py-16 md:py-24 bg-card">
       <div className="max-w-container mx-auto px-4 md:px-8">
-        <h2 className="font-display italic text-3xl md:text-4xl lg:text-[2.75rem] text-[#5D2413] text-center mb-12 md:mb-16">
+        <h2 className="font-display italic text-3xl md:text-4xl lg:text-[2.75rem] text-foreground text-center mb-12 md:mb-16">
           {landingFaqs.headline}
         </h2>
 
@@ -23,18 +23,18 @@ const FAQSection: React.FC = () => {
             return (
               <div
                 key={faq.id}
-                className="bg-[#F5EFE8] rounded-2xl overflow-hidden border border-[#D6C8AF]/30"
+                className="bg-background rounded-2xl overflow-hidden border border-border/30"
               >
                 <button
                   type="button"
                   onClick={() => toggle(faq.id)}
                   className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
                 >
-                  <span className="font-semibold text-[#5D2413] text-sm md:text-base">
+                  <span className="font-semibold text-foreground text-sm md:text-base">
                     {faq.question}
                   </span>
                   <FiChevronDown
-                    className={`w-5 h-5 text-[#5D2413] flex-shrink-0 transition-transform duration-300 ${
+                    className={`w-5 h-5 text-foreground flex-shrink-0 transition-transform duration-300 ${
                       isOpen ? 'rotate-180' : ''
                     }`}
                   />
@@ -55,7 +55,7 @@ const FAQSection: React.FC = () => {
         </div>
 
         <div className="max-w-3xl mx-auto bg-[#FAF3EB] rounded-3xl p-8 md:p-10 text-center">
-          <p className="text-[#5D2413]/80 text-base md:text-lg mb-6">
+          <p className="text-foreground/80 text-base md:text-lg mb-6">
             {landingFaqs.supportCta.text}
           </p>
           <a

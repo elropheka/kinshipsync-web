@@ -71,7 +71,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const isContentBlurred = isNotificationDrawerOpen || isProfileDropdownOpen;
 
   return (
-    <div className="flex h-screen bg-[#F5EFE8]">
+    <div className="flex h-screen bg-background">
       <Sidebar isOpen={isSidebarOpen} hideWhenClosed={isRegularUser} />
       {/* Backdrop for mobile sidebar */}
       {isSidebarOpen && window.innerWidth < 1024 && (
@@ -94,7 +94,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           onProfileDropdownToggle={setIsProfileDropdownOpen}
           unreadCount={unreadCount}
         />
-        <main className={clsx('flex-1 p-4 md:p-6 overflow-y-auto bg-[#F5EFE8]', isContentBlurred && 'pointer-events-none')}>
+        <main className={clsx('flex-1 p-4 md:p-6 overflow-y-auto bg-background', isContentBlurred && 'pointer-events-none')}>
           {children || <Outlet />}
         </main>
       </div>

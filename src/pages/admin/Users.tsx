@@ -95,7 +95,7 @@ const AdminUsersPage: React.FC = () => {
     <div className="max-w-5xl mx-auto pb-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl text-[#5D2413] mb-1">User Management</h1>
+          <h1 className="font-display text-3xl text-foreground mb-1">User Management</h1>
           <p className="text-muted-foreground text-sm">{users.length} total users</p>
         </div>
         <Button className="rounded-full bg-secondary hover:bg-secondary/90 text-white gap-2 self-start">
@@ -123,7 +123,7 @@ const AdminUsersPage: React.FC = () => {
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 roleFilter === btn.key
                   ? 'bg-primary text-white'
-                  : 'bg-white text-[#5D2413] border border-[#D6C8AF]/50'
+                  : 'bg-card text-foreground border border-border/50'
               }`}
             >
               {btn.label}

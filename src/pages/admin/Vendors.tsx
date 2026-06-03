@@ -134,7 +134,7 @@ const AdminVendorsPage: React.FC = () => {
     <div className="max-w-5xl mx-auto pb-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl text-[#5D2413] mb-1">Vendor Management</h1>
+          <h1 className="font-display text-3xl text-foreground mb-1">Vendor Management</h1>
           <p className="text-muted-foreground text-sm">{vendors.length} registered vendors</p>
         </div>
         <Button asChild className="rounded-full bg-secondary hover:bg-secondary/90 text-white gap-2 self-start">

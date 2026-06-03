@@ -252,7 +252,7 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto pb-10 space-y-6">
       <div>
-        <h1 className="font-display text-3xl text-[#5D2413] mb-1">Profile & Settings</h1>
+        <h1 className="font-display text-3xl text-foreground mb-1">Profile & Settings</h1>
         <p className="text-muted-foreground text-sm">Manage your account and preferences</p>
       </div>
 
@@ -298,7 +298,7 @@ const ProfilePage: React.FC = () => {
             <FiCamera className="w-3.5 h-3.5" />
           </div>
         </div>
-        <h2 className="font-bold text-[#5D2413] text-lg">{displayLabel}</h2>
+        <h2 className="font-bold text-foreground text-lg">{displayLabel}</h2>
         <p className="text-muted-foreground text-sm">{userProfile?.email || currentUser?.email}</p>
 
         <div className="mt-6 space-y-2 text-left">
@@ -309,10 +309,10 @@ const ProfilePage: React.FC = () => {
           ].map((row) => (
             <div
               key={row.label}
-              className="flex items-center justify-between px-4 py-3 rounded-xl bg-[#F5EFE8]/60"
+              className="flex items-center justify-between px-4 py-3 rounded-xl bg-muted/60"
             >
               <span className="text-sm text-muted-foreground">{row.label}</span>
-              <span className="font-semibold text-[#5D2413]">{row.value}</span>
+              <span className="font-semibold text-foreground">{row.value}</span>
             </div>
           ))}
         </div>
@@ -331,7 +331,7 @@ const ProfilePage: React.FC = () => {
                   name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[#5D2413]">First Name</FormLabel>
+                      <FormLabel className="text-foreground">First Name</FormLabel>
                       <FormControl>
                         <Input className={dashboardInputClass} {...field} />
                       </FormControl>
@@ -344,7 +344,7 @@ const ProfilePage: React.FC = () => {
                   name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[#5D2413]">Last Name</FormLabel>
+                      <FormLabel className="text-foreground">Last Name</FormLabel>
                       <FormControl>
                         <Input className={dashboardInputClass} {...field} />
                       </FormControl>
@@ -358,7 +358,7 @@ const ProfilePage: React.FC = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#5D2413]">Email Address</FormLabel>
+                    <FormLabel className="text-foreground">Email Address</FormLabel>
                     <FormControl>
                       <Input type="email" className={dashboardInputClass} {...field} disabled />
                     </FormControl>
@@ -370,7 +370,7 @@ const ProfilePage: React.FC = () => {
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#5D2413]">Phone Number</FormLabel>
+                    <FormLabel className="text-foreground">Phone Number</FormLabel>
                     <FormControl>
                       <Input className={dashboardInputClass} placeholder="+1 (555) 123-4567" {...field} />
                     </FormControl>
@@ -382,7 +382,7 @@ const ProfilePage: React.FC = () => {
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#5D2413]">Location</FormLabel>
+                    <FormLabel className="text-foreground">Location</FormLabel>
                     <FormControl>
                       <Input className={dashboardInputClass} placeholder="City, State" {...field} />
                     </FormControl>
@@ -412,7 +412,7 @@ const ProfilePage: React.FC = () => {
               {emailNotificationOptions.map((setting) => (
                 <div key={setting.key} className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="font-medium text-[#5D2413] text-sm">{setting.title}</p>
+                    <p className="font-medium text-foreground text-sm">{setting.title}</p>
                     <p className="text-xs text-muted-foreground">{setting.description}</p>
                   </div>
                   <ThemeSwitch
@@ -434,7 +434,7 @@ const ProfilePage: React.FC = () => {
               {pushNotificationOptions.map((setting) => (
                 <div key={setting.key} className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="font-medium text-[#5D2413] text-sm">{setting.title}</p>
+                    <p className="font-medium text-foreground text-sm">{setting.title}</p>
                     <p className="text-xs text-muted-foreground">{setting.description}</p>
                   </div>
                   <ThemeSwitch
@@ -452,10 +452,10 @@ const ProfilePage: React.FC = () => {
             <h2 className={`${dashboardSectionTitleClass} flex items-center gap-2 mb-4`}>
               <FiShield className="w-5 h-5" /> Privacy & Security
             </h2>
-            <div className="divide-y divide-[#D6C8AF]/30">
+            <div className="divide-y divide-border/30">
               <Link
                 to="/auth/forgot-password"
-                className="flex items-center justify-between py-4 text-[#5D2413] hover:text-secondary transition-colors"
+                className="flex items-center justify-between py-4 text-foreground hover:text-secondary transition-colors"
               >
                 <span className="flex items-center gap-3 text-sm font-medium">
                   <FiShield className="w-4 h-4" />
@@ -465,7 +465,7 @@ const ProfilePage: React.FC = () => {
               </Link>
               <Link
                 to="/dashboard/settings"
-                className="flex items-center justify-between py-4 text-[#5D2413] hover:text-secondary transition-colors"
+                className="flex items-center justify-between py-4 text-foreground hover:text-secondary transition-colors"
               >
                 <span className="flex items-center gap-3 text-sm font-medium">
                   <FiMoon className="w-4 h-4" />
@@ -475,7 +475,7 @@ const ProfilePage: React.FC = () => {
               </Link>
               <Link
                 to="/dashboard/user/delete-my-account"
-                className="flex items-center justify-between py-4 text-[#5D2413] hover:text-secondary transition-colors"
+                className="flex items-center justify-between py-4 text-foreground hover:text-secondary transition-colors"
               >
                 <span className="flex items-center gap-3 text-sm font-medium">
                   <FiUser className="w-4 h-4" />
@@ -495,7 +495,7 @@ const ProfilePage: React.FC = () => {
               name="language"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[#5D2413]">Language</FormLabel>
+                  <FormLabel className="text-foreground">Language</FormLabel>
                   <FormControl>
                     <Input className={dashboardInputClass} placeholder="en" {...field} />
                   </FormControl>

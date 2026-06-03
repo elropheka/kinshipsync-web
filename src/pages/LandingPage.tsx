@@ -46,7 +46,7 @@ const LandingPage: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#F5EFE8]">
+    <div className="relative min-h-screen bg-background">
       <Header />
 
       <main id="main">

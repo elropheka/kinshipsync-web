@@ -7,12 +7,12 @@ interface DashboardCardProps {
 }
 
 export const DashboardCard: React.FC<DashboardCardProps> = ({ children, className }) => (
-  <div className={cn('bg-white rounded-2xl shadow-sm border border-[#D6C8AF]/25', className)}>
+  <div className={cn('bg-card rounded-2xl shadow-sm border border-border/40', className)}>
     {children}
   </div>
 );
 
 export const dashboardInputClass =
-  'rounded-xl border-[#D6C8AF]/50 bg-white focus-visible:ring-secondary/30';
+  'rounded-xl border-border bg-card text-foreground focus-visible:ring-secondary/30';
 
-export const dashboardSectionTitleClass = 'font-display text-xl text-[#5D2413]';
+export const dashboardSectionTitleClass = 'font-display text-xl text-foreground';

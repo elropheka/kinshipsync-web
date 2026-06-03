@@ -184,13 +184,13 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>((props, ref) => {
   };
 
   return (
-    <header className="h-[72px] flex items-center px-4 sm:px-6 bg-[#F5EFE8] border-b border-[#D6C8AF]/50 sticky top-0 z-10">
+    <header className="h-[72px] flex items-center px-4 sm:px-6 bg-background border-b border-border/50 sticky top-0 z-10">
       {/* Left: menu + logo */}
       <div className="flex items-center gap-3 min-w-0 flex-shrink-0">
         <button
           type="button"
           onClick={onToggleSidebar}
-          className="w-10 h-10 flex items-center justify-center rounded-lg text-[#5D2413] hover:bg-[#D6C8AF]/30 transition-colors"
+          className="w-10 h-10 flex items-center justify-center rounded-lg text-foreground hover:bg-muted transition-colors"
           aria-label="Toggle menu"
         >
           <FiMenu className="w-6 h-6" />
@@ -211,13 +211,13 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>((props, ref) => {
             <Input
               type="search"
               placeholder="Search users, events, vendors..."
-              className="w-full pl-11 pr-4 py-2.5 rounded-full border-[#D6C8AF]/60 bg-white text-sm focus-visible:ring-secondary/30"
+              className="w-full pl-11 pr-4 py-2.5 rounded-full border-border bg-card text-sm focus-visible:ring-secondary/30"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsResultsVisible(true)}
             />
             {isResultsVisible && searchQuery && (
-              <div className="absolute mt-2 w-full max-h-80 overflow-y-auto bg-white border border-[#D6C8AF]/40 rounded-xl shadow-lg z-20">
+              <div className="absolute mt-2 w-full max-h-80 overflow-y-auto bg-popover border border-border/40 rounded-xl shadow-lg z-20">
                 {isSearchLoading && (
                   <div className="p-3 text-sm text-muted-foreground">Searching...</div>
                 )}
@@ -231,7 +231,7 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>((props, ref) => {
                     <Link
                       to={item.path}
                       key={item.id + item.type}
-                      className="block px-4 py-2.5 text-sm text-[#5D2413] hover:bg-[#F5EFE8] transition-colors"
+                      className="block px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
                       onClick={() => {
                         setIsResultsVisible(false);
                         setSearchQuery('');
@@ -259,7 +259,7 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>((props, ref) => {
         {isUserAppRoute && (
           <Button
             asChild
-            className="rounded-full bg-[#E08433] hover:bg-[#CC742B] text-white h-10 px-4 sm:px-5 text-sm font-semibold shadow-sm border-0"
+            className="rounded-full bg-secondary hover:bg-secondary/90 text-secondary-foreground h-10 px-4 sm:px-5 text-sm font-semibold shadow-sm border-0"
           >
             <Link to="/dashboard/user/events/create">
               <FiPlus className="w-4 h-4 mr-1.5" />
@@ -273,18 +273,43 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>((props, ref) => {
           type="button"
           title="Notifications"
           onClick={onToggleNotificationDrawer}
-          className="relative w-10 h-10 flex items-center justify-center rounded-lg text-[#5D2413] hover:bg-[#D6C8AF]/30 transition-colors"
+          className="relative w-10 h-10 flex items-center justify-center rounded-lg text-foreground hover:bg-muted transition-colors"
         >
           <FiBell className="w-5 h-5" />
           {props.unreadCount && props.unreadCount > 0 ? (
-            <span className="absolute top-1.5 right-1.5 block h-2.5 w-2.5 rounded-full bg-secondary ring-2 ring-[#F5EFE8]" />
+            <span className="absolute top-1.5 right-1.5 block h-2.5 w-2.5 rounded-full bg-secondary ring-2 ring-background" />
           ) : null}
         </button>
+
+        <button
+          type="button"
+          title={themeMode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+          onClick={toggleTheme}
+          className="w-10 h-10 flex items-center justify-center rounded-lg text-foreground hover:bg-muted transition-colors"
+        >
+          {themeMode === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+        </button>
+
+        {isUserAppRoute && currentUser && (
+          <Button
+            variant="ghost"
+            className="hidden sm:flex items-center gap-1 p-1 rounded-full h-auto hover:bg-muted"
+            onClick={() => navigate('/dashboard/user/profile')}
+          >
+            <Avatar className="h-8 w-8">
+              <AvatarImage
+                src={(userProfile?.avatarUrl || currentUser?.photoURL) ?? undefined}
+                alt={currentUser.displayName || 'User'}
+              />
+              <AvatarFallback>{getAvatarFallback(currentUser.displayName)}</AvatarFallback>
+            </Avatar>
+          </Button>
+        )}
 
         {!isUserAppRoute && currentUser && (
           <DropdownMenu onOpenChange={onProfileDropdownToggle}>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-1 p-1 rounded-full h-auto hover:bg-[#D6C8AF]/30">
+              <Button variant="ghost" className="flex items-center gap-1 p-1 rounded-full h-auto hover:bg-muted">
                 <Avatar className="h-8 w-8">
                   <AvatarImage
                     src={(userProfile?.avatarUrl || currentUser?.photoURL) ?? undefined}
@@ -292,7 +317,7 @@ const Navbar = forwardRef<HTMLButtonElement, NavbarProps>((props, ref) => {
                   />
                   <AvatarFallback>{getAvatarFallback(currentUser.displayName)}</AvatarFallback>
                 </Avatar>
-                <ChevronDown className="h-4 w-4 text-[#5D2413]/70" />
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end">

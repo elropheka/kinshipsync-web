@@ -3,7 +3,7 @@ import { landingTestimonialHero } from '@/constants/mock/landingPage';
 
 const TestimonialHeroSection: React.FC = () => {
   return (
-    <section className="py-8 md:py-12 bg-[#F5EFE8]">
+    <section className="py-8 md:py-12 bg-background">
       <div className="max-w-container mx-auto px-4 md:px-8">
         <div className="relative rounded-3xl overflow-hidden shadow-lg min-h-[320px] md:min-h-[400px]">
           <img

@@ -69,14 +69,14 @@ const CreateEventPage: React.FC = () => {
     <div className="max-w-2xl mx-auto pb-10">
       <Link
         to="/dashboard/user"
-        className="inline-flex items-center gap-2 text-sm text-[#5D2413]/70 hover:text-[#5D2413] mb-6"
+        className="inline-flex items-center gap-2 text-sm text-foreground/70 hover:text-foreground mb-6"
       >
         <FiArrowLeft className="w-4 h-4" />
         Back to Dashboard
       </Link>
 
       <div className="mb-8">
-        <h1 className="font-display text-3xl md:text-4xl text-[#5D2413] mb-2">Create New Event</h1>
+        <h1 className="font-display text-3xl md:text-4xl text-foreground mb-2">Create New Event</h1>
         <p className="text-muted-foreground">Start planning your next memorable gathering</p>
       </div>
 
@@ -93,7 +93,7 @@ const CreateEventPage: React.FC = () => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[#5D2413] font-semibold">
+                  <FormLabel className="text-foreground font-semibold">
                     Event Name <span className="text-secondary">*</span>
                   </FormLabel>
                   <FormControl>
@@ -114,7 +114,7 @@ const CreateEventPage: React.FC = () => {
                 name="date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#5D2413] font-semibold">
+                    <FormLabel className="text-foreground font-semibold">
                       Event Date <span className="text-secondary">*</span>
                     </FormLabel>
                     <FormControl>
@@ -132,7 +132,7 @@ const CreateEventPage: React.FC = () => {
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#5D2413] font-semibold">
+                    <FormLabel className="text-foreground font-semibold">
                       Location <span className="text-secondary">*</span>
                     </FormLabel>
                     <FormControl>
@@ -157,7 +157,7 @@ const CreateEventPage: React.FC = () => {
                 name="expectedGuests"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#5D2413] font-semibold">Expected Guests</FormLabel>
+                    <FormLabel className="text-foreground font-semibold">Expected Guests</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <FiUsers className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -172,7 +172,7 @@ const CreateEventPage: React.FC = () => {
                 name="budget"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#5D2413] font-semibold">Budget</FormLabel>
+                    <FormLabel className="text-foreground font-semibold">Budget</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <FiDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -189,7 +189,7 @@ const CreateEventPage: React.FC = () => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[#5D2413] font-semibold">Event Description</FormLabel>
+                  <FormLabel className="text-foreground font-semibold">Event Description</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Tell us about your event..."
@@ -213,7 +213,7 @@ const CreateEventPage: React.FC = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1 rounded-xl border-[#D6C8AF] h-12"
+                className="flex-1 rounded-xl border-border h-12"
                 onClick={() => navigate('/dashboard/user')}
               >
                 Cancel
@@ -223,11 +223,11 @@ const CreateEventPage: React.FC = () => {
         </Form>
       </DashboardCard>
 
-      <DashboardCard className="p-6 bg-[#FAF3EB] border-[#D6C8AF]/40">
-        <h2 className="font-display text-lg text-[#5D2413] mb-4">Planning Tips</h2>
+      <DashboardCard className="p-6 bg-muted border-border/40">
+        <h2 className="font-display text-lg text-foreground mb-4">Planning Tips</h2>
         <ul className="space-y-2">
           {planningTips.map((tip) => (
-            <li key={tip} className="text-sm text-[#5D2413]/80 flex gap-2">
+            <li key={tip} className="text-sm text-foreground/80 flex gap-2">
               <span className="text-secondary">•</span>
               {tip}
             </li>

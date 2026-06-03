@@ -134,7 +134,7 @@ const EventsDashboardPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-8">
       <div>
-        <h1 className="font-display text-3xl md:text-4xl text-[#5D2413] mb-2">
+        <h1 className="font-display text-3xl md:text-4xl text-foreground mb-2">
           Welcome back, {greetingName} 👋
         </h1>
         <p className="text-muted-foreground">
@@ -150,7 +150,7 @@ const EventsDashboardPage: React.FC = () => {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-                <p className="font-display text-3xl text-[#5D2413] font-bold">{stat.value}</p>
+                <p className="font-display text-3xl text-foreground font-bold">{stat.value}</p>
               </div>
               <div className={`w-10 h-10 rounded-xl ${stat.iconBg} flex items-center justify-center`}>
                 <stat.icon className={`w-5 h-5 ${stat.iconColor}`} />
@@ -178,7 +178,7 @@ const EventsDashboardPage: React.FC = () => {
             <p className="text-muted-foreground text-sm mb-4">No upcoming events yet.</p>
             <Link
               to="/dashboard/user/events/create"
-              className="inline-flex items-center gap-2 rounded-full bg-[#E08433] hover:bg-[#CC742B] text-white text-sm font-semibold px-5 py-2.5 transition-colors"
+              className="inline-flex items-center gap-2 rounded-full bg-secondary hover:bg-secondary/90 text-white text-sm font-semibold px-5 py-2.5 transition-colors"
             >
               Create your first event
             </Link>
@@ -192,12 +192,12 @@ const EventsDashboardPage: React.FC = () => {
                 <Link key={event.id} to={`/dashboard/events/${event.id}`}>
                   <DashboardCard className="p-5 hover:shadow-md transition-shadow">
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-[#F5EFE8] flex items-center justify-center flex-shrink-0">
+                      <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
                         <FiCalendar className="w-5 h-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <h3 className="font-display text-lg text-[#5D2413] font-semibold">
+                          <h3 className="font-display text-lg text-foreground font-semibold">
                             {event.name}
                           </h3>
                           <FiArrowRight className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-1" />
@@ -212,7 +212,7 @@ const EventsDashboardPage: React.FC = () => {
                             <span className="col-span-2">{event.location}</span>
                           )}
                           {confirmed > 0 && (
-                            <span className="col-span-2 text-[#5D2413]/80">
+                            <span className="col-span-2 text-foreground/80">
                               {confirmed} confirmed
                             </span>
                           )}
@@ -242,7 +242,7 @@ const EventsDashboardPage: React.FC = () => {
                     {item.title.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm text-[#5D2413]">
+                    <p className="text-sm text-foreground">
                       <span className="font-bold">{item.title}</span>
                       {item.body ? ` — ${item.body}` : ''}
                     </p>

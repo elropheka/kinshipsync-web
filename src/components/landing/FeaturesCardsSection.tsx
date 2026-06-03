@@ -16,10 +16,10 @@ const featureColorMap = {
 
 const FeaturesCardsSection: React.FC = () => {
   return (
-    <section id="features" className="py-16 md:py-24 bg-white">
+    <section id="features" className="py-16 md:py-24 bg-card">
       <div className="max-w-container mx-auto px-4 md:px-8">
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-display italic text-3xl md:text-4xl lg:text-[2.75rem] text-[#5D2413] mb-4">
+          <h2 className="font-display italic text-3xl md:text-4xl lg:text-[2.75rem] text-foreground mb-4">
             {landingFeatures.headline}
           </h2>
           <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
@@ -40,7 +40,7 @@ const FeaturesCardsSection: React.FC = () => {
                   <Icon className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-[#5D2413] text-lg mb-2">{feature.title}</h3>
+                  <h3 className="font-bold text-foreground text-lg mb-2">{feature.title}</h3>
                   <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
                     {feature.description}
                   </p>

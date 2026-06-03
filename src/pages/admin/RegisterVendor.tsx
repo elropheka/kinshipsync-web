@@ -249,11 +249,11 @@ const AdminRegisterVendorPage: React.FC = () => {
   return (
     <div className="container mx-auto py-4 sm:py-6 md:py-10 bg-background max-w-2xl">
       <div className="mb-8">
-        <h1 className="font-display text-3xl text-[#5D2413] mb-1">Register New Vendor</h1>
+        <h1 className="font-display text-3xl text-foreground mb-1">Register New Vendor</h1>
         <p className="text-muted-foreground text-sm">Add a new vendor to the platform</p>
       </div>
 
-      <div className="rounded-2xl border border-[#D6C8AF]/30 bg-white p-4 sm:p-6 md:p-8 shadow-sm">
+      <div className="rounded-2xl border border-border/30 bg-card p-4 sm:p-6 md:p-8 shadow-sm">
         {/* Debug Button */}
         {/* <Button 
           type="button" 

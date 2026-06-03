@@ -148,7 +148,7 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-8">
       <div>
-        <h1 className="font-display text-3xl text-[#5D2413] mb-1">Admin Dashboard</h1>
+        <h1 className="font-display text-3xl text-foreground mb-1">Admin Dashboard</h1>
         <p className="text-muted-foreground text-sm">Overview of platform activity and metrics</p>
       </div>
 
@@ -161,7 +161,7 @@ const AdminDashboard: React.FC = () => {
               </div>
             </div>
             <p className="text-sm text-muted-foreground">{metric.label}</p>
-            <p className="font-display text-2xl text-[#5D2413] font-bold">{metric.value}</p>
+            <p className="font-display text-2xl text-foreground font-bold">{metric.value}</p>
           </DashboardCard>
         ))}
       </div>
@@ -181,13 +181,13 @@ const AdminDashboard: React.FC = () => {
                         ? 'bg-primary/20 text-primary'
                         : item.color === 'orange'
                           ? 'bg-secondary/20 text-secondary'
-                          : 'bg-[#5D2413]/10 text-[#5D2413]'
+                          : 'bg-foreground/10 text-foreground'
                     }`}
                   >
                     {item.initial}
                   </div>
                   <div>
-                    <p className="text-sm text-[#5D2413]">{item.text}</p>
+                    <p className="text-sm text-foreground">{item.text}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">{item.timeAgo}</p>
                   </div>
                 </li>
@@ -199,11 +199,11 @@ const AdminDashboard: React.FC = () => {
 
       <section>
         <h2 className={`${dashboardSectionTitleClass} mb-4`}>Top Events</h2>
-        <DashboardCard className="divide-y divide-[#D6C8AF]/30">
+        <DashboardCard className="divide-y divide-border/30">
           {topEvents.map((event) => (
             <div key={event.id} className="flex items-center justify-between p-5 gap-4">
               <div>
-                <p className="font-semibold text-[#5D2413]">{event.name}</p>
+                <p className="font-semibold text-foreground">{event.name}</p>
                 <p className="text-xs text-muted-foreground">
                   {event.totalAttendees ?? 0} attendees •{' '}
                   {event.date
@@ -232,15 +232,15 @@ const AdminDashboard: React.FC = () => {
 
       <section>
         <h2 className={`${dashboardSectionTitleClass} mb-4`}>Quick Actions</h2>
-        <DashboardCard className="divide-y divide-[#D6C8AF]/30">
+        <DashboardCard className="divide-y divide-border/30">
           {adminQuickActions.map((action) => (
             <Link
               key={action.id}
               to={action.href}
-              className="flex items-center justify-between p-5 hover:bg-[#F5EFE8]/50 transition-colors"
+              className="flex items-center justify-between p-5 hover:bg-muted/50 transition-colors"
             >
               <div>
-                <p className="font-medium text-[#5D2413]">{action.title}</p>
+                <p className="font-medium text-foreground">{action.title}</p>
                 <p className="text-xs text-muted-foreground">{action.description}</p>
               </div>
               <FiChevronRight className="w-5 h-5 text-muted-foreground" />

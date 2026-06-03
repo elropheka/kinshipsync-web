@@ -33,8 +33,8 @@ const SidebarNavLink: React.FC<{
       end={exact} // Use NavLink's 'end' prop for exact matching if needed
       className={({ isActive }) =>
         clsx(
-                  "flex items-center space-x-3 p-2 rounded-xl hover:bg-[#D6C8AF]/30 transition-colors",
-        isActive ? "bg-white text-[#5D2413] font-semibold shadow-sm" : "text-[#5D2413]/80",
+                  "flex items-center space-x-3 p-2 rounded-xl hover:bg-muted transition-colors",
+        isActive ? "bg-card text-foreground font-semibold shadow-sm" : "text-muted-foreground",
           !isOpen && "justify-center",
           isOpen && isSubItem && "pl-8" 
         )
@@ -58,7 +58,7 @@ const SidebarDropdownTrigger: React.FC<{
     <button
       onClick={onClick}
       className={clsx(
-        "flex items-center w-full space-x-3 p-2 rounded-xl hover:bg-[#D6C8AF]/30 text-[#5D2413]/80 transition-colors",
+        "flex items-center w-full space-x-3 p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors",
         !isOpen && "justify-center" // Center icon when sidebar is closed
       )}
       title={label}
@@ -102,7 +102,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, hideWhenClosed = false }) => 
   return (
     <aside
       className={clsx(
-        "bg-[#F5EFE8] border-r border-[#D6C8AF]/50 flex flex-col transition-all duration-300 ease-in-out fixed inset-y-0 left-0 z-40 md:static",
+        "bg-background border-r border-border/50 flex flex-col transition-all duration-300 ease-in-out fixed inset-y-0 left-0 z-40 md:static",
         isOpen
           ? "w-64 p-4 space-y-6 translate-x-0"
           : hideWhenClosed
@@ -187,7 +187,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, hideWhenClosed = false }) => 
           
           {!isAdmin && !isVendor && currentUser && (
             <>
-              {isOpen && <h3 className="px-2 pt-3 pb-1 text-xs font-semibold text-[#5D2413]/60 uppercase tracking-wider">User Menu</h3>}
+              {isOpen && <h3 className="px-2 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">User Menu</h3>}
               <SidebarNavLink to="/dashboard/user" icon={LayoutDashboard} label="Dashboard" isOpen={isOpen} exact />
               <SidebarNavLink to="/dashboard/user/events" icon={CalendarClock} label="All Events" isOpen={isOpen} />
               <SidebarNavLink to="/dashboard/user/profile" icon={UserCog} label="Profile & Settings" isOpen={isOpen} />

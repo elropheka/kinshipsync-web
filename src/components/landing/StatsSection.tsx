@@ -10,9 +10,9 @@ const statIconMap = {
 
 const statColorMap = {
   rust: {
-    iconBg: 'bg-[#5D2413]/10',
-    icon: 'text-[#5D2413]',
-    value: 'text-[#5D2413]',
+    iconBg: 'bg-foreground/10',
+    icon: 'text-foreground',
+    value: 'text-foreground',
   },
   orange: {
     iconBg: 'bg-secondary/15',
@@ -28,10 +28,10 @@ const statColorMap = {
 
 const StatsSection: React.FC = () => {
   return (
-    <section id="stats" className="py-16 md:py-24 bg-[#F5EFE8]">
+    <section id="stats" className="py-16 md:py-24 bg-background">
       <div className="max-w-container mx-auto px-4 md:px-8">
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-display italic text-3xl md:text-4xl lg:text-[2.75rem] text-[#5D2413] mb-4">
+          <h2 className="font-display italic text-3xl md:text-4xl lg:text-[2.75rem] text-foreground mb-4">
             {landingStats.headline}
           </h2>
           <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
@@ -47,7 +47,7 @@ const StatsSection: React.FC = () => {
             return (
               <div
                 key={stat.id}
-                className="bg-white rounded-2xl p-8 text-center shadow-sm border border-[#D6C8AF]/30"
+                className="bg-card rounded-2xl p-8 text-center shadow-sm border border-border/30"
               >
                 <div
                   className={`w-12 h-12 rounded-xl ${colors.iconBg} flex items-center justify-center mx-auto mb-5`}

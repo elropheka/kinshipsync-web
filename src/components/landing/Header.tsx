@@ -20,7 +20,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#F5EFE8] border-b border-[#D6C8AF]/40">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border/40">
       <div className="max-w-container mx-auto px-4 md:px-8">
         <div className="flex items-center justify-between h-[72px] md:h-20">
           <Link to="/" className="flex-shrink-0">
@@ -36,7 +36,7 @@ const Header: React.FC = () => {
               <a
                 key={item.id}
                 href={item.href}
-                className="text-sm font-medium text-[#5D2413]/80 hover:text-[#5D2413] transition-colors"
+                className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
               >
                 {item.label}
               </a>
@@ -54,7 +54,7 @@ const Header: React.FC = () => {
             <button
               type="button"
               onClick={toggleMobileMenu}
-              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg text-[#5D2413] hover:bg-[#D6C8AF]/30 transition-colors"
+              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg text-foreground hover:bg-muted/30 transition-colors"
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {isMobileMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
@@ -64,14 +64,14 @@ const Header: React.FC = () => {
       </div>
 
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-[72px] bg-[#F5EFE8] z-40 px-4 py-6">
+        <div className="lg:hidden fixed inset-0 top-[72px] bg-background z-40 px-4 py-6">
           <nav className="flex flex-col gap-1">
             {landingNavItems.map((item) => (
               <a
                 key={item.id}
                 href={item.href}
                 onClick={closeMobileMenu}
-                className="px-4 py-3 rounded-xl text-[#5D2413] font-medium hover:bg-[#D6C8AF]/30 transition-colors"
+                className="px-4 py-3 rounded-xl text-foreground font-medium hover:bg-muted/30 transition-colors"
               >
                 {item.label}
               </a>

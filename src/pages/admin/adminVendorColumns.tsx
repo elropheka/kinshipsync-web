@@ -22,7 +22,7 @@ export const getAdminVendorColumns = (
             <FiShoppingBag className="w-4 h-4" />
           </div>
           <div>
-            <p className="font-semibold text-[#5D2413] text-sm">{vendor.name}</p>
+            <p className="font-semibold text-foreground text-sm">{vendor.name}</p>
             <p className="text-xs text-muted-foreground">{vendor.categoryIds?.[0] || 'General'}</p>
           </div>
         </div>
@@ -36,7 +36,7 @@ export const getAdminVendorColumns = (
       const vendor = row.original;
       return (
         <div>
-          <p className="text-sm text-[#5D2413]">{vendor.name}</p>
+          <p className="text-sm text-foreground">{vendor.name}</p>
           <p className="text-xs text-muted-foreground">{vendor.contactEmail}</p>
         </div>
       );
@@ -45,7 +45,7 @@ export const getAdminVendorColumns = (
   {
     id: 'eventsServed',
     header: 'Events Served',
-    cell: () => <span className="text-sm text-[#5D2413]">—</span>,
+    cell: () => <span className="text-sm text-foreground">—</span>,
   },
   {
     id: 'rating',
@@ -54,7 +54,7 @@ export const getAdminVendorColumns = (
       const vendor = row.original;
       if (!vendor.averageRating) return <span className="text-muted-foreground">—</span>;
       return (
-        <span className="inline-flex items-center gap-1 text-sm text-[#5D2413]">
+        <span className="inline-flex items-center gap-1 text-sm text-foreground">
           <FiStar className="w-4 h-4 text-yellow-500 fill-yellow-500" />
           {vendor.averageRating}
         </span>

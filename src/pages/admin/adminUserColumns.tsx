@@ -36,7 +36,7 @@ export const getAdminUserColumns = (
             {getInitials(name)}
           </div>
           <div>
-            <p className="font-semibold text-[#5D2413] text-sm">{name}</p>
+            <p className="font-semibold text-foreground text-sm">{name}</p>
             <p className="text-xs text-muted-foreground">{user.email}</p>
           </div>
         </div>
@@ -49,7 +49,7 @@ export const getAdminUserColumns = (
     cell: ({ row }) => {
       const role = (row.getValue('role') as string) || 'user';
       return (
-        <span className="inline-flex px-3 py-1 rounded-full text-xs font-medium bg-[#F5EFE8] text-[#5D2413] capitalize">
+        <span className="inline-flex px-3 py-1 rounded-full text-xs font-medium bg-muted text-foreground capitalize">
           {role}
         </span>
       );
@@ -58,7 +58,7 @@ export const getAdminUserColumns = (
   {
     id: 'eventsCreated',
     header: 'Events Created',
-    cell: () => <span className="text-sm text-[#5D2413]">—</span>,
+    cell: () => <span className="text-sm text-foreground">—</span>,
   },
   {
     id: 'status',
