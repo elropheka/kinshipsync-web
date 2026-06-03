@@ -109,11 +109,28 @@ jobs:
           name: web-dist
           path: dist
 
-      # server = cPanel "Server Name" or FTP Accounts "FTP Server" (hostname only, no https:// or :2083)
+      # Secret must be named exactly CPANEL_HOSTNAME (Shared IP or server hostname; no https:// or :2083)
+      - name: Resolve FTP server host
+        id: ftp-host
+        env:
+          CPANEL_HOSTNAME: ${{ secrets.CPANEL_HOSTNAME }}
+          CPANEL_FTP_SERVER: ${{ secrets.CPANEL_FTP_SERVER }}
+          CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
+        run: |
+          HOST="$CPANEL_HOSTNAME"
+          if [ -z "$HOST" ]; then HOST="$CPANEL_FTP_SERVER"; fi
+          if [ -z "$HOST" ]; then HOST="$CPANEL_HOST"; fi
+          if [ -z "$HOST" ]; then
+            echo "::error::Missing FTP host secret. In this repo's Settings → Secrets, add CPANEL_HOSTNAME (e.g. your cPanel Shared IP)."
+            exit 1
+          fi
+          echo "FTP host resolved (value is masked in logs if stored as a secret)."
+          echo "host=$HOST" >> "$GITHUB_OUTPUT"
+
       - name: Deploy to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ${{ secrets.CPANEL_HOSTNAME }}
+          server: ${{ steps.ftp-host.outputs.host }}
           username: ${{ secrets.CPANEL_USERNAME }}
           password: ${{ secrets.CPANEL_PASSWORD }}
           port: 21
@@ -165,7 +182,8 @@ jobs:
           echo "Web client deploy failed."
           echo ""
           echo "Build job: check Node/pnpm, Vite secrets, and version bump push permissions."
-          echo "cPanel job: CPANEL_HOSTNAME + CPANEL_USERNAME + CPANEL_PASSWORD (hostname from cPanel General Information, no :2083)."
-          echo "  If ETIMEDOUT persists, kinshipsync.com may be behind Cloudflare — use the server hostname or origin IP from cPanel, not the public site domain."
+          echo "cPanel job: secrets must exist on the web client repo (not only the monorepo parent)."
+          echo "  Required: CPANEL_HOSTNAME (exact name), CPANEL_USERNAME, CPANEL_PASSWORD."
+          echo "  CPANEL_HOSTNAME = Shared IP or server hostname only (no https://, no :2083)."
           echo ""
           echo "Version (if build succeeded): ${{ needs.build.outputs.version }}"
