@@ -5,18 +5,19 @@ on:
     branches:
       - main
 
-# Prevent concurrent builds - cancel old builds when new ones start
 concurrency:
   group: web-deploy
   cancel-in-progress: true
 
 jobs:
   build:
-    name: Build and Deploy Web Client
+    name: Install and Build
     runs-on: ubuntu-latest
     permissions:
       contents: write
       actions: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
 
     steps:
       - name: Checkout code
@@ -25,34 +26,22 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: latest
 
-      - name: Get pnpm store directory
-        id: pnpm-store
-        run: echo "store_path=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache pnpm store
-        uses: actions/cache@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          path: ${{ steps.pnpm-store.outputs.store_path }}
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
+          node-version: '18'
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Increment version
         id: version
-        working-directory: ./
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           echo "Current version: $CURRENT_VERSION"
@@ -79,8 +68,7 @@ jobs:
             git push origin "web-v${{ steps.version.outputs.version }}"
           fi
 
-      - name: Build Vite App
-        working-directory: ./
+      - name: Build Vite app
         env:
           VITE_APP_FIREBASE_VAPID_KEY: ${{ secrets.VITE_APP_FIREBASE_VAPID_KEY }}
           VITE_MESSAGING_API_URL: ${{ secrets.VITE_MESSAGING_API_URL }}
@@ -88,24 +76,38 @@ jobs:
         run: pnpm run build
 
       - name: Verify build output
-        working-directory: ./
         run: |
           if [ ! -d "dist" ]; then
             echo "Build failed - dist directory not found"
             exit 1
           fi
           echo "Build verification passed"
-          echo "Files in dist:"
           ls -la dist/
-          echo ""
-          echo "Checking for .htaccess in dist:"
           if [ -f "dist/.htaccess" ]; then
-            echo "✅ .htaccess found in dist/"
-            cat dist/.htaccess
+            echo ".htaccess found in dist/"
           else
-            echo "❌ .htaccess NOT found in dist/ - this will cause deployment issues!"
+            echo ".htaccess NOT found in dist/ - cPanel SPA routing may fail"
             exit 1
           fi
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: dist/
+          retention-days: 7
+
+  cpanel-deploy:
+    name: Deploy to cPanel
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+          path: dist
 
       - name: Deploy to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -125,47 +127,43 @@ jobs:
             **/.htaccess
             .htaccess
           log-level: verbose
-        continue-on-error: false
 
       - name: Verify .htaccess deployment
         run: |
-          echo "🔍 Checking if .htaccess file was deployed..."
-          echo "If the routing issue persists, check:"
-          echo "1. cPanel File Manager - verify .htaccess exists in public_html/"
-          echo "2. cPanel Error Logs - check for mod_rewrite errors"
-          echo "3. Contact hosting provider if mod_rewrite is disabled"
+          echo "If routing fails after deploy, verify .htaccess in public_html/ and mod_rewrite on the host."
 
       - name: Create GitHub Release
-        if: success()
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: web-v${{ steps.version.outputs.version }}
-          name: Web Release v${{ steps.version.outputs.version }}
+          tag_name: web-v${{ needs.build.outputs.version }}
+          name: Web Release v${{ needs.build.outputs.version }}
           body: |
-            Automated web client release for version ${{ steps.version.outputs.version }}
+            Automated web client release for version ${{ needs.build.outputs.version }}
 
-            🚀 **Deployment Details:**
-            - Version bumped to ${{ steps.version.outputs.version }}
+            Deployment details:
+            - Version bumped to ${{ needs.build.outputs.version }}
             - Deployed to: https://kinshipsync.com/
-            - Build verified and deployment completed successfully
-            
-            **Verify deployment:** https://kinshipsync.com/
+            - Build verified and FTP deployment completed successfully
+
+            Verify: https://kinshipsync.com/
           draft: false
           prerelease: false
           generate_release_notes: true
 
-      - name: Deployment failure notification
-        if: failure()
+  notify-failure:
+    name: Deployment failure notification
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - cpanel-deploy
+    if: failure()
+
+    steps:
+      - name: Print troubleshooting steps
         run: |
-          echo "❌ Deployment failed for version ${{ steps.version.outputs.version }}"
+          echo "Web client deploy failed."
           echo ""
-          echo "🔍 Troubleshooting steps:"
-          echo "1. **MOST COMMON ISSUE**: Check if cPanel password has expired and needs reset"
-          echo "2. Update CPANEL_PASSWORD secret in repository settings if password was reset"
-          echo "3. Verify FTP access is enabled in cPanel"
-          echo "4. Ensure the public_html directory exists, has proper permissions, and cgi-bin folder is preserved"
-          echo "5. Check if your hosting provider has any FTP restrictions"
+          echo "Build job: check Node/pnpm, Vite secrets, and version bump push permissions."
+          echo "cPanel job: verify CPANEL_USERNAME and CPANEL_PASSWORD; confirm FTP is enabled."
           echo ""
-          echo "📧 Contact your hosting provider if issues persist"
-          echo ""
-          echo "ℹ️  With concurrency control enabled, any new pushes will cancel this failed build and start fresh"
+          echo "Version (if build succeeded): ${{ needs.build.outputs.version }}"
