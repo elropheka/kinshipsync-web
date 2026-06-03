@@ -111,14 +111,14 @@ jobs:
           path: dist
 
       # CPANEL_HOSTNAME = Shared IP or server hostname (no https://, no :2083)
-      # Optional: CPANEL_USE_SFTP=true | CPANEL_FTP_PROTOCOL=ftps|ftp|ftps-legacy | CPANEL_FTP_PORT=21|990
+      # Default: SFTP port 22 (port 21 is often blocked from GitHub Actions). Set CPANEL_USE_FTP=true to use FTP/FTPS instead.
       - name: Resolve cPanel deploy settings
         id: ftp-host
         env:
           CPANEL_HOSTNAME: ${{ secrets.CPANEL_HOSTNAME }}
           CPANEL_FTP_SERVER: ${{ secrets.CPANEL_FTP_SERVER }}
           CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
-          CPANEL_USE_SFTP: ${{ secrets.CPANEL_USE_SFTP }}
+          CPANEL_USE_FTP: ${{ secrets.CPANEL_USE_FTP }}
           CPANEL_FTP_PROTOCOL: ${{ secrets.CPANEL_FTP_PROTOCOL }}
           CPANEL_FTP_PORT: ${{ secrets.CPANEL_FTP_PORT }}
         run: |
@@ -130,21 +130,18 @@ jobs:
             exit 1
           fi
 
-          TRANSPORT="ftp"
-          if [ "$CPANEL_USE_SFTP" = "true" ] || [ "$CPANEL_USE_SFTP" = "sftp" ]; then
-            TRANSPORT="sftp"
+          # Port 21 frequently times out from GitHub-hosted runners; SFTP is the default.
+          TRANSPORT="sftp"
+          PORT="22"
+          PROTOCOL="sftp"
+          if [ "$CPANEL_USE_FTP" = "true" ] || [ "$CPANEL_USE_FTP" = "ftp" ]; then
+            TRANSPORT="ftp"
+            PROTOCOL="${CPANEL_FTP_PROTOCOL:-ftps}"
+            PORT="${CPANEL_FTP_PORT:-21}"
+            if [ "$PROTOCOL" = "ftps-legacy" ] && [ -z "$CPANEL_FTP_PORT" ]; then
+              PORT="990"
+            fi
           fi
-
-          PROTOCOL="${CPANEL_FTP_PROTOCOL:-ftps}"
-          PORT="${CPANEL_FTP_PORT:-21}"
-          if [ "$TRANSPORT" = "sftp" ]; then
-            PORT="22"
-            PROTOCOL="sftp"
-          fi
-          if [ "$PROTOCOL" = "ftps-legacy" ] && [ -z "$CPANEL_FTP_PORT" ]; then
-            PORT="990"
-          fi
-
           echo "host=$HOST" >> "$GITHUB_OUTPUT"
           echo "transport=$TRANSPORT" >> "$GITHUB_OUTPUT"
           echo "protocol=$PROTOCOL" >> "$GITHUB_OUTPUT"
@@ -159,10 +156,11 @@ jobs:
           username: ${{ secrets.CPANEL_USERNAME }}
           password: ${{ secrets.CPANEL_PASSWORD }}
           port: ${{ steps.ftp-host.outputs.port }}
-          local_path: './dist/*'
-          remote_path: '/public_html/'
+          local_path: './dist/'
+          remote_path: 'public_html/'
           sftp_only: true
           sftpArgs: '-o ConnectTimeout=60'
+          rsyncArgs: '--exclude=.ftp-deploy-sync-state.json'
 
       - name: Deploy to cPanel via FTP/FTPS
         if: steps.ftp-host.outputs.transport != 'sftp'
@@ -222,9 +220,8 @@ jobs:
           echo ""
           echo "Build job: check Node/pnpm, Vite secrets, and version bump push permissions."
           echo "cPanel job: CPANEL_HOSTNAME, CPANEL_USERNAME, CPANEL_PASSWORD on this repo."
-          echo "  Default deploy is FTPS on port 21. If timeout persists, try secrets:"
-          echo "    CPANEL_FTP_PROTOCOL=ftps-legacy and CPANEL_FTP_PORT=990"
-          echo "    or CPANEL_USE_SFTP=true (port 22; many hosts only allow SFTP from CI)."
-          echo "  In cPanel: confirm FTP/SFTP is enabled; check FTP Accounts for the correct port."
+          echo "  Default deploy is SFTP port 22 (port 21 often blocked from GitHub Actions)."
+          echo "  ETIMEDOUT on :21 → do not use FTP; ensure SSH/SFTP access is enabled in cPanel."
+          echo "  To force FTP anyway: set secret CPANEL_USE_FTP=true and optional CPANEL_FTP_PORT."
           echo ""
           echo "Version (if build succeeded): ${{ needs.build.outputs.version }}"
