@@ -101,6 +101,7 @@ jobs:
     name: Deploy to cPanel
     runs-on: ubuntu-latest
     needs: build
+    timeout-minutes: 20
 
     steps:
       - name: Download build artifact
@@ -109,32 +110,70 @@ jobs:
           name: web-dist
           path: dist
 
-      # Secret must be named exactly CPANEL_HOSTNAME (Shared IP or server hostname; no https:// or :2083)
-      - name: Resolve FTP server host
+      # CPANEL_HOSTNAME = Shared IP or server hostname (no https://, no :2083)
+      # Optional: CPANEL_USE_SFTP=true | CPANEL_FTP_PROTOCOL=ftps|ftp|ftps-legacy | CPANEL_FTP_PORT=21|990
+      - name: Resolve cPanel deploy settings
         id: ftp-host
         env:
           CPANEL_HOSTNAME: ${{ secrets.CPANEL_HOSTNAME }}
           CPANEL_FTP_SERVER: ${{ secrets.CPANEL_FTP_SERVER }}
           CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
+          CPANEL_USE_SFTP: ${{ secrets.CPANEL_USE_SFTP }}
+          CPANEL_FTP_PROTOCOL: ${{ secrets.CPANEL_FTP_PROTOCOL }}
+          CPANEL_FTP_PORT: ${{ secrets.CPANEL_FTP_PORT }}
         run: |
           HOST="$CPANEL_HOSTNAME"
           if [ -z "$HOST" ]; then HOST="$CPANEL_FTP_SERVER"; fi
           if [ -z "$HOST" ]; then HOST="$CPANEL_HOST"; fi
           if [ -z "$HOST" ]; then
-            echo "::error::Missing FTP host secret. In this repo's Settings → Secrets, add CPANEL_HOSTNAME (e.g. your cPanel Shared IP)."
+            echo "::error::Missing host secret. Add CPANEL_HOSTNAME (cPanel Shared IP or server hostname)."
             exit 1
           fi
-          echo "FTP host resolved (value is masked in logs if stored as a secret)."
-          echo "host=$HOST" >> "$GITHUB_OUTPUT"
 
-      - name: Deploy to cPanel via FTP
+          TRANSPORT="ftp"
+          if [ "$CPANEL_USE_SFTP" = "true" ] || [ "$CPANEL_USE_SFTP" = "sftp" ]; then
+            TRANSPORT="sftp"
+          fi
+
+          PROTOCOL="${CPANEL_FTP_PROTOCOL:-ftps}"
+          PORT="${CPANEL_FTP_PORT:-21}"
+          if [ "$TRANSPORT" = "sftp" ]; then
+            PORT="22"
+            PROTOCOL="sftp"
+          fi
+          if [ "$PROTOCOL" = "ftps-legacy" ] && [ -z "$CPANEL_FTP_PORT" ]; then
+            PORT="990"
+          fi
+
+          echo "host=$HOST" >> "$GITHUB_OUTPUT"
+          echo "transport=$TRANSPORT" >> "$GITHUB_OUTPUT"
+          echo "protocol=$PROTOCOL" >> "$GITHUB_OUTPUT"
+          echo "port=$PORT" >> "$GITHUB_OUTPUT"
+          echo "Using transport=$TRANSPORT protocol=$PROTOCOL port=$PORT"
+
+      - name: Deploy to cPanel via SFTP
+        if: steps.ftp-host.outputs.transport == 'sftp'
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
+        with:
+          server: ${{ steps.ftp-host.outputs.host }}
+          username: ${{ secrets.CPANEL_USERNAME }}
+          password: ${{ secrets.CPANEL_PASSWORD }}
+          port: ${{ steps.ftp-host.outputs.port }}
+          local_path: './dist/*'
+          remote_path: '/public_html/'
+          sftp_only: true
+          sftpArgs: '-o ConnectTimeout=60'
+
+      - name: Deploy to cPanel via FTP/FTPS
+        if: steps.ftp-host.outputs.transport != 'sftp'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ steps.ftp-host.outputs.host }}
           username: ${{ secrets.CPANEL_USERNAME }}
           password: ${{ secrets.CPANEL_PASSWORD }}
-          port: 21
-          protocol: ftp
+          port: ${{ steps.ftp-host.outputs.port }}
+          protocol: ${{ steps.ftp-host.outputs.protocol }}
+          security: loose
           local-dir: ./dist/
           server-dir: ./public_html/
           exclude: |
@@ -144,7 +183,7 @@ jobs:
             .env*
             cgi-bin/**
           log-level: verbose
-          timeout: 120000
+          timeout: 300000
 
       - name: Verify .htaccess deployment
         run: |
@@ -182,8 +221,10 @@ jobs:
           echo "Web client deploy failed."
           echo ""
           echo "Build job: check Node/pnpm, Vite secrets, and version bump push permissions."
-          echo "cPanel job: secrets must exist on the web client repo (not only the monorepo parent)."
-          echo "  Required: CPANEL_HOSTNAME (exact name), CPANEL_USERNAME, CPANEL_PASSWORD."
-          echo "  CPANEL_HOSTNAME = Shared IP or server hostname only (no https://, no :2083)."
+          echo "cPanel job: CPANEL_HOSTNAME, CPANEL_USERNAME, CPANEL_PASSWORD on this repo."
+          echo "  Default deploy is FTPS on port 21. If timeout persists, try secrets:"
+          echo "    CPANEL_FTP_PROTOCOL=ftps-legacy and CPANEL_FTP_PORT=990"
+          echo "    or CPANEL_USE_SFTP=true (port 22; many hosts only allow SFTP from CI)."
+          echo "  In cPanel: confirm FTP/SFTP is enabled; check FTP Accounts for the correct port."
           echo ""
           echo "Version (if build succeeded): ${{ needs.build.outputs.version }}"
