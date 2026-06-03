@@ -109,12 +109,15 @@ jobs:
           name: web-dist
           path: dist
 
+      # server = cPanel "Server Name" or FTP Accounts "FTP Server" (hostname only, no https:// or :2083)
       - name: Deploy to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: kinshipsync.com
+          server: ${{ secrets.CPANEL_HOSTNAME }}
           username: ${{ secrets.CPANEL_USERNAME }}
           password: ${{ secrets.CPANEL_PASSWORD }}
+          port: 21
+          protocol: ftp
           local-dir: ./dist/
           server-dir: ./public_html/
           exclude: |
@@ -123,10 +126,8 @@ jobs:
             **/node_modules/**
             .env*
             cgi-bin/**
-          include: |
-            **/.htaccess
-            .htaccess
           log-level: verbose
+          timeout: 120000
 
       - name: Verify .htaccess deployment
         run: |
@@ -164,6 +165,7 @@ jobs:
           echo "Web client deploy failed."
           echo ""
           echo "Build job: check Node/pnpm, Vite secrets, and version bump push permissions."
-          echo "cPanel job: verify CPANEL_USERNAME and CPANEL_PASSWORD; confirm FTP is enabled."
+          echo "cPanel job: CPANEL_HOSTNAME + CPANEL_USERNAME + CPANEL_PASSWORD (hostname from cPanel General Information, no :2083)."
+          echo "  If ETIMEDOUT persists, kinshipsync.com may be behind Cloudflare — use the server hostname or origin IP from cPanel, not the public site domain."
           echo ""
           echo "Version (if build succeeded): ${{ needs.build.outputs.version }}"
