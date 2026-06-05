@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiChevronUp } from 'react-icons/fi';
+import { ChevronUp } from 'lucide-react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import { useAuth } from '@/context/AuthContext';
 import Header from '../components/landing/Header';
 import HeroSection from '../components/landing/HeroSection';
-import StatsSection from '../components/landing/StatsSection';
-import TestimonialHeroSection from '../components/landing/TestimonialHeroSection';
+import AboutSection from '../components/landing/AboutSection';
 import FeaturesCardsSection from '../components/landing/FeaturesCardsSection';
-import HowItWorksSection from '../components/landing/HowItWorksSection';
-import TestimonialsSection from '../components/landing/TestimonialsSection';
+import FeaturesTwoSection from '../components/landing/FeaturesTwoSection';
+import CallToActionSection from '../components/landing/CallToActionSection';
+import StatsSection from '../components/landing/StatsSection';
 import FAQSection from '../components/landing/FAQSection';
-import FinalCTASection from '../components/landing/FinalCTASection';
+import CallToActionTwoSection from '../components/landing/CallToActionTwoSection';
+import ContactSection from '../components/landing/ContactSection';
+import AppInstallSection from '../components/landing/AppInstallSection';
 import Footer from '../components/landing/Footer';
 
 const LandingPage: React.FC = () => {
@@ -31,10 +35,19 @@ const LandingPage: React.FC = () => {
   }, [currentUser, navigate]);
 
   useEffect(() => {
+    AOS.init({
+      duration: 800,
+      easing: 'ease-in-out',
+      once: true,
+      mirror: false,
+    });
+  }, []);
+
+  useEffect(() => {
     document.body.classList.remove('loading');
 
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 400);
+      setShowScrollTop(window.scrollY > 300);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -42,22 +55,31 @@ const LandingPage: React.FC = () => {
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
   };
 
   return (
     <div className="relative min-h-screen bg-background">
       <Header />
 
-      <main id="main">
-        <HeroSection />
-        <StatsSection />
-        <TestimonialHeroSection />
-        <FeaturesCardsSection />
-        <HowItWorksSection />
-        <TestimonialsSection />
-        <FAQSection />
-        <FinalCTASection />
+      <main id="main" className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-muted to-background pointer-events-none" />
+
+        <div className="relative">
+          <HeroSection />
+          <AboutSection />
+          <FeaturesCardsSection />
+          <FeaturesTwoSection />
+          <CallToActionSection />
+          <StatsSection />
+          <FAQSection />
+          <CallToActionTwoSection />
+          <ContactSection />
+          <AppInstallSection />
+        </div>
       </main>
 
       <Footer />
@@ -65,13 +87,53 @@ const LandingPage: React.FC = () => {
       <button
         type="button"
         onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 z-50 w-11 h-11 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:bg-[#516036] transition-all duration-300 ${
+        className={`fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl flex items-center justify-center transform hover:-translate-y-1 transition-all duration-300 ${
           showScrollTop ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
         aria-label="Scroll to top"
       >
-        <FiChevronUp className="w-5 h-5" />
+        <ChevronUp className="w-6 h-6" />
       </button>
+
+      <div
+        id="preloader"
+        className="fixed inset-0 bg-background z-50 flex items-center justify-center"
+      >
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
+      </div>
+
+      <style>
+        {`
+          html {
+            scroll-behavior: smooth;
+          }
+
+          body:not(.loading) #preloader {
+            display: none;
+          }
+
+          section {
+            transition: opacity 0.3s ease-in-out;
+          }
+
+          ::-webkit-scrollbar {
+            width: 10px;
+          }
+
+          ::-webkit-scrollbar-track {
+            background: hsl(var(--muted));
+          }
+
+          ::-webkit-scrollbar-thumb {
+            background: hsl(var(--primary));
+            border-radius: 5px;
+          }
+
+          ::-webkit-scrollbar-thumb:hover {
+            background: hsl(var(--primary) / 0.8);
+          }
+        `}
+      </style>
     </div>
   );
 };
