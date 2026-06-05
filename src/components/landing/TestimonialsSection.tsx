@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { landingTestimonials } from '@/constants/mock/landingPage';
+import { landingTestimonials } from '@/constants/content/landingPage';
 
 const TestimonialsSection: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);

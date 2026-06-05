@@ -27,8 +27,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 const AdminVendorsPage: React.FC = () => {
-  const { vendors, isLoading, error, adminToggleVendorFeature, adminUpdateVendorProfile, adminDeleteVendor } =
-    useAllVendors();
+  const { vendors, isLoading, error, adminUpdateVendorProfile, adminDeleteVendor } = useAllVendors();
   const { users, adminUpdateUserProfile: updateUserProfileRoles } = useAllUsers();
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
   const [isVendorEditModalOpen, setIsVendorEditModalOpen] = useState(false);
@@ -36,15 +35,6 @@ const AdminVendorsPage: React.FC = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isUpdatingVendor, setIsUpdatingVendor] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
-  const handleToggleFeature = useCallback(
-    async (vendorId: string, currentStatus: boolean) => {
-      const success = await adminToggleVendorFeature(vendorId, currentStatus);
-      if (success) toast.success(`Vendor feature status ${currentStatus ? 'removed' : 'added'}.`);
-      else toast.error(getErrorMessage(error) || 'Failed to update vendor feature status.');
-    },
-    [adminToggleVendorFeature, error]
-  );
 
   const handleEditVendor = useCallback((vendor: Vendor) => {
     setEditingVendor(vendor);
@@ -84,11 +74,8 @@ const AdminVendorsPage: React.FC = () => {
 
   const columns = useMemo(
     () =>
-      getAdminVendorColumns(handleToggleFeature, handleEditVendor, (vendor: Vendor) => {
-        setVendorToDelete(vendor);
-        setIsDeleteDialogOpen(true);
-      }),
-    [handleToggleFeature, handleEditVendor]
+      getAdminVendorColumns(handleEditVendor),
+    [handleEditVendor]
   );
 
   const confirmDeleteVendor = async () => {

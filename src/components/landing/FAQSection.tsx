@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
-import { landingFaqs } from '@/constants/mock/landingPage';
+import { landingFaqs } from '@/constants/content/landingPage';
 
 const FAQSection: React.FC = () => {
   const [openId, setOpenId] = useState<string | null>(landingFaqs.items[0]?.id ?? null);

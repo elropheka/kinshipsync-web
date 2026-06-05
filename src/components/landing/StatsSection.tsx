@@ -1,6 +1,6 @@
 import React from 'react';
 import { FiClock, FiHeart, FiCalendar } from 'react-icons/fi';
-import { landingStats, landingValueProp } from '@/constants/mock/landingPage';
+import { landingStats, landingValueProp } from '@/constants/content/landingPage';
 
 const statIconMap = {
   clock: FiClock,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { landingTestimonialHero } from '@/constants/mock/landingPage';
+import { landingTestimonialHero } from '@/constants/content/landingPage';
 
 const TestimonialHeroSection: React.FC = () => {
   return (

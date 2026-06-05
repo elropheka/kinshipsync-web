@@ -6,9 +6,7 @@ import { Button } from '@/components/ui/button';
 import { FiStar, FiShoppingBag } from 'react-icons/fi';
 
 export const getAdminVendorColumns = (
-  _onToggleFeature: (vendorId: string, currentStatus: boolean) => Promise<void>,
-  onEditVendor: (vendor: Vendor) => void,
-  _onDeleteVendor: (vendor: Vendor) => void
+  onEditVendor: (vendor: Vendor) => void
 ): ColumnDef<Vendor>[] => [
   {
     id: 'business',

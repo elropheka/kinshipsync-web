@@ -1,6 +1,6 @@
 import React from 'react';
 import { FiCalendar, FiUsers, FiMessageCircle, FiBell } from 'react-icons/fi';
-import { landingFeatures } from '@/constants/mock/landingPage';
+import { landingFeatures } from '@/constants/content/landingPage';
 
 const featureIconMap = {
   calendar: FiCalendar,

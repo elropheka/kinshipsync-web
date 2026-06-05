@@ -45,7 +45,7 @@ export interface AppThemeLightPalette {
   grey: string;
 }
 
-export interface AppThemeDarkPalette extends AppThemeLightPalette {}
+export type AppThemeDarkPalette = AppThemeLightPalette;
 
 export interface AppTheme {
   light: AppThemeLightPalette;

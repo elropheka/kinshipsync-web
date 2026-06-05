@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiAlertCircle, FiArrowRight } from 'react-icons/fi';
-import { landingHero } from '@/constants/mock/landingPage';
+import { landingHero } from '@/constants/content/landingPage';
 
 const HeroSection: React.FC = () => {
   return (

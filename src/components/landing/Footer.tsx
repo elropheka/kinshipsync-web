@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiHeart } from 'react-icons/fi';
 import tealTextLogo from '@/assets/branding/teal-text-logo.png';
-import { landingFooter } from '@/constants/mock/landingPage';
+import { landingFooter } from '@/constants/content/landingPage';
 
 const Footer: React.FC = () => {
   return (

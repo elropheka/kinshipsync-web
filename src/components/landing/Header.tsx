@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMenu, FiX } from 'react-icons/fi';
 import tealTextLogo from '@/assets/branding/teal-text-logo.png';
-import { landingNavItems } from '@/constants/mock/landingPage';
+import { landingNavItems } from '@/constants/content/landingPage';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

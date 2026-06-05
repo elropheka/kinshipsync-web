@@ -1,6 +1,6 @@
 import React from 'react';
 import { FiEdit3, FiCheck, FiMessageCircle, FiHeart } from 'react-icons/fi';
-import { landingHowItWorks } from '@/constants/mock/landingPage';
+import { landingHowItWorks } from '@/constants/content/landingPage';
 
 const stepIconMap = {
   edit: FiEdit3,

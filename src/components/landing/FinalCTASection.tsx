@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiClock, FiArrowRight } from 'react-icons/fi';
-import { landingFinalCta } from '@/constants/mock/landingPage';
+import { landingFinalCta } from '@/constants/content/landingPage';
 
 const FinalCTASection: React.FC = () => {
   return (
