@@ -28,6 +28,19 @@ export const EventSiteDetailPage = () => {
     );
   }
 
+  if (!websiteDetails.published) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Website Not Published</h1>
+          <p className="text-muted-foreground">
+            This event website is not available yet. Please contact the organizer for access.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // Check if the event is private and handle access control
   if (event.visibility === 'private') {
     // TODO: Implement private event access control
