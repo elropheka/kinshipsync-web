@@ -18,6 +18,7 @@ export interface Event {
   allowedUserIds?: string[]; // For private event access
   totalAttendees?: number; // Calculated or manually set
   status?: 'upcoming' | 'ongoing' | 'completed' | 'cancelled'; // Calculated or manually set by admin
+  coverImageUrl?: string;
   website?: WebsitePayload; // Website details
 }
 

@@ -25,6 +25,7 @@ import type { Theme } from '@/types/themeTypes';
 import { useAllThemes } from '@/hooks/useAllThemes';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { suggestEventSlug } from '@/utils/eventUrlUtils';
+import ImageUploadInput from '@/components/common/ImageUploadInput';
 
 // Schema for Step 1: Event Details
 const eventDetailsFormSchema = z.object({
@@ -36,6 +37,7 @@ const eventDetailsFormSchema = z.object({
   visibility: z.enum(['public', 'private', 'unlisted'], { required_error: "Visibility is required." }),
   themeId: z.string().optional().nullable(),
   needsWebsite: z.boolean(),
+  coverImageUrl: z.string().optional().refine((val) => !val || val === '' || z.string().url().safeParse(val).success, { message: "Please enter a valid URL." }),
 });
 export type EventDetailsFormData = z.infer<typeof eventDetailsFormSchema>;
 
@@ -87,6 +89,7 @@ const EventCreateEditModal: React.FC<EventCreateEditModalProps> = ({
       visibility: 'private',
       themeId: null,
       needsWebsite: false,
+      coverImageUrl: '',
     },
   });
 
@@ -131,6 +134,7 @@ const EventCreateEditModal: React.FC<EventCreateEditModalProps> = ({
           visibility: event.visibility || 'private',
           themeId: event.themeId || null,
           needsWebsite: !!eventWebsiteDetails,
+          coverImageUrl: event.coverImageUrl || event.website?.headerImageUrl || '',
         });
 
         // Reset website details form with proper website data
@@ -165,6 +169,7 @@ const EventCreateEditModal: React.FC<EventCreateEditModalProps> = ({
           visibility: 'private',
           themeId: null,
           needsWebsite: false,
+          coverImageUrl: '',
         });
         // Explicitly reset website form with empty values
         websiteDetailsForm.reset({
@@ -230,6 +235,7 @@ const EventCreateEditModal: React.FC<EventCreateEditModalProps> = ({
       location: detailsData.location || undefined,
       visibility: detailsData.visibility,
       ...(detailsData.themeId !== "__NONE__" && detailsData.themeId ? { themeId: detailsData.themeId } : {}),
+      ...(detailsData.coverImageUrl?.trim() ? { coverImageUrl: detailsData.coverImageUrl.trim() } : {}),
     };
 
     // Only include website data if user wants a website AND there's actual content
@@ -262,6 +268,29 @@ const EventCreateEditModal: React.FC<EventCreateEditModalProps> = ({
       case 1: // Event Details
         return (
           <form className="space-y-4 py-2">
+            <FormField control={eventDetailsForm.control} name="coverImageUrl" render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <ImageUploadInput
+                      label="Cover Image (Optional)"
+                      currentImageUrl={field.value}
+                      storagePath="event_covers"
+                      imageClassName="w-full aspect-video object-cover rounded-md border"
+                      onImageUploaded={(newUrl) => {
+                        eventDetailsForm.setValue('coverImageUrl', newUrl, { shouldValidate: true, shouldDirty: true });
+                      }}
+                      onImageRemoved={() => {
+                        eventDetailsForm.setValue('coverImageUrl', '', { shouldValidate: true, shouldDirty: true });
+                      }}
+                      onError={(errorMessage) => {
+                        eventDetailsForm.setError('coverImageUrl', { type: 'manual', message: errorMessage });
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField control={eventDetailsForm.control} name="name" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Event Name *</FormLabel>

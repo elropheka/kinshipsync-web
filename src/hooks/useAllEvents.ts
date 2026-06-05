@@ -134,6 +134,7 @@ export const useAllEvents = () => {
         ...(eventData.time && { time: eventData.time }),
         ...(eventData.location && { location: eventData.location }),
         ...(eventData.themeId && { themeId: eventData.themeId }), // Only add if themeId exists and is not null
+        ...(eventData.coverImageUrl && { coverImageUrl: eventData.coverImageUrl }),
       };
       const eventDocRef = await addDoc(collection(firestore, EVENTS_COLLECTION), dataToSave);
       

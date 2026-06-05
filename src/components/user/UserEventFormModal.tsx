@@ -19,6 +19,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import EventWebsiteForm from '../website/EventWebsiteForm';
+import ImageUploadInput from '@/components/common/ImageUploadInput';
 import type { Event, CreateEventPayload, UpdateEventPayload, WebsitePayload } from '@/types/eventTypes';
 
 // Schema for the event form
@@ -29,6 +30,7 @@ const eventFormSchema = z.object({
   time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM).").optional(),
   location: z.string().max(150).optional(),
   visibility: z.enum(['public', 'private', 'unlisted']),
+  coverImageUrl: z.string().optional().refine((val) => !val || val === '' || z.string().url().safeParse(val).success, { message: "Please enter a valid URL." }),
 });
 
 // Website form schema
@@ -74,6 +76,7 @@ const UserEventFormModal: React.FC<UserEventFormModalProps> = ({ event, isOpen, 
       time: undefined,
       location: undefined,
       visibility: 'private',
+      coverImageUrl: '',
     },
   });
 
@@ -97,6 +100,7 @@ const UserEventFormModal: React.FC<UserEventFormModalProps> = ({ event, isOpen, 
         time: event.time || undefined,
         location: event.location || undefined,
         visibility: event.visibility || 'private',
+        coverImageUrl: event.coverImageUrl || event.website?.headerImageUrl || '',
       });
     } else {
       eventForm.reset({ 
@@ -105,7 +109,8 @@ const UserEventFormModal: React.FC<UserEventFormModalProps> = ({ event, isOpen, 
         date: '', 
         time: undefined, 
         location: undefined, 
-        visibility: 'private' 
+        visibility: 'private',
+        coverImageUrl: '',
       });
     }
   }, [event, eventForm, isOpen, mode]);
@@ -143,6 +148,7 @@ const UserEventFormModal: React.FC<UserEventFormModalProps> = ({ event, isOpen, 
           time: data.time,
           location: data.location,
           visibility: data.visibility,
+          ...(data.coverImageUrl?.trim() ? { coverImageUrl: data.coverImageUrl.trim() } : {}),
           website: websitePayload
         };
         await onSubmit(payload, event.id);
@@ -154,6 +160,7 @@ const UserEventFormModal: React.FC<UserEventFormModalProps> = ({ event, isOpen, 
           time: data.time,
           location: data.location,
           visibility: data.visibility,
+          ...(data.coverImageUrl?.trim() ? { coverImageUrl: data.coverImageUrl.trim() } : {}),
           website: websitePayload
         };
         await onSubmit(payload);
@@ -185,6 +192,28 @@ const UserEventFormModal: React.FC<UserEventFormModalProps> = ({ event, isOpen, 
           <TabsContent value="details">
             <Form {...eventForm}>
               <form onSubmit={eventForm.handleSubmit(handleFormSubmit)} className="space-y-4 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField control={eventForm.control} name="coverImageUrl" render={({ field }) => (
+                  <FormItem className="sm:col-span-2">
+                    <FormControl>
+                      <ImageUploadInput
+                        label="Cover Image (Optional)"
+                        currentImageUrl={field.value}
+                        storagePath="event_covers"
+                        imageClassName="w-full aspect-video object-cover rounded-md border"
+                        onImageUploaded={(newUrl) => {
+                          eventForm.setValue('coverImageUrl', newUrl, { shouldValidate: true, shouldDirty: true });
+                        }}
+                        onImageRemoved={() => {
+                          eventForm.setValue('coverImageUrl', '', { shouldValidate: true, shouldDirty: true });
+                        }}
+                        onError={(errorMessage) => {
+                          eventForm.setError('coverImageUrl', { type: 'manual', message: errorMessage });
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
                 <FormField control={eventForm.control} name="name" render={({ field }) => (
                   <FormItem><FormLabel>Event Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
