@@ -25,13 +25,6 @@ export const useUserProfile = (userId?: string): UseUserProfileReturn => {
   // Determine the effective user ID: passed prop or current authenticated user
   const effectiveUserId = userId || currentUser?.uid;
 
-  // Fetch profile automatically when hook mounts or effectiveUserId changes
-  useEffect(() => {
-    if (effectiveUserId) {
-      fetchUserProfile();
-    }
-  }, [effectiveUserId]);
-
   const fetchUserProfile = useCallback(async () => {
     if (!effectiveUserId) {
       setUserProfile(null);
@@ -91,7 +84,13 @@ export const useUserProfile = (userId?: string): UseUserProfileReturn => {
     };
 
     doFetchUserProfile();
-  }, [effectiveUserId]); // Depend on effectiveUserId
+  }, [effectiveUserId]);
+
+  useEffect(() => {
+    if (effectiveUserId) {
+      void fetchUserProfile();
+    }
+  }, [effectiveUserId, fetchUserProfile]);
 
   const updateCurrentUserProfile = async (profileData: UpdateUserProfilePayload): Promise<boolean> => {
     if (!currentUser?.uid) {

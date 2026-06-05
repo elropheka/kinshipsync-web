@@ -54,6 +54,7 @@ export interface CreateEventPayload {
   themeId?: string;
   visibility: Event['visibility'];
   allowedUserIds?: string[];
+  coverImageUrl?: string;
   website?: WebsitePayload;
 }
 

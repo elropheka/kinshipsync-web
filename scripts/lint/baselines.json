@@ -1,0 +1,6 @@
+{
+  "mockData": { "maxViolations": 0 },
+  "brandCompliance": { "hardcodedHexInSrc": 0 },
+  "deadCodePatterns": { "filesOnDisk": 0 },
+  "routerGuards": { "issues": 0 }
+}
