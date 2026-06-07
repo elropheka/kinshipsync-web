@@ -1,7 +1,7 @@
 // HeroSection.tsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, ArrowRight, Play } from 'lucide-react';
+import { ArrowRight, Play } from 'lucide-react';
 import { landingHero } from '@/constants/landingContent';
 
 const HeroSection: React.FC = () => {
@@ -42,22 +42,6 @@ const HeroSection: React.FC = () => {
 
       <div className="container mx-auto max-w-7xl px-4 md:px-8 relative z-10">
         <div className="hero-content text-center lg:text-left max-w-3xl">
-          <div
-            className={`
-              inline-flex items-center mb-8 bg-primary-foreground/15 text-primary-foreground
-              px-6 py-3 rounded-full font-medium shadow-lg border border-primary-foreground/20
-              transform transition-all duration-700 group
-              hover:scale-105 hover:shadow-xl hover:-translate-y-1
-              ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-            `}
-          >
-            <Users className="w-5 h-5 mr-2 transform group-hover:rotate-12 transition-transform" />
-            <span className="relative tracking-wide">
-              {landingHero.badge}
-              <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-secondary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
-            </span>
-          </div>
-
           <h1
             className={`
               mb-8 font-display text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight

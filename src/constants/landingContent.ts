@@ -8,12 +8,11 @@ import {
 } from 'lucide-react';
 
 export const landingHero = {
-  badge: 'Bring Everyone Together',
   headlineLine1: 'Your Ultimate Event',
   headlineLine2: 'Planner and',
   headlineHighlight: 'Beyond!',
   description:
-    'Easily organize your reunion with family and friends in one central spot.',
+    'Bring everyone together—easily organize your reunion with family and friends in one central spot.',
 };
 
 export const landingFeatures = {
