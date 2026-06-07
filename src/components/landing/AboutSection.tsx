@@ -1,6 +1,7 @@
 // AboutSection.tsx
 import React, { useState, useEffect } from 'react';
 import { Heart, Globe, Users, ShieldCheck, Smartphone, RotateCw } from 'lucide-react';
+import { landingAbout } from '@/constants/landingContent';
 // import briaDemetrius from '../../assets/img/Bria-Demetrius.jpg';
 // import about5 from '../../assets/img/about-5.webp';
 // import about2 from '../../assets/img/about-2.webp';
@@ -33,12 +34,12 @@ const AboutSection: React.FC = () => {
   }, []);
 
   const features = [
-    { icon: <Heart className="w-6 h-6" />, text: 'Family-first approach', color: 'primary' },
-    { icon: <Globe className="w-6 h-6" />, text: 'Cultural sensitivity', color: 'primary' },
-    { icon: <Users className="w-6 h-6" />, text: 'Community focus', color: 'primary' },
+    { icon: <Heart className="w-6 h-6" />, text: 'Family & friend reunions', color: 'primary' },
+    { icon: <Globe className="w-6 h-6" />, text: 'One central planning hub', color: 'primary' },
+    { icon: <Users className="w-6 h-6" />, text: 'Collaborative planning', color: 'primary' },
     { icon: <ShieldCheck className="w-6 h-6" />, text: 'Privacy protection', color: 'primary' },
-    { icon: <Smartphone className="w-6 h-6" />, text: 'User-friendly design', color: 'primary' },
-    { icon: <RotateCw className="w-6 h-6" />, text: 'Continuous innovation', color: 'primary' }
+    { icon: <Smartphone className="w-6 h-6" />, text: 'Plan from any device', color: 'primary' },
+    { icon: <RotateCw className="w-6 h-6" />, text: 'Real-time updates', color: 'primary' }
   ];
 
   return (
@@ -82,7 +83,7 @@ const AboutSection: React.FC = () => {
             `}>
               <Heart className="w-5 h-5 mr-2 transform group-hover:rotate-12 transition-transform" fill="currentColor" />
               <span className="relative">
-                OUR MISSION
+                {landingAbout.badge}
                 <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
               </span>
             </div>
@@ -93,15 +94,7 @@ const AboutSection: React.FC = () => {
               transform transition-all duration-700 delay-200
               ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
             `}>
-              Bringing Families Together Through{' '}
-              <span className="relative inline-block group">
-                <span className="relative z-10 text-primary transform transition-transform duration-300 group-hover:scale-110">Technology</span>
-                <span className={`
-                  absolute bottom-2 left-0 w-full h-3 bg-primary/10 -z-10
-                  transform -rotate-2 transition-all duration-300
-                  group-hover:h-full group-hover:bottom-0 group-hover:rotate-0
-                `}></span>
-              </span>
+              {landingAbout.title}
             </h2>
 
             {/* Description */}
@@ -110,7 +103,7 @@ const AboutSection: React.FC = () => {
               transform transition-all duration-700 delay-400
               ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
             `}>
-              Kinship Sync was born from the need to simplify family event planning while maintaining the warmth and connection that makes family gatherings special. We understand the unique challenges of organizing family events and have created a platform that makes it easier, more collaborative, and more enjoyable.
+              {landingAbout.description}
             </p>
 
             {/* Features Grid */}

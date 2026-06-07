@@ -1,20 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronUp } from 'lucide-react';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
 import { useAuth } from '@/context/AuthContext';
 import Header from '../components/landing/Header';
 import HeroSection from '../components/landing/HeroSection';
-import AboutSection from '../components/landing/AboutSection';
-import FeaturesCardsSection from '../components/landing/FeaturesCardsSection';
 import FeaturesTwoSection from '../components/landing/FeaturesTwoSection';
-import CallToActionSection from '../components/landing/CallToActionSection';
-import StatsSection from '../components/landing/StatsSection';
 import FAQSection from '../components/landing/FAQSection';
-import CallToActionTwoSection from '../components/landing/CallToActionTwoSection';
 import ContactSection from '../components/landing/ContactSection';
-import AppInstallSection from '../components/landing/AppInstallSection';
 import Footer from '../components/landing/Footer';
 
 const LandingPage: React.FC = () => {
@@ -33,15 +25,6 @@ const LandingPage: React.FC = () => {
       }
     }
   }, [currentUser, navigate]);
-
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      easing: 'ease-in-out',
-      once: true,
-      mirror: false,
-    });
-  }, []);
 
   useEffect(() => {
     document.body.classList.remove('loading');
@@ -66,20 +49,10 @@ const LandingPage: React.FC = () => {
       <Header />
 
       <main id="main" className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-muted to-background pointer-events-none" />
-
-        <div className="relative">
-          <HeroSection />
-          <AboutSection />
-          <FeaturesCardsSection />
-          <FeaturesTwoSection />
-          <CallToActionSection />
-          <StatsSection />
-          <FAQSection />
-          <CallToActionTwoSection />
-          <ContactSection />
-          <AppInstallSection />
-        </div>
+        <HeroSection />
+        <FeaturesTwoSection />
+        <FAQSection />
+        <ContactSection />
       </main>
 
       <Footer />
@@ -110,10 +83,6 @@ const LandingPage: React.FC = () => {
 
           body:not(.loading) #preloader {
             display: none;
-          }
-
-          section {
-            transition: opacity 0.3s ease-in-out;
           }
 
           ::-webkit-scrollbar {

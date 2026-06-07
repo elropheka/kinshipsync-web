@@ -82,7 +82,7 @@ const Footer: React.FC = () => {
             </Link>
             <div className="space-y-6">
               <p className="text-primary-foreground/70 leading-relaxed">
-                Bringing families closer together through seamless event planning and coordination.
+                Your ultimate event planner for reunions—organize guests, budgets, tasks, and vendors in one place.
               </p>
               <div className="space-y-4">
                 <a 
@@ -122,8 +122,8 @@ const Footer: React.FC = () => {
               {[
                 { href: '#hero', label: 'Home' },
                 { href: '#features', label: 'Features' },
-                { href: '#pricing', label: 'Pricing' },
-                { href: '#platform', label: 'Platform' }
+                { href: '#faq', label: 'FAQ' },
+                { href: '#support', label: 'Support' },
               ].map((link) => (
                 <li key={link.href}>
                   <a 
@@ -161,7 +161,6 @@ const Footer: React.FC = () => {
                 'Event Websites',
                 'RSVP Management',
                 'Collaborative Planning',
-                'Gift Registry'
               ].map((service) => (
                 <li key={service}>
                   <a 
@@ -199,7 +198,6 @@ const Footer: React.FC = () => {
                 'Privacy Policy',
                 'Terms of Service',
                 'Cookie Policy',
-                'GDPR Compliance'
               ].map((item) => (
                 <li key={item}>
                   <a 
