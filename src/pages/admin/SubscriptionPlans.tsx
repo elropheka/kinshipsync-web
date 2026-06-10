@@ -117,12 +117,15 @@ const SubscriptionPlansPage: React.FC = () => {
   };
 
   const toggleFeature = (featureName: string) => {
-    setForm((f) => ({
-      ...f,
-      features: f.features.includes(featureName)
-        ? f.features.filter((n) => n !== featureName)
-        : [...f.features, featureName],
-    }));
+    setForm((f) => {
+      const exists = f.features.some((n) => n.toLowerCase() === featureName.toLowerCase());
+      return {
+        ...f,
+        features: exists
+          ? f.features.filter((n) => n.toLowerCase() !== featureName.toLowerCase())
+          : [...f.features, featureName],
+      };
+    });
   };
 
   const save = async () => {
