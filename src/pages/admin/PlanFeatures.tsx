@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, doc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/services/firebaseConfig';
 import { useAuth } from '@/context/AuthContext';
-import { DashboardCard, dashboardSectionTitleClass } from '@/components/dashboard/DashboardCard';
+import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';

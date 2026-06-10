@@ -120,7 +120,7 @@ const CouponsPage: React.FC = () => {
       return;
     }
     try {
-      const data: Record<string, unknown> = {
+      const data: Record<string, unknown> & { updatedAt: ReturnType<typeof serverTimestamp> } = {
         code: form.code.toUpperCase().trim(),
         description: form.description || '',
         discountType: form.discountType,
