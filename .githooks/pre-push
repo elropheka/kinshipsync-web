@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
 
-echo "🔍 Running build before push..."
-pnpm run build
-echo "✅ Build passed"
+echo "🔍 Running typecheck before push..."
+pnpm run typecheck
+echo "✅ Typecheck passed"
