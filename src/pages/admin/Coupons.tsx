@@ -3,6 +3,7 @@ import { collection, doc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp
 import { firestore } from '@/services/firebaseConfig';
 import { useAuth } from '@/context/AuthContext';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -64,6 +65,7 @@ const CouponsPage: React.FC = () => {
   const [form, setForm] = useState<CouponForm>(defaultForm);
   const [activeFrom, setActiveFrom] = useState('');
   const [activeUntil, setActiveUntil] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -148,10 +150,10 @@ const CouponsPage: React.FC = () => {
   };
 
   const remove = async (id: string) => {
-    if (!confirm('Delete this coupon?')) return;
     await deleteDoc(doc(firestore, 'coupons', id));
     toast.success('Coupon deleted.');
     fetchCoupons();
+    setDeleteTarget(null);
   };
 
   const formatDiscount = (c: Coupon) => {
@@ -207,7 +209,7 @@ const CouponsPage: React.FC = () => {
                       fetchCoupons();
                     }} />
                     <Button variant="ghost" size="icon" onClick={() => openEdit(c)}><FiEdit2 /></Button>
-                    <Button variant="ghost" size="icon" onClick={() => remove(c.id)}><FiTrash2 /></Button>
+                    <Button variant="ghost" size="icon" onClick={() => setDeleteTarget(c.id)}><FiTrash2 /></Button>
                   </div>
                 </div>
               </CardContent>
@@ -281,6 +283,19 @@ const CouponsPage: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteTarget !== null} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Coupon</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to delete this coupon? This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteTarget(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteTarget && remove(deleteTarget)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

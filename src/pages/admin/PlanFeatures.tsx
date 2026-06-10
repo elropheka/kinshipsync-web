@@ -3,6 +3,7 @@ import { collection, doc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp
 import { firestore } from '@/services/firebaseConfig';
 import { useAuth } from '@/context/AuthContext';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -34,6 +35,7 @@ const PlanFeaturesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Feature | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [form, setForm] = useState({ key: '', name: '', description: '', planIds: [] as string[], isActive: true });
 
   useEffect(() => {
@@ -92,10 +94,10 @@ const PlanFeaturesPage: React.FC = () => {
   };
 
   const remove = async (id: string) => {
-    if (!confirm('Delete this feature?')) return;
     await deleteDoc(doc(firestore, 'appFeatures', id));
     toast.success('Feature deleted.');
     fetchFeatures();
+    setDeleteTarget(null);
   };
 
   if (loading) return <div className="max-w-5xl mx-auto pb-8"><DashboardCard><p className="text-muted-foreground p-4">Loading...</p></DashboardCard></div>;
@@ -140,7 +142,7 @@ const PlanFeaturesPage: React.FC = () => {
                       fetchFeatures();
                     }} />
                     <Button variant="ghost" size="icon" onClick={() => openEdit(f)}><FiEdit2 /></Button>
-                    <Button variant="ghost" size="icon" onClick={() => remove(f.id)}><FiTrash2 /></Button>
+                    <Button variant="ghost" size="icon" onClick={() => setDeleteTarget(f.id)}><FiTrash2 /></Button>
                   </div>
                 </div>
               </CardContent>
@@ -175,6 +177,19 @@ const PlanFeaturesPage: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteTarget !== null} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Feature</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to delete this feature? This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteTarget(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteTarget && remove(deleteTarget)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ThemeSwitch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { FiPlus, FiEdit2, FiTrash2, FiDollarSign, FiRefreshCw, FiCheckSquare, FiSquare } from 'react-icons/fi';
@@ -61,6 +62,8 @@ const SubscriptionPlansPage: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'features'>('details');
   const [appFeatures, setAppFeatures] = useState<AppFeature[]>([]);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [showSeedConfirm, setShowSeedConfirm] = useState(false);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -154,18 +157,19 @@ const SubscriptionPlansPage: React.FC = () => {
   };
 
   const remove = async (id: string) => {
-    if (!confirm('Delete this plan?')) return;
     try {
       await deleteDoc(doc(firestore, 'subscriptionPlans', id));
       toast.success('Plan deleted.');
       fetchPlans();
     } catch (e: any) {
       toast.error('Failed to delete plan: ' + e.message);
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
   const handleSeed = async () => {
-    if (!confirm('This will reset all plans and features to defaults. Continue?')) return;
+    setShowSeedConfirm(false);
     setSeeding(true);
     try {
       await seedSubscriptionData();
@@ -197,7 +201,7 @@ const SubscriptionPlansPage: React.FC = () => {
         </div>
         <div className="flex gap-2">
           {plans.length === 0 && (
-            <Button onClick={handleSeed} disabled={seeding} variant="outline" className="gap-2">
+            <Button onClick={() => setShowSeedConfirm(true)} disabled={seeding} variant="outline" className="gap-2">
               <FiRefreshCw className={`w-4 h-4 ${seeding ? 'animate-spin' : ''}`} />
               {seeding ? 'Seeding...' : 'Seed Defaults'}
             </Button>
@@ -228,7 +232,7 @@ const SubscriptionPlansPage: React.FC = () => {
                     <Button variant="ghost" size="icon" onClick={() => openEdit(plan)}>
                       <FiEdit2 />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => remove(plan.id)}>
+                    <Button variant="ghost" size="icon" onClick={() => setDeleteTarget(plan.id)}>
                       <FiTrash2 />
                     </Button>
                   </div>
@@ -343,6 +347,32 @@ const SubscriptionPlansPage: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteTarget !== null} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Plan</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to delete this plan? This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteTarget(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteTarget && remove(deleteTarget)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showSeedConfirm} onOpenChange={setShowSeedConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Seed Default Data</AlertDialogTitle>
+            <AlertDialogDescription>This will reset all plans and features to defaults. Existing data will be deactivated. Continue?</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowSeedConfirm(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleSeed}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
