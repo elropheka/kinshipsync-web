@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { FiPlus, FiEdit2, FiTrash2, FiDollarSign, FiRefreshCw } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiDollarSign, FiRefreshCw, FiCheckSquare, FiSquare } from 'react-icons/fi';
 import { seedSubscriptionData } from '@/services/seedSubscriptionData';
 
 interface AppFeature {
@@ -59,6 +59,7 @@ const SubscriptionPlansPage: React.FC = () => {
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [form, setForm] = useState<Omit<Plan, 'id'>>(defaultPlan);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'details' | 'features'>('details');
   const [appFeatures, setAppFeatures] = useState<AppFeature[]>([]);
 
   useEffect(() => {
@@ -92,6 +93,7 @@ const SubscriptionPlansPage: React.FC = () => {
   const openCreate = () => {
     setEditingPlan(null);
     setForm({ ...defaultPlan, sortOrder: plans.length });
+    setActiveTab('details');
     setDialogOpen(true);
   };
 
@@ -110,6 +112,7 @@ const SubscriptionPlansPage: React.FC = () => {
       sortOrder: plan.sortOrder,
       metadata: plan.metadata,
     });
+    setActiveTab('details');
     setDialogOpen(true);
   };
 
@@ -250,60 +253,89 @@ const SubscriptionPlansPage: React.FC = () => {
           <DialogHeader>
             <DialogTitle>{editingPlan ? 'Edit Plan' : 'New Plan'}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
-            <Input placeholder="Plan name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
-            <Textarea placeholder="Description" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-muted-foreground">Monthly Price (cents)</label>
-                <Input type="number" min={0} value={form.price} onChange={(e) => setForm((f) => ({ ...f, price: parseInt(e.target.value) || 0 }))} />
+
+          <div className="flex border-b border-border mb-4">
+            <button
+              className={`pb-2 px-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'details' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+              onClick={() => setActiveTab('details')}
+            >
+              Details
+            </button>
+            <button
+              className={`pb-2 px-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'features' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+              onClick={() => setActiveTab('features')}
+            >
+              Features
+            </button>
+          </div>
+
+          {activeTab === 'details' && (
+            <div className="space-y-3">
+              <Input placeholder="Plan name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
+              <Textarea placeholder="Description" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground">Monthly Price (cents)</label>
+                  <Input type="number" min={0} value={form.price} onChange={(e) => setForm((f) => ({ ...f, price: parseInt(e.target.value) || 0 }))} />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Yearly Price (cents, optional)</label>
+                  <Input type="number" min={0} value={form.yearlyPrice || ''} onChange={(e) => setForm((f) => ({ ...f, yearlyPrice: e.target.value ? parseInt(e.target.value) : undefined }))} />
+                </div>
               </div>
-              <div>
-                <label className="text-xs text-muted-foreground">Yearly Price (cents, optional)</label>
-                <Input type="number" min={0} value={form.yearlyPrice || ''} onChange={(e) => setForm((f) => ({ ...f, yearlyPrice: e.target.value ? parseInt(e.target.value) : undefined }))} />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground">Trial Days</label>
+                  <Input type="number" min={0} value={form.trialDays} onChange={(e) => setForm((f) => ({ ...f, trialDays: parseInt(e.target.value) || 0 }))} />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Sort Order</label>
+                  <Input type="number" value={form.sortOrder} onChange={(e) => setForm((f) => ({ ...f, sortOrder: parseInt(e.target.value) || 0 }))} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground">Color</label>
+                  <Input type="color" value={form.metadata?.color || '#757575'} onChange={(e) => setForm((f) => ({ ...f, metadata: { ...f.metadata, color: e.target.value } }))} />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Accent Color</label>
+                  <Input type="color" value={form.metadata?.accentColor || '#f5f5f5'} onChange={(e) => setForm((f) => ({ ...f, metadata: { ...f.metadata, accentColor: e.target.value } }))} />
+                </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-muted-foreground">Trial Days</label>
-                <Input type="number" min={0} value={form.trialDays} onChange={(e) => setForm((f) => ({ ...f, trialDays: parseInt(e.target.value) || 0 }))} />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground">Sort Order</label>
-                <Input type="number" value={form.sortOrder} onChange={(e) => setForm((f) => ({ ...f, sortOrder: parseInt(e.target.value) || 0 }))} />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-muted-foreground">Color</label>
-                <Input type="color" value={form.metadata?.color || '#757575'} onChange={(e) => setForm((f) => ({ ...f, metadata: { ...f.metadata, color: e.target.value } }))} />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground">Accent Color</label>
-                <Input type="color" value={form.metadata?.accentColor || '#f5f5f5'} onChange={(e) => setForm((f) => ({ ...f, metadata: { ...f.metadata, accentColor: e.target.value } }))} />
-              </div>
-            </div>
-            <div>
-              <label className="text-sm font-medium">Features</label>
-              {appFeatures.length === 0 && (
-                <p className="text-xs text-muted-foreground mt-1">No features defined. Go to Subscriptions &gt; Features to create some.</p>
-              )}
-              <div className="flex flex-wrap gap-2 mt-2">
-                {appFeatures.map((af) => {
+          )}
+
+          {activeTab === 'features' && (
+            <div className="space-y-1 max-h-80 overflow-y-auto">
+              {appFeatures.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No features defined. Go to Subscriptions &gt; Features to create some.</p>
+              ) : (
+                appFeatures.map((af) => {
                   const selected = form.features.some((f) => f.toLowerCase() === af.name.toLowerCase());
                   return (
-                    <Badge
+                    <label
                       key={af.id}
-                      variant={selected ? 'default' : 'outline'}
-                      className="cursor-pointer"
+                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted cursor-pointer transition-colors"
                       onClick={() => toggleFeature(af.name)}
                     >
-                      {af.name}
-                    </Badge>
+                      {selected ? (
+                        <FiCheckSquare className="w-5 h-5 text-primary flex-shrink-0" />
+                      ) : (
+                        <FiSquare className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                      )}
+                      <div>
+                        <p className="text-sm font-medium">{af.name}</p>
+                        {af.description && <p className="text-xs text-muted-foreground">{af.description}</p>}
+                      </div>
+                    </label>
                   );
-                })}
-              </div>
+                })
+              )}
             </div>
+          )}
+
+          <div className="mt-4">
             <Button onClick={save} className="w-full">{editingPlan ? 'Update Plan' : 'Create Plan'}</Button>
           </div>
         </DialogContent>
