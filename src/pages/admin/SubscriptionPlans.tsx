@@ -290,7 +290,7 @@ const SubscriptionPlansPage: React.FC = () => {
               )}
               <div className="flex flex-wrap gap-2 mt-2">
                 {appFeatures.map((af) => {
-                  const selected = form.features.includes(af.name);
+                  const selected = form.features.some((f) => f.toLowerCase() === af.name.toLowerCase());
                   return (
                     <Badge
                       key={af.id}
