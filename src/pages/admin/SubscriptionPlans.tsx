@@ -190,10 +190,12 @@ const SubscriptionPlansPage: React.FC = () => {
           <p className="text-muted-foreground text-sm">{plans.length} plan(s)</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={handleSeed} disabled={seeding} variant="outline" className="gap-2">
-            <FiRefreshCw className={`w-4 h-4 ${seeding ? 'animate-spin' : ''}`} />
-            {seeding ? 'Seeding...' : 'Seed Defaults'}
-          </Button>
+          {plans.length === 0 && (
+            <Button onClick={handleSeed} disabled={seeding} variant="outline" className="gap-2">
+              <FiRefreshCw className={`w-4 h-4 ${seeding ? 'animate-spin' : ''}`} />
+              {seeding ? 'Seeding...' : 'Seed Defaults'}
+            </Button>
+          )}
           <Button onClick={openCreate} className="rounded-full bg-secondary hover:bg-secondary/90 text-white gap-2 self-start">
             <FiPlus className="w-4 h-4" />New Plan
           </Button>
