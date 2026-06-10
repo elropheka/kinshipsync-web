@@ -233,7 +233,11 @@ const SubscriptionPlansPage: React.FC = () => {
                   {plan.trialDays ? <span>{plan.trialDays}-day trial</span> : null}
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1">
-                  {plan.features.map((f, i) => <Badge key={i} variant="outline">{f}</Badge>)}
+                  {plan.features.map((f, i) => (
+                    <Badge key={i} variant={appFeatures.some((af) => af.name === f) ? 'default' : 'outline'}>
+                      {f}
+                    </Badge>
+                  ))}
                 </div>
               </CardContent>
             </Card>
