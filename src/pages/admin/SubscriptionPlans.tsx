@@ -319,12 +319,16 @@ const SubscriptionPlansPage: React.FC = () => {
                 <p className="text-sm text-muted-foreground">No features defined. Go to Subscriptions &gt; Features to create some.</p>
               ) : (
                 appFeatures.map((af) => {
-                  const selected = form.features.some((f) => f.toLowerCase() === af.name.toLowerCase());
+                  const planFeatureNames = form.features.map((f) => f.toLowerCase());
+                  const selected = planFeatureNames.includes(af.name.toLowerCase());
                   return (
-                    <label
+                    <div
                       key={af.id}
+                      role="button"
+                      tabIndex={0}
                       className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted cursor-pointer transition-colors"
                       onClick={() => toggleFeature(af.name)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleFeature(af.name); }}
                     >
                       {selected ? (
                         <FiCheckSquare className="w-5 h-5 text-primary flex-shrink-0" />
@@ -335,7 +339,7 @@ const SubscriptionPlansPage: React.FC = () => {
                         <p className="text-sm font-medium">{af.name}</p>
                         {af.description && <p className="text-xs text-muted-foreground">{af.description}</p>}
                       </div>
-                    </label>
+                    </div>
                   );
                 })
               )}
