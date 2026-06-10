@@ -11,7 +11,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { FiPlus, FiEdit2, FiTrash2, FiDollarSign } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiDollarSign, FiRefreshCw } from 'react-icons/fi';
+import { seedSubscriptionData } from '@/services/seedSubscriptionData';
 
 interface AppFeature {
   id: string;
@@ -54,6 +55,7 @@ const SubscriptionPlansPage: React.FC = () => {
   const { isAdmin } = useAuth();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [seeding, setSeeding] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [form, setForm] = useState<Omit<Plan, 'id'>>(defaultPlan);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -156,6 +158,20 @@ const SubscriptionPlansPage: React.FC = () => {
     }
   };
 
+  const handleSeed = async () => {
+    if (!confirm('This will reset all plans and features to defaults. Continue?')) return;
+    setSeeding(true);
+    try {
+      await seedSubscriptionData();
+      toast.success('Default plans and features created.');
+      await Promise.all([fetchPlans(), fetchAppFeatures()]);
+    } catch (e: any) {
+      toast.error('Seed failed: ' + e.message);
+    } finally {
+      setSeeding(false);
+    }
+  };
+
   const toggleActive = async (plan: Plan) => {
     await updateDoc(doc(firestore, 'subscriptionPlans', plan.id), {
       isActive: !plan.isActive,
@@ -173,9 +189,15 @@ const SubscriptionPlansPage: React.FC = () => {
           <h1 className="font-display text-3xl text-foreground mb-1">Subscription Plans</h1>
           <p className="text-muted-foreground text-sm">{plans.length} plan(s)</p>
         </div>
-        <Button onClick={openCreate} className="rounded-full bg-secondary hover:bg-secondary/90 text-white gap-2 self-start">
-          <FiPlus className="w-4 h-4" />New Plan
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleSeed} disabled={seeding} variant="outline" className="gap-2">
+            <FiRefreshCw className={`w-4 h-4 ${seeding ? 'animate-spin' : ''}`} />
+            {seeding ? 'Seeding...' : 'Seed Defaults'}
+          </Button>
+          <Button onClick={openCreate} className="rounded-full bg-secondary hover:bg-secondary/90 text-white gap-2 self-start">
+            <FiPlus className="w-4 h-4" />New Plan
+          </Button>
+        </div>
       </div>
 
       <DashboardCard>
