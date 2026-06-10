@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, doc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { collection, doc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, query, orderBy, where } from 'firebase/firestore';
 import { firestore } from '@/services/firebaseConfig';
 import { useAuth } from '@/context/AuthContext';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
@@ -12,6 +12,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { FiPlus, FiEdit2, FiTrash2, FiDollarSign } from 'react-icons/fi';
+
+interface AppFeature {
+  id: string;
+  key: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+}
 
 interface Plan {
   id: string;
@@ -49,12 +57,23 @@ const SubscriptionPlansPage: React.FC = () => {
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [form, setForm] = useState<Omit<Plan, 'id'>>(defaultPlan);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [featureInput, setFeatureInput] = useState('');
+  const [appFeatures, setAppFeatures] = useState<AppFeature[]>([]);
 
   useEffect(() => {
     if (!isAdmin) return;
     fetchPlans();
+    fetchAppFeatures();
   }, [isAdmin]);
+
+  const fetchAppFeatures = async () => {
+    try {
+      const q = query(collection(firestore, 'appFeatures'), where('isActive', '==', true));
+      const snap = await getDocs(q);
+      setAppFeatures(snap.docs.map((d) => ({ id: d.id, ...d.data() } as AppFeature)));
+    } catch (e: any) {
+      console.error('Failed to load app features:', e);
+    }
+  };
 
   const fetchPlans = async () => {
     try {
@@ -71,7 +90,6 @@ const SubscriptionPlansPage: React.FC = () => {
   const openCreate = () => {
     setEditingPlan(null);
     setForm({ ...defaultPlan, sortOrder: plans.length });
-    setFeatureInput('');
     setDialogOpen(true);
   };
 
@@ -90,19 +108,16 @@ const SubscriptionPlansPage: React.FC = () => {
       sortOrder: plan.sortOrder,
       metadata: plan.metadata,
     });
-    setFeatureInput('');
     setDialogOpen(true);
   };
 
-  const addFeature = () => {
-    const val = featureInput.trim();
-    if (!val) return;
-    setForm((f) => ({ ...f, features: [...f.features, val] }));
-    setFeatureInput('');
-  };
-
-  const removeFeature = (idx: number) => {
-    setForm((f) => ({ ...f, features: f.features.filter((_, i) => i !== idx) }));
+  const toggleFeature = (featureName: string) => {
+    setForm((f) => ({
+      ...f,
+      features: f.features.includes(featureName)
+        ? f.features.filter((n) => n !== featureName)
+        : [...f.features, featureName],
+    }));
   };
 
   const save = async () => {
@@ -241,17 +256,24 @@ const SubscriptionPlansPage: React.FC = () => {
               </div>
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Features</label>
-              <div className="flex gap-2 mt-1">
-                <Input value={featureInput} onChange={(e) => setFeatureInput(e.target.value)} placeholder="Add a feature" onKeyDown={(e) => e.key === 'Enter' && addFeature()} />
-                <Button type="button" onClick={addFeature}>Add</Button>
-              </div>
-              <div className="flex flex-wrap gap-1 mt-2">
-                {form.features.map((f, i) => (
-                  <Badge key={i} variant="secondary" className="cursor-pointer" onClick={() => removeFeature(i)}>
-                    {f} &times;
-                  </Badge>
-                ))}
+              <label className="text-sm font-medium">Features</label>
+              {appFeatures.length === 0 && (
+                <p className="text-xs text-muted-foreground mt-1">No features defined. Go to Subscriptions &gt; Features to create some.</p>
+              )}
+              <div className="flex flex-wrap gap-2 mt-2">
+                {appFeatures.map((af) => {
+                  const selected = form.features.includes(af.name);
+                  return (
+                    <Badge
+                      key={af.id}
+                      variant={selected ? 'default' : 'outline'}
+                      className="cursor-pointer"
+                      onClick={() => toggleFeature(af.name)}
+                    >
+                      {af.name}
+                    </Badge>
+                  );
+                })}
               </div>
             </div>
             <Button onClick={save} className="w-full">{editingPlan ? 'Update Plan' : 'Create Plan'}</Button>
