@@ -8,6 +8,10 @@ import Vendors from '@/pages/admin/Vendors';
 import RegisterVendor from '@/pages/admin/RegisterVendor';
 import CreateThemePage from '@/pages/admin/CreateThemePage';
 import CreateVendorCategoryPage from '@/pages/admin/CreateVendorCategoryPage';
+import SubscriptionPlans from '@/pages/admin/SubscriptionPlans';
+import PlanFeatures from '@/pages/admin/PlanFeatures';
+import Coupons from '@/pages/admin/Coupons';
+import SubscriptionConfig from '@/pages/admin/SubscriptionConfig';
 import EventDetailPage from '@/pages/detail/EventDetailPage';
 import UserDetailPage from '@/pages/detail/UserDetailPage';
 import VendorDetailPage from '@/pages/detail/VendorDetailPage';
@@ -39,6 +43,10 @@ function App() {
             <Route path="register-vendor" element={<RegisterVendor />} />
             <Route path="create-theme" element={<CreateThemePage />} />
             <Route path="create-vendor-category" element={<CreateVendorCategoryPage />} />
+            <Route path="subscriptions/plans" element={<SubscriptionPlans />} />
+            <Route path="subscriptions/features" element={<PlanFeatures />} />
+            <Route path="subscriptions/coupons" element={<Coupons />} />
+            <Route path="subscriptions/config" element={<SubscriptionConfig />} />
           </Route>
 
           {/* Legacy redirects */}

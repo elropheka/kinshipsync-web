@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { 
   LogOut, LayoutDashboard, ListChecks, Users, CalendarClock, UserPlus, 
   UserCog, Briefcase, FolderPlus, Palette, ChevronDown, ChevronRight, Trash2,
-  Settings,
+  Settings, CreditCard, Tag, Globe,
 } from 'lucide-react';
 import clsx from 'clsx';
 import tealLogoOnly from '@/assets/branding/teal-logo-only.png';
@@ -73,7 +73,8 @@ const SidebarDropdownTrigger: React.FC<{
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, hideWhenClosed = false }) => {
   const { currentUser, isAdmin, isVendor } = useAuth();
   const [isEventsDropdownOpen, setIsEventsDropdownOpen] = useState(false);
-  const [isVendorsDropdownOpen, setIsVendorsDropdownOpen] = useState(false); // State for vendors dropdown
+  const [isVendorsDropdownOpen, setIsVendorsDropdownOpen] = useState(false);
+  const [isSubscriptionsDropdownOpen, setIsSubscriptionsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -163,6 +164,22 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, hideWhenClosed = false }) => 
                   <SidebarNavLink to="/dashboard/vendor/" icon={LayoutDashboard} label="Vendor Dashboard View" isOpen={isOpen} isSubItem={isOpen} exact />
                   <SidebarNavLink to="/dashboard/vendor/items" icon={ListChecks} label="Vendor Items View" isOpen={isOpen} isSubItem={isOpen} />
                   <SidebarNavLink to="/dashboard/vendor/profile" icon={UserCog} label="Vendor Profile View" isOpen={isOpen} isSubItem={isOpen} />
+                </ul>
+              )}
+              {/* Subscriptions Dropdown */}
+              <SidebarDropdownTrigger
+                icon={CreditCard}
+                label="Subscriptions"
+                isOpen={isOpen}
+                isDropdownOpen={isSubscriptionsDropdownOpen}
+                onClick={() => setIsSubscriptionsDropdownOpen(!isSubscriptionsDropdownOpen)}
+              />
+              {isSubscriptionsDropdownOpen && (
+                <ul className={clsx(isOpen ? "pl-4" : "mt-1", "space-y-1")}>
+                  <SidebarNavLink to="/dashboard/admin/subscriptions/plans" icon={CreditCard} label="Plans" isOpen={isOpen} isSubItem={isOpen} />
+                  <SidebarNavLink to="/dashboard/admin/subscriptions/features" icon={ListChecks} label="Features" isOpen={isOpen} isSubItem={isOpen} />
+                  <SidebarNavLink to="/dashboard/admin/subscriptions/coupons" icon={Tag} label="Coupons" isOpen={isOpen} isSubItem={isOpen} />
+                  <SidebarNavLink to="/dashboard/admin/subscriptions/config" icon={Globe} label="Provider Config" isOpen={isOpen} isSubItem={isOpen} />
                 </ul>
               )}
               {isOpen && (
