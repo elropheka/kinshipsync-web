@@ -4,7 +4,14 @@ import { ChevronUp } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Header from '../components/landing/Header';
 import HeroSection from '../components/landing/HeroSection';
-import FeaturesTwoSection from '../components/landing/FeaturesTwoSection';
+import AboutSection from '../components/landing/AboutSection';
+import WhyChooseSection from '../components/landing/FeaturesTwoSection';
+import DetailedFeaturesSection from '../components/landing/DetailedFeaturesSection';
+import PerfectForSection from '../components/landing/PerfectForSection';
+import HowItWorksSection from '../components/landing/HowItWorksSection';
+import PricingSection from '../components/landing/PricingSection';
+import VendorSection from '../components/landing/VendorSection';
+import FutureVisionSection from '../components/landing/FutureVisionSection';
 import FAQSection from '../components/landing/FAQSection';
 import ContactSection from '../components/landing/ContactSection';
 import Footer from '../components/landing/Footer';
@@ -50,7 +57,14 @@ const LandingPage: React.FC = () => {
 
       <main id="main" className="relative overflow-hidden">
         <HeroSection />
-        <FeaturesTwoSection />
+        <AboutSection />
+        <WhyChooseSection />
+        <DetailedFeaturesSection />
+        <PerfectForSection />
+        <HowItWorksSection />
+        <PricingSection />
+        <VendorSection />
+        <FutureVisionSection />
         <FAQSection />
         <ContactSection />
       </main>
@@ -75,34 +89,14 @@ const LandingPage: React.FC = () => {
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
       </div>
 
-      <style>
-        {`
-          html {
-            scroll-behavior: smooth;
-          }
-
-          body:not(.loading) #preloader {
-            display: none;
-          }
-
-          ::-webkit-scrollbar {
-            width: 10px;
-          }
-
-          ::-webkit-scrollbar-track {
-            background: hsl(var(--muted));
-          }
-
-          ::-webkit-scrollbar-thumb {
-            background: hsl(var(--primary));
-            border-radius: 5px;
-          }
-
-          ::-webkit-scrollbar-thumb:hover {
-            background: hsl(var(--primary) / 0.8);
-          }
-        `}
-      </style>
+      <style>{`
+        html { scroll-behavior: smooth; }
+        body:not(.loading) #preloader { display: none; }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: hsl(var(--muted)); }
+        ::-webkit-scrollbar-thumb { background: hsl(var(--primary)); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary) / 0.8); }
+      `}</style>
     </div>
   );
 };

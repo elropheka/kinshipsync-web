@@ -80,7 +80,7 @@ const Footer: React.FC = () => {
             </Link>
             <div className="space-y-6">
               <p className="text-primary-foreground/70 leading-relaxed">
-                Your ultimate event planner for reunions—organize guests, budgets, tasks, and vendors in one place.
+                Bringing Families, Friends, and Communities Together Through Better Event Planning.
               </p>
               <div className="space-y-4">
                 <a 
