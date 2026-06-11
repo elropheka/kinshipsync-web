@@ -22,7 +22,7 @@ const HeroSection: React.FC = () => {
         className="absolute inset-0 bg-primary opacity-100"
       />
       <div
-        className="absolute inset-0 opacity-[0.12]"
+        className="absolute inset-0 opacity-100"
         style={{
           backgroundImage: `url(${tealLogo})`,
           backgroundRepeat: 'repeat',
