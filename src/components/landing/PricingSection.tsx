@@ -38,7 +38,7 @@ const PricingSection: React.FC = () => {
         `}>
           <span className="inline-flex items-center mb-4 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm uppercase font-semibold tracking-wider">
             <Tag className="w-5 h-5 mr-2" />
-            Pricing Section
+            <span className="font-display not-italic">Pricing</span>
           </span>
         </div>
 
@@ -68,7 +68,7 @@ const PricingSection: React.FC = () => {
 
                 <div className="flex items-center gap-3 mb-4 mt-2">
                   <Package className="w-6 h-6 text-primary" />
-                  <h3 className={`text-xl font-bold transition-colors duration-300 ${isHovered ? 'text-primary' : 'text-foreground'}`}>
+                  <h3 className={`text-xl transition-colors duration-300 font-heading tracking-tight ${isHovered ? 'text-primary' : 'text-foreground'}`}>
                     {plan.name}
                   </h3>
                 </div>

@@ -44,11 +44,11 @@ const AboutSection: React.FC = () => {
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
           `}>
             <Info className="w-5 h-5 mr-2" />
-            <span>About Kinship Sync</span>
+            <span className="font-display">About Kinship Sync</span>
           </div>
 
           <p className={`
-            text-lg md:text-xl text-foreground mb-6 leading-relaxed
+            text-lg md:text-xl text-foreground mb-6 leading-relaxed font-display
             transform transition-all duration-700 delay-200
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
           `}>

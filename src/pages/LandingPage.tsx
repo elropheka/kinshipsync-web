@@ -57,8 +57,8 @@ const LandingPage: React.FC = () => {
         <HeroSection />
         <AboutSection />
         <WhyChooseSection />
-        <PerfectForSection />
         <HowItWorksSection />
+        <PerfectForSection />
         <PricingSection />
         <VendorSection />
         <FutureVisionSection />

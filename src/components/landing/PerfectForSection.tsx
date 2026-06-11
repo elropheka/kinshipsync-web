@@ -24,10 +24,10 @@ const PerfectForSection: React.FC = () => {
           transform transition-all duration-700
           ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
         `}>
-          <span className="inline-flex items-center mb-4 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm uppercase font-semibold tracking-wider">
-            <Target className="w-5 h-5 mr-2" />
-            Perfect For
-          </span>
+            <span className="inline-flex items-center mb-4 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm uppercase font-semibold tracking-wider">
+              <Target className="w-5 h-5 mr-2" />
+              <span className="font-display not-italic">Perfect For</span>
+            </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -52,7 +52,7 @@ const PerfectForSection: React.FC = () => {
                 `}>
                   <Target className={`w-7 h-7 text-primary transition-transform duration-300 ${isHovered ? 'scale-110' : ''}`} />
                 </div>
-                <h3 className={`text-xl font-semibold mb-3 transition-colors duration-300 ${isHovered ? 'text-primary' : 'text-foreground'}`}>
+                <h3 className={`text-xl mb-3 transition-colors duration-300 font-heading tracking-tight ${isHovered ? 'text-primary' : 'text-foreground'}`}>
                   {item.title}
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">{item.description}</p>

@@ -54,7 +54,7 @@ const HeroSection: React.FC = () => {
 
           <h1
             className={`
-              mb-8 font-display text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight
+              mb-8 font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-primary-foreground leading-tight
               transform transition-all duration-700 delay-200
               ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
             `}

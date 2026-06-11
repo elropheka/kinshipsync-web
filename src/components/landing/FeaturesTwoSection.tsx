@@ -45,7 +45,7 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
             max-w-sm text-right transform transition-all duration-300
             ${isHovered ? 'translate-x-2' : ''}
           `}>
-            <h3 className={`text-xl font-semibold mb-2 transition-colors duration-300 ${isHovered ? 'text-primary' : 'text-foreground'}`}>
+            <h3 className={`text-xl mb-2 transition-colors duration-300 font-heading tracking-tight ${isHovered ? 'text-primary' : 'text-foreground'}`}>
               {title}
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
@@ -65,7 +65,7 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
             max-w-sm transform transition-all duration-300
             ${isHovered ? '-translate-x-2' : ''}
           `}>
-            <h3 className={`text-xl font-semibold mb-2 transition-colors duration-300 ${isHovered ? 'text-primary' : 'text-foreground'}`}>
+            <h3 className={`text-xl mb-2 transition-colors duration-300 font-heading tracking-tight ${isHovered ? 'text-primary' : 'text-foreground'}`}>
               {title}
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
@@ -129,9 +129,9 @@ const FeaturesTwoSection: React.FC = () => {
         `}>
           <span className="inline-flex items-center mb-4 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm uppercase font-semibold tracking-wider">
             <Grid className="w-5 h-5 mr-2" />
-            Features
+            <span className="font-display not-italic">Features</span>
           </span>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto font-display">
             {landingFeatures.sectionSubtitle}
           </p>
         </div>

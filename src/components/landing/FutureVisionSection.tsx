@@ -39,7 +39,7 @@ const FutureVisionSection: React.FC = () => {
           </div>
 
           <h2 className={`
-            text-3xl md:text-4xl font-bold mb-6 leading-tight
+            text-3xl md:text-4xl font-bold mb-6 leading-tight font-display
             transform transition-all duration-700 delay-200
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
           `}>
