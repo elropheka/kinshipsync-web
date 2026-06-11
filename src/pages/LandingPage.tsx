@@ -6,13 +6,11 @@ import Header from '../components/landing/Header';
 import HeroSection from '../components/landing/HeroSection';
 import AboutSection from '../components/landing/AboutSection';
 import WhyChooseSection from '../components/landing/FeaturesTwoSection';
-import DetailedFeaturesSection from '../components/landing/DetailedFeaturesSection';
 import PerfectForSection from '../components/landing/PerfectForSection';
 import HowItWorksSection from '../components/landing/HowItWorksSection';
 import PricingSection from '../components/landing/PricingSection';
 import VendorSection from '../components/landing/VendorSection';
 import FutureVisionSection from '../components/landing/FutureVisionSection';
-import FAQSection from '../components/landing/FAQSection';
 import ContactSection from '../components/landing/ContactSection';
 import Footer from '../components/landing/Footer';
 
@@ -59,13 +57,11 @@ const LandingPage: React.FC = () => {
         <HeroSection />
         <AboutSection />
         <WhyChooseSection />
-        <DetailedFeaturesSection />
         <PerfectForSection />
         <HowItWorksSection />
         <PricingSection />
         <VendorSection />
         <FutureVisionSection />
-        <FAQSection />
         <ContactSection />
       </main>
 

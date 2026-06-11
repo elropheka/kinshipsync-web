@@ -33,8 +33,6 @@ const HowItWorksSection: React.FC = () => {
         </div>
 
         <div className="relative">
-          <div className="hidden lg:block absolute top-1/2 left-[15%] right-[15%] h-0.5 bg-border -translate-y-1/2" />
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {howItWorks.map((step, index) => {
               const Icon = stepIcons[index];
