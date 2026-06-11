@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Tag, ArrowRight, Package } from 'lucide-react';
+import { Tag, ArrowRight, Package, Sparkles, Puzzle } from 'lucide-react';
 import { pricingPlans } from '@/constants/landingContent';
 
 const PricingSection: React.FC = () => {
@@ -42,10 +42,11 @@ const PricingSection: React.FC = () => {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-7xl mx-auto">
           {pricingPlans.map((plan, index) => {
             const isHovered = hoveredPlan === index;
             const isPro = index === 2;
+            const isInfo = index >= 3;
             return (
               <div
                 key={plan.name}
@@ -67,26 +68,32 @@ const PricingSection: React.FC = () => {
                 )}
 
                 <div className="flex items-center gap-3 mb-4 mt-2">
-                  <Package className="w-6 h-6 text-primary" />
+                  {isInfo ? (
+                    index === 3 ? <Puzzle className="w-6 h-6 text-accent" /> : <Sparkles className="w-6 h-6 text-accent" />
+                  ) : (
+                    <Package className="w-6 h-6 text-primary" />
+                  )}
                   <h3 className={`text-xl transition-colors duration-300 font-heading tracking-tight ${isHovered ? 'text-primary' : 'text-foreground'}`}>
                     {plan.name}
                   </h3>
                 </div>
                 <p className="text-muted-foreground mb-8 flex-grow">{plan.description}</p>
 
-                <Link
-                  to="/auth"
-                  className={`
-                    group relative w-full inline-flex items-center justify-center px-6 py-3 rounded-xl font-medium transition-all duration-300
-                    ${isPro
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/80'
-                      : 'bg-primary/10 text-primary hover:bg-primary/20'}
-                    transform hover:-translate-y-1 hover:shadow-lg
-                  `}
-                >
-                  <span>Get Started</span>
-                  <ArrowRight className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
-                </Link>
+                {!isInfo && (
+                  <Link
+                    to="/auth"
+                    className={`
+                      group relative w-full inline-flex items-center justify-center px-6 py-3 rounded-xl font-medium transition-all duration-300
+                      ${isPro
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/80'
+                        : 'bg-primary/10 text-primary hover:bg-primary/20'}
+                      transform hover:-translate-y-1 hover:shadow-lg
+                    `}
+                  >
+                    <span>Get Started</span>
+                    <ArrowRight className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                )}
               </div>
             );
           })}

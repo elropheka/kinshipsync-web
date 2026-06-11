@@ -213,11 +213,12 @@ export const pricingPlans = [
     name: 'Pro Plan',
     description: 'Advanced features for larger events and organizers.',
   },
-] as const;
-
-export const addons = [
-  'Additional storage',
-  'Premium themes',
-  'Advanced analytics',
-  'Vendor promotion tools',
+  {
+    name: 'Add Ons',
+    description: 'Additional storage, premium themes, advanced analytics, and vendor promotion tools.',
+  },
+  {
+    name: 'Free Trial',
+    description: 'Try all features free before committing to a plan.',
+  },
 ] as const;
