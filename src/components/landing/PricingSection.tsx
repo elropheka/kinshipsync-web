@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Tag, Sparkles, ArrowRight, Package } from 'lucide-react';
-import { pricingPlans, addons } from '@/constants/landingContent';
+import { Tag, ArrowRight, Package } from 'lucide-react';
+import { pricingPlans } from '@/constants/landingContent';
 
 const PricingSection: React.FC = () => {
   const [hoveredPlan, setHoveredPlan] = useState<number | null>(null);
@@ -92,28 +92,7 @@ const PricingSection: React.FC = () => {
           })}
         </div>
 
-        <div className={`
-          mt-12 max-w-3xl mx-auto bg-card border border-border rounded-2xl p-8 shadow-lg
-          transform transition-all duration-700 delay-700
-          ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-        `}>
-          <div className="flex items-center gap-3 mb-6">
-            <Sparkles className="w-6 h-6 text-accent" />
-            <h3 className="text-xl font-semibold text-foreground">Available Add-ons</h3>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            {addons.map((addon) => (
-              <span key={addon} className="flex items-center gap-2 text-sm text-foreground/80 bg-background rounded-lg px-4 py-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
-                {addon}
-              </span>
-            ))}
-          </div>
-          <div className="flex items-center gap-2 text-sm text-primary font-medium">
-            <Sparkles className="w-4 h-4" />
-            Free Trial Available
-          </div>
-        </div>
+        
       </div>
 
       <style>{`
