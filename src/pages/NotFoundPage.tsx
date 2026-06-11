@@ -40,10 +40,6 @@ const NotFoundPage: React.FC<NotFoundPageProps> = ({ compact = false }) => {
     <>
       <Helmet>
         <title>Page not found | KinshipSync</title>
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap"
-        />
       </Helmet>
 
       <div
@@ -62,17 +58,11 @@ const NotFoundPage: React.FC<NotFoundPageProps> = ({ compact = false }) => {
             </div>
           </div>
 
-          <p
-            className="text-7xl sm:text-8xl font-bold leading-none text-primary tracking-tight"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <p className="text-7xl sm:text-8xl font-bold leading-none text-primary tracking-tight font-display">
             404
           </p>
 
-          <h1
-            className="mt-4 text-2xl sm:text-3xl font-semibold text-primary"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h1 className="mt-4 text-2xl sm:text-3xl font-semibold text-primary font-display">
             Page Not Found
           </h1>
 

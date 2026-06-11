@@ -7,10 +7,11 @@ module.exports = {
   ],
   theme: {
   	extend: {
-  		fontFamily: {
-  			display: ['Playfair Display', 'Georgia', 'serif'],
-  			sans: ['Inter', 'system-ui', 'sans-serif'],
-  		},
+   		fontFamily: {
+   			display: ['EB Garamond', 'Georgia', 'serif'],
+   			heading: ['Inter', 'system-ui', 'sans-serif'],
+   			sans: ['Inter', 'system-ui', 'sans-serif'],
+   		},
   		maxWidth: {
   			container: '1200px',
   		},

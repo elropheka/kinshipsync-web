@@ -20,7 +20,7 @@
     background-color: hsl(var(--card));
   }
   :root {
-    --font-display: 'Playfair Display', Georgia, serif;
+    --font-display: 'EB Garamond', Georgia, serif;
     --font-heading: 'Inter', system-ui, sans-serif;
     --font-body: 'Inter', system-ui, sans-serif;
 
