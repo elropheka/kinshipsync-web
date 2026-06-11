@@ -39,7 +39,7 @@ const AboutSection: React.FC = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <div className="order-2 lg:order-1">
+          <div className="order-2 lg:order-2">
             <div className={`
               inline-flex items-center mb-6 bg-primary/10 text-primary
               px-6 py-3 rounded-full font-medium shadow-lg
@@ -77,7 +77,7 @@ const AboutSection: React.FC = () => {
 
           <div
             className={`
-              relative order-1 lg:order-2 transform transition-all duration-700 delay-300
+              relative order-1 lg:order-1 transform transition-all duration-700 delay-300
               ${isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-4 opacity-0 scale-95'}
             `}
             onMouseEnter={() => setIsImageLoaded(true)}
