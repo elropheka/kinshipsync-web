@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { landingHero } from '@/constants/landingContent';
+import familyTableImage from '@/assets/img/family_table.webp';
 
 const HeroSection: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
@@ -40,88 +42,106 @@ const HeroSection: React.FC = () => {
       />
 
       <div className="container mx-auto max-w-7xl px-4 md:px-8 relative z-10">
-        <div className="hero-content text-center lg:text-left max-w-4xl">
-          <div
-            className={`
-              inline-flex items-center mb-8 px-4 py-2 bg-primary-foreground/10 text-accent rounded-full text-sm font-medium border border-primary-foreground/20
-              transform transition-all duration-700
-              ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-            `}
-          >
-            <Sparkles className="w-4 h-4 mr-2" />
-            Kinship Sync
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="hero-content">
+            <div
+              className={`
+                inline-flex items-center mb-6 px-4 py-2 bg-primary-foreground/10 text-accent rounded-full text-sm font-medium border border-primary-foreground/20
+                transform transition-all duration-700
+                ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+              `}
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Kinship Sync
+            </div>
+
+            <h1
+              className={`
+                mb-6 font-display text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-semibold text-primary-foreground leading-tight
+                transform transition-all duration-700 delay-200
+                ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+              `}
+            >
+              {landingHero.headline}
+            </h1>
+
+            <p
+              className={`
+                mb-4 text-lg md:text-xl text-primary-foreground/85 max-w-3xl leading-relaxed
+                transform transition-all duration-700 delay-400
+                ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+              `}
+            >
+              {landingHero.description}
+            </p>
+
+            <p
+              className={`
+                mb-8 text-base md:text-lg text-primary-foreground/75 max-w-3xl leading-relaxed
+                transform transition-all duration-700 delay-500
+                ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+              `}
+            >
+              {landingHero.subDescription}
+            </p>
+
+            <div
+              className={`
+                flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start
+                transform transition-all duration-700 delay-700
+                ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+              `}
+            >
+              <Link
+                to="/auth"
+                className="group relative w-full sm:w-auto inline-flex items-center justify-center"
+              >
+                <span className="absolute inset-0 bg-secondary rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span className="relative px-8 py-4 bg-secondary text-secondary-foreground font-semibold rounded-xl inline-flex items-center transform transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
+                  Create Your Event
+                  <ArrowRight className="w-5 h-5 ml-2 transform group-hover:translate-x-2 transition-transform" />
+                </span>
+              </Link>
+
+              <Link
+                to="/auth"
+                className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 text-primary-foreground font-medium hover:text-accent transition-colors"
+              >
+                <span className="w-12 h-12 rounded-full bg-primary-foreground/15 flex items-center justify-center transform group-hover:scale-110 transition-transform group-hover:shadow-lg border border-primary-foreground/20">
+                  <ArrowRight className="w-6 h-6 text-accent transform group-hover:translate-x-0.5 transition-transform" />
+                </span>
+                <span className="relative">
+                  Start Planning Free
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-accent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+                </span>
+              </Link>
+            </div>
           </div>
 
-          <h1
-            className={`
-              mb-8 font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-primary-foreground leading-tight
-              transform transition-all duration-700 delay-200
-              ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-            `}
-          >
-            {landingHero.headline}
-          </h1>
-
-          <p
-            className={`
-              mb-6 text-lg md:text-xl text-primary-foreground/85 max-w-3xl mx-auto lg:mx-0 leading-relaxed
-              transform transition-all duration-700 delay-400
-              ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-            `}
-          >
-            {landingHero.description}
-          </p>
-
-          <p
-            className={`
-              mb-6 text-base md:text-lg text-primary-foreground/75 max-w-3xl mx-auto lg:mx-0 leading-relaxed
-              transform transition-all duration-700 delay-500
-              ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-            `}
-          >
-            {landingHero.subDescription}
-          </p>
-
-          <p
-            className={`
-              mb-10 text-base text-accent font-medium max-w-3xl mx-auto lg:mx-0
-              transform transition-all duration-700 delay-600
-              ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-            `}
-          >
-            {landingHero.tagline}
-          </p>
-
           <div
             className={`
-              flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start
-              transform transition-all duration-700 delay-700
-              ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+              relative transform transition-all duration-700 delay-500
+              ${isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-4 opacity-0 scale-95'}
             `}
+            onMouseEnter={() => setIsImageLoaded(true)}
           >
-            <Link
-              to="/auth"
-              className="group relative w-full sm:w-auto inline-flex items-center justify-center"
-            >
-              <span className="absolute inset-0 bg-secondary rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <span className="relative px-8 py-4 bg-secondary text-secondary-foreground font-semibold rounded-xl inline-flex items-center transform transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
-                Create Your Event
-                <ArrowRight className="w-5 h-5 ml-2 transform group-hover:translate-x-2 transition-transform" />
-              </span>
-            </Link>
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-tr from-secondary/20 to-transparent opacity-30 rounded-3xl transform rotate-3 transition-all duration-500 group-hover:opacity-40 group-hover:rotate-1" />
+              <div className={`absolute -top-6 -right-6 w-40 h-40 bg-secondary rounded-full mix-blend-soft-light filter blur-3xl transition-all duration-500 ${isImageLoaded ? 'opacity-20 scale-110' : 'opacity-10'}`} />
+              <div className={`absolute -bottom-6 -left-6 w-40 h-40 bg-accent rounded-full mix-blend-soft-light filter blur-3xl transition-all duration-500 ${isImageLoaded ? 'opacity-20 scale-110' : 'opacity-10'}`} />
 
-            <Link
-              to="/auth"
-              className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 text-primary-foreground font-medium hover:text-accent transition-colors"
-            >
-              <span className="w-12 h-12 rounded-full bg-primary-foreground/15 flex items-center justify-center transform group-hover:scale-110 transition-transform group-hover:shadow-lg border border-primary-foreground/20">
-                <ArrowRight className="w-6 h-6 text-accent transform group-hover:translate-x-0.5 transition-transform" />
-              </span>
-              <span className="relative">
-                Start Planning Free
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-accent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
-              </span>
-            </Link>
+              <img
+                src={familyTableImage}
+                alt="Family gathered around a table"
+                className={`
+                  relative z-10 w-full rounded-3xl shadow-2xl
+                  transform transition-all duration-700
+                  ${isImageLoaded ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 translate-y-4 opacity-0'}
+                  group-hover:scale-[1.02] group-hover:shadow-3xl
+                `}
+                onLoad={() => setIsImageLoaded(true)}
+              />
+            </div>
           </div>
         </div>
       </div>

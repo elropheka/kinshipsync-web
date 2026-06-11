@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Info } from 'lucide-react';
 import { landingAbout } from '@/constants/landingContent';
+import teensTableImage from '@/assets/img/teens-table.png';
 
 const AboutSection: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -36,40 +38,68 @@ const AboutSection: React.FC = () => {
       `} />
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-4xl mx-auto">
-          <div className={`
-            inline-flex items-center mb-8 bg-primary/10 text-primary
-            px-6 py-3 rounded-full font-medium shadow-lg
-            transform transition-all duration-700
-            ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-          `}>
-            <Info className="w-5 h-5 mr-2" />
-            <span className="font-display">About Kinship Sync</span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="order-2 lg:order-1">
+            <div className={`
+              inline-flex items-center mb-6 bg-primary/10 text-primary
+              px-6 py-3 rounded-full font-medium shadow-lg
+              transform transition-all duration-700
+              ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+            `}>
+              <Info className="w-5 h-5 mr-2" />
+              <span className="font-display">About Kinship Sync</span>
+            </div>
+
+            <p className={`
+              text-lg md:text-xl text-foreground mb-6 leading-relaxed font-display
+              transform transition-all duration-700 delay-200
+              ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+            `}>
+              {landingAbout.title}
+            </p>
+
+            <p className={`
+              text-base md:text-lg text-muted-foreground mb-6 leading-relaxed
+              transform transition-all duration-700 delay-400
+              ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+            `}>
+              {landingAbout.description}
+            </p>
+
+            <p className={`
+              text-base md:text-lg text-primary font-medium leading-relaxed
+              transform transition-all duration-700 delay-600
+              ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+            `}>
+              {landingAbout.closing}
+            </p>
           </div>
 
-          <p className={`
-            text-lg md:text-xl text-foreground mb-6 leading-relaxed font-display
-            transform transition-all duration-700 delay-200
-            ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-          `}>
-            {landingAbout.title}
-          </p>
+          <div
+            className={`
+              relative order-1 lg:order-2 transform transition-all duration-700 delay-300
+              ${isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-4 opacity-0 scale-95'}
+            `}
+            onMouseEnter={() => setIsImageLoaded(true)}
+          >
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent opacity-20 rounded-3xl transform rotate-3 transition-all duration-500 group-hover:opacity-30 group-hover:rotate-1" />
+              <div className={`absolute -top-6 -right-6 w-40 h-40 bg-primary rounded-full mix-blend-soft-light filter blur-3xl transition-all duration-500 ${isImageLoaded ? 'opacity-20 scale-110' : 'opacity-10'}`} />
+              <div className={`absolute -bottom-6 -left-6 w-40 h-40 bg-secondary rounded-full mix-blend-soft-light filter blur-3xl transition-all duration-500 ${isImageLoaded ? 'opacity-20 scale-110' : 'opacity-10'}`} />
 
-          <p className={`
-            text-base md:text-lg text-muted-foreground mb-6 leading-relaxed
-            transform transition-all duration-700 delay-400
-            ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-          `}>
-            {landingAbout.description}
-          </p>
-
-          <p className={`
-            text-base md:text-lg text-primary font-medium leading-relaxed
-            transform transition-all duration-700 delay-600
-            ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-          `}>
-            {landingAbout.closing}
-          </p>
+              <img
+                src={teensTableImage}
+                alt="Teens gathered around a table"
+                className={`
+                  relative z-10 w-full rounded-3xl shadow-2xl
+                  transform transition-all duration-700
+                  ${isImageLoaded ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 translate-y-4 opacity-0'}
+                  group-hover:scale-[1.02]
+                `}
+                onLoad={() => setIsImageLoaded(true)}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
