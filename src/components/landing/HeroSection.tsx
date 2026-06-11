@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { landingHero } from '@/constants/landingContent';
 import familyTableImage from '@/assets/img/family_table.webp';
+import tealLogo from '@/assets/branding/teal-logo-only.png';
 
 const HeroSection: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -18,27 +19,15 @@ const HeroSection: React.FC = () => {
       className="hero section relative pt-32 md:pt-40 lg:pt-48 pb-16 md:pb-24 lg:pb-32 overflow-hidden bg-primary text-primary-foreground"
     >
       <div
-        className={`
-          absolute inset-0 bg-gradient-to-br from-primary via-primary to-[hsl(74_28%_28%)]
-          transform transition-opacity duration-1000
-          ${isVisible ? 'opacity-100' : 'opacity-0'}
-        `}
+        className="absolute inset-0 bg-primary opacity-100"
       />
       <div
-        className={`
-          absolute top-0 left-1/4 w-96 h-96 bg-secondary rounded-full
-          mix-blend-soft-light filter blur-3xl opacity-0
-          transition-all duration-1000 delay-300
-          ${isVisible ? 'opacity-20 animate-blob' : ''}
-        `}
-      />
-      <div
-        className={`
-          absolute bottom-0 right-1/4 w-96 h-96 bg-accent rounded-full
-          mix-blend-soft-light filter blur-3xl opacity-0
-          transition-all duration-1000 delay-500
-          ${isVisible ? 'opacity-15 animate-blob animation-delay-2000' : ''}
-        `}
+        className="absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage: `url(${tealLogo})`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '120px 120px',
+        }}
       />
 
       <div className="container mx-auto max-w-7xl px-4 md:px-8 relative z-10">

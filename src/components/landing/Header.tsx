@@ -2,19 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Grid, HelpCircle, Headphones, ArrowRight, Menu, X } from 'lucide-react';
-import tealLogoOnly from '@/assets/branding/teal-logo-only.png';
 import beigeLogo from '@/assets/branding/beige-logo.png';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-
       // Update active section based on scroll position
       const sections = document.querySelectorAll('section[id]');
       sections.forEach(section => {
@@ -60,14 +56,9 @@ const Header: React.FC = () => {
   return (
     <>
     <header className={`
-      fixed top-0 left-0 right-0
+      fixed top-0 left-0 right-0 z-50
       transition-all duration-500
-      ${isMobileMenuOpen ? 'z-[110]' : 'z-50'}
-      ${isMobileMenuOpen
-        ? 'bg-primary/50 backdrop-blur-md border-b border-white/10 shadow-sm'
-        : isScrolled
-          ? 'bg-background/95 backdrop-blur-md shadow-lg border-b border-border'
-          : 'bg-gradient-to-b from-primary/40 to-transparent'}
+      bg-primary/40 backdrop-blur-md
     `}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
@@ -80,10 +71,10 @@ const Header: React.FC = () => {
               w-12 h-12 rounded-xl flex items-center justify-center
               transform transition-all duration-500
               group-hover:rotate-6 group-hover:scale-105
-              ${isMobileMenuOpen ? '!bg-white/10' : isScrolled ? 'bg-primary/10 shadow-sm' : 'bg-primary-foreground/10'}
+              bg-primary-foreground/10
             `}>
               <img 
-                src={isMobileMenuOpen || !isScrolled ? beigeLogo : tealLogoOnly}
+                src={beigeLogo}
                 alt="KinshipSync Logo" 
                 className="h-9 w-9 object-contain"
               />
@@ -91,9 +82,9 @@ const Header: React.FC = () => {
             <h1 className={`
               sitename text-2xl font-bold tracking-tight
               transition-colors duration-300
-              ${isMobileMenuOpen || !isScrolled ? 'text-primary-foreground' : 'text-foreground'}
+              text-primary-foreground
             `}>
-              Kinship<span className={isMobileMenuOpen || !isScrolled ? 'text-accent' : 'text-primary'}>Sync</span>
+              Kinship<span className="text-accent">Sync</span>
             </h1>
           </Link>
 
@@ -109,11 +100,9 @@ const Header: React.FC = () => {
                       text-sm font-medium px-4 py-2 rounded-lg
                       transition-all duration-300
                       flex items-center space-x-2
-                      ${isScrolled 
-                        ? 'text-foreground hover:text-primary' 
-                        : 'text-primary-foreground hover:text-accent'}
+                      text-primary-foreground hover:text-accent
                       ${activeSection === item.href.slice(1) 
-                        ? isScrolled ? 'text-primary bg-primary/10' : 'text-primary-foreground bg-primary-foreground/15' 
+                        ? 'text-primary-foreground bg-primary-foreground/15' 
                         : ''}
                       ${hoveredItem === item.href ? 'scale-105' : ''}
                     `}
@@ -181,9 +170,7 @@ const Header: React.FC = () => {
                 flex items-center justify-center
                 transform transition-all duration-300
                 hover:scale-105
-                ${isMobileMenuOpen || !isScrolled
-                  ? 'hover:bg-white/10 text-primary-foreground'
-                  : 'hover:bg-muted text-foreground'}
+                hover:bg-white/10 text-primary-foreground
               `}
             >
               {isMobileMenuOpen ? (
