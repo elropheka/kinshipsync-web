@@ -14,7 +14,7 @@ const defaultPlans = [
     features: [],
     isActive: true,
     sortOrder: 0,
-    metadata: { color: '#757575', accentColor: '#f5f5f5' },
+    metadata: { color: '#D6C8AF', accentColor: '#F5EFE8' },
   },
   {
     id: 'basic',
@@ -28,7 +28,7 @@ const defaultPlans = [
     features: ['Unlimited Events', 'Custom Event Pages', 'Guest Management', 'Email & Push Notifications', 'Basic Analytics', 'Vendor Directory Access'],
     isActive: true,
     sortOrder: 1,
-    metadata: { color: '#4CAF50', accentColor: '#E8F5E9' },
+    metadata: { color: '#5F6E3D', accentColor: '#D6C8AF' },
   },
   {
     id: 'premium',
@@ -42,7 +42,7 @@ const defaultPlans = [
     features: ['Unlimited Events', 'Event Website', 'Custom Event Pages', 'Guest Management', 'Email & Push Notifications', 'Basic Analytics', 'Vendor Directory Access', 'Priority Support', 'Advanced Analytics', 'Custom Themes', 'Team Collaboration', 'Export & Reporting'],
     isActive: true,
     sortOrder: 2,
-    metadata: { color: '#9C27B0', accentColor: '#F3E5F5' },
+    metadata: { color: '#ECAB47', accentColor: '#E08433' },
   },
 ];
 

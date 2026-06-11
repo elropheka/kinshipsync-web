@@ -1,4 +1,3 @@
-// Footer.tsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ChevronRight, Heart, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
@@ -32,14 +31,14 @@ const Footer: React.FC = () => {
   }, []);
 
   const socialLinks = [
-    { icon: <Facebook className="w-5 h-5" />, href: '#', color: '#1877F2' },
-    { icon: <Twitter className="w-5 h-5" />, href: '#', color: '#1DA1F2' },
-    { icon: <Instagram className="w-5 h-5" />, href: '#', color: '#E4405F' },
-    { icon: <Linkedin className="w-5 h-5" />, href: '#', color: '#0A66C2' }
+    { icon: <Facebook className="w-5 h-5" />, href: '#' },
+    { icon: <Twitter className="w-5 h-5" />, href: '#' },
+    { icon: <Instagram className="w-5 h-5" />, href: '#' },
+    { icon: <Linkedin className="w-5 h-5" />, href: '#' }
   ];
 
   return (
-    <footer id="footer" className="footer relative bg-[hsl(15_66%_14%)] pt-20 pb-12 overflow-hidden text-primary-foreground">
+    <footer id="footer" className="footer relative bg-[#5D2413] pt-20 pb-12 overflow-hidden text-primary-foreground">
       <div className={`
         absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent
         transform transition-opacity duration-1000
@@ -60,7 +59,6 @@ const Footer: React.FC = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-          {/* Company Info */}
           <div className={`
             footer-about transform transition-all duration-700
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
@@ -109,7 +107,6 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div className={`
             transform transition-all duration-700 delay-200
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
@@ -147,7 +144,6 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Services */}
           <div className={`
             transform transition-all duration-700 delay-400
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
@@ -184,7 +180,6 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Legal */}
           <div className={`
             transform transition-all duration-700 delay-600
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
@@ -222,7 +217,6 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Social Links */}
         <div className={`
           flex justify-center space-x-6 mb-12
           transform transition-all duration-700 delay-800
@@ -237,15 +231,10 @@ const Footer: React.FC = () => {
               onMouseLeave={() => setHoveredSocial(null)}
             >
               <div className={`
-                absolute inset-0 rounded-xl bg-gradient-to-r from-secondary to-[${social.color}]
-                opacity-0 transition-opacity duration-300
-                ${hoveredSocial === index ? 'opacity-20' : ''}
-              `}></div>
-              <div className={`
                 w-12 h-12 rounded-xl bg-primary-foreground/10 border border-primary-foreground/10
                 flex items-center justify-center
                 transform transition-all duration-300
-                ${hoveredSocial === index ? 'scale-110 rotate-12 shadow-lg' : ''}
+                ${hoveredSocial === index ? 'scale-110 rotate-12 shadow-lg bg-accent/20' : ''}
               `}>
                 <div className={`
                   text-accent
@@ -259,7 +248,6 @@ const Footer: React.FC = () => {
           ))}
         </div>
 
-        {/* Copyright */}
         <div className={`
           text-center border-t border-primary-foreground/15 pt-8
           transform transition-all duration-700 delay-1000
@@ -276,7 +264,6 @@ const Footer: React.FC = () => {
         </div>
       </div>
 
-      {/* Animation Styles */}
       <style>
         {`
           @keyframes blob {

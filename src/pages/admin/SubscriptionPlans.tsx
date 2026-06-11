@@ -49,7 +49,7 @@ const defaultPlan: Omit<Plan, 'id'> = {
   features: [],
   isActive: true,
   sortOrder: 0,
-  metadata: { color: '#757575', accentColor: '#f5f5f5' },
+  metadata: { color: '#D6C8AF', accentColor: '#F5EFE8' },
 };
 
 const SubscriptionPlansPage: React.FC = () => {
@@ -220,7 +220,7 @@ const SubscriptionPlansPage: React.FC = () => {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 rounded-full" style={{ backgroundColor: plan.metadata?.color || '#757575' }} />
+                    <div className="w-4 h-4 rounded-full" style={{ backgroundColor: plan.metadata?.color || '#D6C8AF' }} />
                     <div>
                       <h3 className="font-semibold">{plan.name}</h3>
                       <p className="text-sm text-muted-foreground">{plan.description}</p>
@@ -303,11 +303,11 @@ const SubscriptionPlansPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-muted-foreground">Color</label>
-                  <Input type="color" value={form.metadata?.color || '#757575'} onChange={(e) => setForm((f) => ({ ...f, metadata: { ...f.metadata, color: e.target.value } }))} />
+                  <Input type="color" value={form.metadata?.color || '#D6C8AF'} onChange={(e) => setForm((f) => ({ ...f, metadata: { ...f.metadata, color: e.target.value } }))} />
                 </div>
                 <div>
                   <label className="text-xs text-muted-foreground">Accent Color</label>
-                  <Input type="color" value={form.metadata?.accentColor || '#f5f5f5'} onChange={(e) => setForm((f) => ({ ...f, metadata: { ...f.metadata, accentColor: e.target.value } }))} />
+                  <Input type="color" value={form.metadata?.accentColor || '#F5EFE8'} onChange={(e) => setForm((f) => ({ ...f, metadata: { ...f.metadata, accentColor: e.target.value } }))} />
                 </div>
               </div>
             </div>
