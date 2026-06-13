@@ -6,6 +6,9 @@ import { Toaster } from 'sonner';
 import './index.css';
 import App from './App.tsx';
 import LandingPage from './pages/LandingPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import CookiePolicyPage from './pages/CookiePolicyPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
 import Auth from './pages/Auth';
 import ForgotPassword from './pages/ForgotPassword';
 import PasswordResetEmailSent from './pages/PasswordResetEmailSent';
@@ -33,6 +36,9 @@ createRoot(document.getElementById('root')!).render(
             <Router>
               <Routes>
                 <Route path="/" element={<LandingPage />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+                <Route path="/terms-of-service" element={<TermsOfServicePage />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/auth/forgot-password" element={<ForgotPassword />} />
                 <Route path="/auth/password-reset-sent" element={<PasswordResetEmailSent />} />

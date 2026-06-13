@@ -16,6 +16,7 @@ import tealTextLogo from '@/assets/branding/teal-text-logo.png';
 import GoogleIcon from '@/assets/google.png';
 import { useNavigate } from 'react-router-dom'; // For redirecting after auth
 import { Link } from 'react-router-dom'; // For navigation links
+import { legalPageRoutes } from '@/constants/mock/legalContent';
 
 // Type for writing to the 'profiles' Firestore collection
 interface FirestoreProfileWriteData {
@@ -328,9 +329,9 @@ const Auth = () => {
                 />
                 <label htmlFor="acceptTerms" className="ml-2 text-sm text-muted-foreground">
                   Accept{' '}
-                  <a href="#" className="text-secondary hover:underline">
+                  <Link to={legalPageRoutes.termsOfService} className="text-secondary hover:underline">
                     Terms & Conditions
-                  </a>
+                  </Link>
                 </label>
               </div>
 

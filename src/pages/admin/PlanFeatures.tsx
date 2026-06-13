@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/errorUtils';
 import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 interface Feature {
@@ -88,8 +89,8 @@ const PlanFeaturesPage: React.FC = () => {
       }
       setDialogOpen(false);
       fetchFeatures();
-    } catch (e: any) {
-      toast.error('Failed to save: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Failed to save: ' + getErrorMessage(e));
     }
   };
 

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/errorUtils';
 import { FiSave, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 
 interface Config {
@@ -33,8 +34,8 @@ const SubscriptionConfigPage: React.FC = () => {
       if (snap.exists()) {
         setConfig(snap.data() as Config);
       }
-    } catch (e: any) {
-      toast.error('Failed to load config: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Failed to load config: ' + getErrorMessage(e));
     } finally {
       setLoading(false);
     }
@@ -48,8 +49,8 @@ const SubscriptionConfigPage: React.FC = () => {
         updatedAt: serverTimestamp(),
       }, { merge: true });
       toast.success('Configuration saved.');
-    } catch (e: any) {
-      toast.error('Failed to save: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Failed to save: ' + getErrorMessage(e));
     } finally {
       setSaving(false);
     }

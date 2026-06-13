@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/errorUtils';
 import { FiPlus, FiEdit2, FiTrash2, FiDollarSign, FiRefreshCw, FiCheckSquare, FiSquare } from 'react-icons/fi';
 import { seedSubscriptionData } from '@/services/seedSubscriptionData';
 
@@ -76,7 +77,7 @@ const SubscriptionPlansPage: React.FC = () => {
       const q = query(collection(firestore, 'appFeatures'), where('isActive', '==', true));
       const snap = await getDocs(q);
       setAppFeatures(snap.docs.map((d) => ({ id: d.id, ...d.data() } as AppFeature)));
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('Failed to load app features:', e);
     }
   };
@@ -86,8 +87,8 @@ const SubscriptionPlansPage: React.FC = () => {
       const q = query(collection(firestore, 'subscriptionPlans'), orderBy('sortOrder'));
       const snap = await getDocs(q);
       setPlans(snap.docs.map((d) => ({ id: d.id, ...d.data() } as Plan)));
-    } catch (e: any) {
-      toast.error('Failed to load plans: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Failed to load plans: ' + getErrorMessage(e));
     } finally {
       setLoading(false);
     }
@@ -151,8 +152,8 @@ const SubscriptionPlansPage: React.FC = () => {
       }
       setDialogOpen(false);
       fetchPlans();
-    } catch (e: any) {
-      toast.error('Failed to save plan: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Failed to save plan: ' + getErrorMessage(e));
     }
   };
 
@@ -161,8 +162,8 @@ const SubscriptionPlansPage: React.FC = () => {
       await deleteDoc(doc(firestore, 'subscriptionPlans', id));
       toast.success('Plan deleted.');
       fetchPlans();
-    } catch (e: any) {
-      toast.error('Failed to delete plan: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Failed to delete plan: ' + getErrorMessage(e));
     } finally {
       setDeleteTarget(null);
     }
@@ -175,8 +176,8 @@ const SubscriptionPlansPage: React.FC = () => {
       await seedSubscriptionData();
       toast.success('Default plans and features created.');
       await Promise.all([fetchPlans(), fetchAppFeatures()]);
-    } catch (e: any) {
-      toast.error('Seed failed: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Seed failed: ' + getErrorMessage(e));
     } finally {
       setSeeding(false);
     }

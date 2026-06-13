@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Info } from 'lucide-react';
 import { landingAbout } from '@/constants/landingContent';
-import teensTableImage from '@/assets/img/teens-table.png';
+import kinshipsyncUsage from '@/assets/img/woman-use-kinshipsync.png';
 
 const AboutSection: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -88,7 +88,7 @@ const AboutSection: React.FC = () => {
               <div className={`absolute -bottom-6 -left-6 w-40 h-40 bg-secondary rounded-full mix-blend-soft-light filter blur-3xl transition-all duration-500 ${isImageLoaded ? 'opacity-20 scale-110' : 'opacity-10'}`} />
 
               <img
-                src={teensTableImage}
+                src={kinshipsyncUsage}
                 alt="Teens gathered around a table"
                 className={`
                   relative z-10 w-full rounded-3xl shadow-2xl

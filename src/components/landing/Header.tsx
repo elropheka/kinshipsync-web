@@ -1,10 +1,17 @@
-// Header.tsx
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Home, Grid, HelpCircle, Headphones, ArrowRight, Menu, X } from 'lucide-react';
 import beigeLogo from '@/assets/branding/beige-logo.png';
 
+interface NavItem {
+  label: string;
+  icon: React.ReactNode;
+  sectionId: string;
+}
+
 const Header: React.FC = () => {
+  const location = useLocation();
+  const isLandingPage = location.pathname === '/';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
@@ -46,12 +53,118 @@ const Header: React.FC = () => {
     setIsMobileMenuOpen((open) => !open);
   };
 
-  const navItems = [
-    { href: '#hero', label: 'Home', icon: <Home className="w-5 h-5" /> },
-    { href: '#features', label: 'Features', icon: <Grid className="w-5 h-5" /> },
-    { href: '#faq', label: 'FAQ', icon: <HelpCircle className="w-5 h-5" /> },
-    { href: '#support', label: 'Support', icon: <Headphones className="w-5 h-5" /> },
+  const navItems: NavItem[] = [
+    { sectionId: 'hero', label: 'Home', icon: <Home className="w-5 h-5" /> },
+    { sectionId: 'features', label: 'Features', icon: <Grid className="w-5 h-5" /> },
+    { sectionId: 'faq', label: 'FAQ', icon: <HelpCircle className="w-5 h-5" /> },
+    { sectionId: 'support', label: 'Support', icon: <Headphones className="w-5 h-5" /> },
   ];
+
+  const getNavTarget = (item: NavItem) => {
+    if (item.sectionId === 'hero' && !isLandingPage) {
+      return { to: '/' as const, href: undefined };
+    }
+
+    if (isLandingPage) {
+      return { to: undefined, href: `#${item.sectionId}` };
+    }
+
+    return { to: { pathname: '/', hash: `#${item.sectionId}` }, href: undefined };
+  };
+
+  const getNavKey = (item: NavItem) => item.sectionId;
+
+  const isNavActive = (item: NavItem) => isLandingPage && activeSection === item.sectionId;
+
+  const navLinkClassName = (item: NavItem, hovered: boolean) => `
+    relative group overflow-hidden
+    text-sm font-medium px-4 py-2 rounded-lg
+    transition-all duration-300
+    flex items-center space-x-2
+    text-primary-foreground hover:text-accent
+    ${isNavActive(item) ? 'text-primary-foreground bg-primary-foreground/15' : ''}
+    ${hovered ? 'scale-105' : ''}
+  `;
+
+  const renderDesktopNavItem = (item: NavItem) => {
+    const target = getNavTarget(item);
+    const hovered = hoveredItem === item.sectionId;
+    const content = (
+      <>
+        <div className={`
+          absolute inset-0 bg-gradient-to-r from-primary to-primary/80
+          opacity-0 transition-opacity duration-300
+          ${hovered ? 'opacity-10' : ''}
+        `}></div>
+        <div className={`
+          opacity-75
+          transform transition-all duration-300
+          ${hovered ? 'scale-110 rotate-12' : ''}
+        `}>
+          {item.icon}
+        </div>
+        <span className="relative z-10">{item.label}</span>
+        <span className={`
+          absolute bottom-0 left-0 w-full h-0.5
+          bg-gradient-to-r from-primary to-primary/80
+          transform origin-left transition-transform duration-300
+          ${isNavActive(item) ? 'scale-x-100' : 'scale-x-0'}
+          ${hovered ? 'scale-x-100' : ''}
+        `}></span>
+      </>
+    );
+
+    if (target.to) {
+      return (
+        <Link
+          to={target.to}
+          className={navLinkClassName(item, hovered)}
+          onMouseEnter={() => setHoveredItem(item.sectionId)}
+          onMouseLeave={() => setHoveredItem(null)}
+        >
+          {content}
+        </Link>
+      );
+    }
+
+    return (
+      <a
+        href={target.href}
+        className={navLinkClassName(item, hovered)}
+        onMouseEnter={() => setHoveredItem(item.sectionId)}
+        onMouseLeave={() => setHoveredItem(null)}
+      >
+        {content}
+      </a>
+    );
+  };
+
+  const renderMobileNavItem = (item: NavItem) => {
+    const target = getNavTarget(item);
+    const className = `
+      flex items-center gap-4 px-5 py-4 rounded-xl
+      transition-all duration-200 font-medium
+      ${isNavActive(item)
+        ? 'bg-white/15 text-white'
+        : 'text-white/90 hover:bg-white/10 hover:text-white'}
+    `;
+
+    if (target.to) {
+      return (
+        <Link to={target.to} className={className} onClick={closeMobileMenu}>
+          <span className="text-accent">{item.icon}</span>
+          <span>{item.label}</span>
+        </Link>
+      );
+    }
+
+    return (
+      <a href={target.href} className={className} onClick={closeMobileMenu}>
+        <span className="text-accent">{item.icon}</span>
+        <span>{item.label}</span>
+      </a>
+    );
+  };
 
   return (
     <>
@@ -92,49 +205,8 @@ const Header: React.FC = () => {
           <nav className="hidden xl:block">
             <ul className="flex items-center space-x-8">
               {navItems.map((item) => (
-                <li key={item.href}>
-                  <a 
-                    href={item.href}
-                    className={`
-                      relative group overflow-hidden
-                      text-sm font-medium px-4 py-2 rounded-lg
-                      transition-all duration-300
-                      flex items-center space-x-2
-                      text-primary-foreground hover:text-accent
-                      ${activeSection === item.href.slice(1) 
-                        ? 'text-primary-foreground bg-primary-foreground/15' 
-                        : ''}
-                      ${hoveredItem === item.href ? 'scale-105' : ''}
-                    `}
-                    onMouseEnter={() => setHoveredItem(item.href)}
-                    onMouseLeave={() => setHoveredItem(null)}
-                  >
-                    {/* Background Animation */}
-                    <div className={`
-                      absolute inset-0 bg-gradient-to-r from-primary to-primary/80
-                      opacity-0 transition-opacity duration-300
-                      ${hoveredItem === item.href ? 'opacity-10' : ''}
-                    `}></div>
-
-                    {/* Icon and Label */}
-                    <div className={`
-                      opacity-75
-                      transform transition-all duration-300
-                      ${hoveredItem === item.href ? 'scale-110 rotate-12' : ''}
-                    `}>
-                      {item.icon}
-                    </div>
-                    <span className="relative z-10">{item.label}</span>
-
-                    {/* Underline Animation */}
-                    <span className={`
-                      absolute bottom-0 left-0 w-full h-0.5
-                      bg-gradient-to-r from-primary to-primary/80
-                      transform origin-left transition-transform duration-300
-                      ${activeSection === item.href.slice(1) ? 'scale-x-100' : 'scale-x-0'}
-                      ${hoveredItem === item.href ? 'scale-x-100' : ''}
-                    `}></span>
-                  </a>
+                <li key={getNavKey(item)}>
+                  {renderDesktopNavItem(item)}
                 </li>
               ))}
             </ul>
@@ -204,21 +276,8 @@ const Header: React.FC = () => {
       <nav className="flex flex-col h-full pt-24 pb-8 px-4 overflow-y-auto">
         <ul className="space-y-2">
           {navItems.map((item) => (
-            <li key={item.href}>
-              <a
-                href={item.href}
-                className={`
-                  flex items-center gap-4 px-5 py-4 rounded-xl
-                  transition-all duration-200 font-medium
-                  ${activeSection === item.href.slice(1)
-                    ? 'bg-white/15 text-white'
-                    : 'text-white/90 hover:bg-white/10 hover:text-white'}
-                `}
-                onClick={closeMobileMenu}
-              >
-                <span className="text-accent">{item.icon}</span>
-                <span>{item.label}</span>
-              </a>
+            <li key={getNavKey(item)}>
+              {renderMobileNavItem(item)}
             </li>
           ))}
         </ul>
