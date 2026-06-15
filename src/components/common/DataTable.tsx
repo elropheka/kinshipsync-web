@@ -111,7 +111,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full px-4 md:px-6">
       <div className="flex items-center py-4">
         <Input
           placeholder={globalFilterPlaceholder}
@@ -132,7 +132,7 @@ export function DataTable<TData, TValue>({
           {toolbarActions}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
+              <Button variant="outline" className="ml-auto hidden md:inline-flex">
                 Columns <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -182,7 +182,7 @@ export function DataTable<TData, TValue>({
       )}
 
       {/* Desktop table view */}
-      <div className={`rounded-xl border border-border overflow-x-auto bg-background/50 ${renderMobileCard ? 'hidden md:block' : ''}`}>
+      <div className={`rounded-xl border border-border overflow-x-auto bg-background/50 px-4 md:px-6 ${renderMobileCard ? 'hidden md:block' : ''}`}>
         <Table className="w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

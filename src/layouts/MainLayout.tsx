@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import clsx from 'clsx';
 import Navbar from '@/components/common/Navbar';
 import Sidebar from '@/components/common/Sidebar';
+import MobileBottomNav from '@/components/common/MobileBottomNav';
 import NotificationDrawer from '@/components/common/NotificationDrawer'; // Import NotificationDrawer
 import { useNotifications } from '@/hooks/useNotifications'; // Import useNotifications
 import { useAuth } from '@/context/AuthContext';
@@ -98,6 +99,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           {children || <Outlet />}
         </main>
       </div>
+      <MobileBottomNav />
       <NotificationDrawer 
         ref={notificationDrawerRef} 
         isOpen={isNotificationDrawerOpen} 
