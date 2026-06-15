@@ -1,13 +1,56 @@
 import { CalendarPlus, LayoutTemplate, Users, Wallet, ListChecks, Store } from 'lucide-react';
 
-export const landingHero = {
-  headline: 'A family-first planning platform built to bring people together without the stress.',
-  description:
-    'It\'s for: The cousin who always starts the group chat. The auntie who keeps everyone on track. The family that refuses to lose touch, no matter the distance.',
-  subDescription:
-    'Kinship Sync brings everything into one simple, shared space so planning feels easy again. With Kinship Sync, you can coordinate schedules without the back-and-forth, collect RSVPs in seconds, share updates everyone actually sees, and keep traditions alive across cities and generations.',
-  closing:
-    'Because this isn\'t just about planning events. It\'s about staying connected, showing up for each other, and creating moments that turn into memories. Kinship Sync helps families do what they\'ve always done best — be together.',
+export type HeroSectionBlock =
+  | { type: 'text'; content: string }
+  | { type: 'list'; items: string[] };
+
+export const landingHero: {
+  headline: string;
+  sections: HeroSectionBlock[];
+} = {
+  headline:
+    'A family-first planning platform built to bring people together without the stress.',
+  sections: [
+    { type: 'text', content: 'It\'s for:' },
+    {
+      type: 'list',
+      items: [
+        'The cousin who always starts the group chat',
+        'The auntie who keeps everyone on track',
+        'The family that refuses to lose touch, no matter the distance',
+      ],
+    },
+    {
+      type: 'text',
+      content:
+        'Kinship Sync brings everything into one simple, shared space so planning feels easy again.',
+    },
+    { type: 'text', content: 'With Kinship Sync, you can:' },
+    {
+      type: 'list',
+      items: [
+        'Coordinate schedules without the back-and-forth',
+        'Collect RSVPs in seconds',
+        'Share updates everyone actually sees',
+        'Keep traditions alive across cities and generations',
+      ],
+    },
+    { type: 'text', content: 'Because this isn\'t just about planning events.' },
+    { type: 'text', content: 'It\'s about:' },
+    {
+      type: 'list',
+      items: [
+        'Staying connected',
+        'Showing up for each other',
+        'Creating moments that turn into memories',
+      ],
+    },
+    {
+      type: 'text',
+      content:
+        'Kinship Sync helps families do what they\'ve always done best — be together.',
+    },
+  ],
 };
 
 export const landingAbout = {

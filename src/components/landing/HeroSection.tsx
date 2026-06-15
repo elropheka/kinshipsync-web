@@ -64,35 +64,42 @@ const HeroSection: React.FC = () => {
               {landingHero.headline}
             </h1>
 
-            <p
-              className={`
-                mb-4 text-lg md:text-xl text-primary-foreground/85 max-w-3xl leading-relaxed
-                transform transition-all duration-700 delay-400
-                ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-              `}
-            >
-              {landingHero.description}
-            </p>
-
-            <p
-              className={`
-                mb-4 text-base md:text-lg text-primary-foreground/75 max-w-3xl leading-relaxed
-                transform transition-all duration-700 delay-500
-                ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-              `}
-            >
-              {landingHero.subDescription}
-            </p>
-
-            <p
-              className={`
-                mb-8 text-base md:text-lg text-primary-foreground/80 max-w-3xl leading-relaxed font-medium
-                transform transition-all duration-700 delay-500
-                ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-              `}
-            >
-              {landingHero.closing}
-            </p>
+            {landingHero.sections.map((section, index) => {
+              const delay = 300 + index * 100;
+              if (section.type === 'list') {
+                return (
+                  <ul
+                    key={index}
+                    className={`
+                      mb-4 space-y-1 max-w-3xl
+                      transform transition-all duration-700
+                      ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+                    `}
+                    style={{ transitionDelay: `${delay}ms` }}
+                  >
+                    {section.items.map((item, i) => (
+                      <li key={i} className="flex items-start gap-2 text-base md:text-lg text-primary-foreground/85 leading-relaxed">
+                        <span className="mt-2 w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                );
+              }
+              return (
+                <p
+                  key={index}
+                  className={`
+                    mb-4 text-base md:text-lg text-primary-foreground/80 max-w-3xl leading-relaxed
+                    transform transition-all duration-700
+                    ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+                  `}
+                  style={{ transitionDelay: `${delay}ms` }}
+                >
+                  {section.content}
+                </p>
+              );
+            })}
 
             <div
               className={`
