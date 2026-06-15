@@ -41,7 +41,7 @@ const HeroSection: React.FC = () => {
       />
 
       <div className="container mx-auto max-w-7xl px-4 md:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-12 lg:gap-16 items-center">
           <div className="hero-content">
             <div
               className={`
@@ -56,7 +56,7 @@ const HeroSection: React.FC = () => {
 
             <h1
               className={`
-                mb-6 font-display text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-semibold text-primary-foreground leading-tight
+                mb-6 font-display text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-semibold text-primary-foreground leading-tight
                 transform transition-all duration-700 delay-200
                 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
               `}
@@ -139,7 +139,7 @@ const HeroSection: React.FC = () => {
                 src={familyTableImage}
                 alt="Family gathered around a table"
                 className={`
-                  relative z-10 w-full rounded-3xl shadow-2xl
+                  relative z-10 w-full h-auto md:h-[500px] lg:h-[580px] object-cover rounded-3xl shadow-2xl
                   transform transition-all duration-700
                   ${isImageLoaded ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 translate-y-4 opacity-0'}
                   group-hover:scale-[1.02] group-hover:shadow-3xl
