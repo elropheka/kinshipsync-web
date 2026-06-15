@@ -76,12 +76,22 @@ const HeroSection: React.FC = () => {
 
             <p
               className={`
-                mb-8 text-base md:text-lg text-primary-foreground/75 max-w-3xl leading-relaxed
+                mb-4 text-base md:text-lg text-primary-foreground/75 max-w-3xl leading-relaxed
                 transform transition-all duration-700 delay-500
                 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
               `}
             >
               {landingHero.subDescription}
+            </p>
+
+            <p
+              className={`
+                mb-8 text-base md:text-lg text-primary-foreground/80 max-w-3xl leading-relaxed font-medium
+                transform transition-all duration-700 delay-500
+                ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+              `}
+            >
+              {landingHero.closing}
             </p>
 
             <div

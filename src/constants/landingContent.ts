@@ -1,13 +1,13 @@
 import { CalendarPlus, LayoutTemplate, Users, Wallet, ListChecks, Store } from 'lucide-react';
 
 export const landingHero = {
-  headline: 'Your Ultimate Event Planner and beyond!',
+  headline: 'A family-first planning platform built to bring people together without the stress.',
   description:
-    'Bring your family together with a custom event website, collaborative planning tools, RSVP management, and a clear event schedule – all in one place.',
+    'It\'s for: The cousin who always starts the group chat. The auntie who keeps everyone on track. The family that refuses to lose touch, no matter the distance.',
   subDescription:
-    'Whether you\'re organizing a family reunion, planning a vacation, or coordinating any type of event, Kinship Sync makes the process simple and stress-free. Invite your family and friends to join the planning, track who\'s attending, and keep everyone on the same page.',
-  tagline:
-    'This is your one-stop-shop to digitalize the event planning process and make it easier for everyone to participate. No more confusion, no more missed details – just seamless event coordination from start to finish! Let us help you create a memorable event with ease.',
+    'Kinship Sync brings everything into one simple, shared space so planning feels easy again. With Kinship Sync, you can coordinate schedules without the back-and-forth, collect RSVPs in seconds, share updates everyone actually sees, and keep traditions alive across cities and generations.',
+  closing:
+    'Because this isn\'t just about planning events. It\'s about staying connected, showing up for each other, and creating moments that turn into memories. Kinship Sync helps families do what they\'ve always done best — be together.',
 };
 
 export const landingAbout = {
