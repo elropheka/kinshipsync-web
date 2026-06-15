@@ -41,7 +41,7 @@ const HeroSection: React.FC = () => {
       />
 
       <div className="container mx-auto max-w-7xl px-4 md:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-16 items-center">
           <div className="hero-content">
             <div
               className={`
@@ -71,7 +71,7 @@ const HeroSection: React.FC = () => {
                   <ul
                     key={index}
                     className={`
-                      mb-4 space-y-1 max-w-3xl
+                      mb-4 space-y-1
                       transform transition-all duration-700
                       ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
                     `}
@@ -90,7 +90,7 @@ const HeroSection: React.FC = () => {
                 <p
                   key={index}
                   className={`
-                    mb-4 text-base md:text-lg text-primary-foreground/80 max-w-3xl leading-relaxed
+                    mb-4 text-base md:text-lg text-primary-foreground/80 leading-relaxed
                     transform transition-all duration-700
                     ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
                   `}
