@@ -2,6 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Grid, Store, ArrowRight, Menu, X, Mail } from 'lucide-react';
 import beigeLogo from '@/assets/branding/beige-logo.png';
+import { APP_STORE_LINKS } from '@/constants/links';
+
+const getDownloadLink = (): string => {
+  if (typeof navigator === 'undefined') return APP_STORE_LINKS.ios;
+  const ua = navigator.userAgent;
+  if (/android/i.test(ua)) return APP_STORE_LINKS.android;
+  if (/iPad|iPhone|iPod/i.test(ua)) return APP_STORE_LINKS.ios;
+  return APP_STORE_LINKS.ios;
+};
 
 interface NavItem {
   label: string;
@@ -15,6 +24,11 @@ const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [downloadLink, setDownloadLink] = useState(APP_STORE_LINKS.ios);
+
+  useEffect(() => {
+    setDownloadLink(getDownloadLink());
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -214,8 +228,10 @@ const Header: React.FC = () => {
 
           {/* CTA Button */}
           <div className="flex items-center space-x-6">
-            <Link 
-              to="/auth" 
+            <a
+              href={downloadLink}
+              target="_blank"
+              rel="noopener noreferrer"
               className={`
                 hidden sm:inline-flex items-center gap-2
                 px-6 py-3 rounded-xl font-semibold text-sm
@@ -229,7 +245,7 @@ const Header: React.FC = () => {
               
               <span className="relative z-10">Download Now</span>
               <ArrowRight className="w-5 h-5 relative z-10 transform group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </a>
 
             {/* Mobile Menu Button */}
             <button
@@ -283,14 +299,16 @@ const Header: React.FC = () => {
         </ul>
 
         <div className="mt-8 px-1">
-          <Link
-            to="/auth"
+          <a
+            href={downloadLink}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl bg-secondary text-secondary-foreground font-semibold hover:bg-secondary/90 transition-colors"
             onClick={closeMobileMenu}
           >
             Download Now
             <ArrowRight className="w-5 h-5" />
-          </Link>
+          </a>
         </div>
       </nav>
     </div>
