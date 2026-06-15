@@ -87,7 +87,7 @@ const VendorEditModal: React.FC<VendorEditModalProps> = ({ vendor, isOpen, onClo
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleFormSubmit, (errors) => {
             showValidationErrors(errors, 'Please correct the form errors:');
-          })} className="space-y-4 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          })} className="space-y-6 py-4">
             <FormField
               control={form.control}
               name="name"
@@ -108,13 +108,13 @@ const VendorEditModal: React.FC<VendorEditModalProps> = ({ vendor, isOpen, onClo
                 <FormItem>
                   <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Vendor's description" {...field} rows={3} />
+                    <Textarea placeholder="Vendor's description" {...field} rows={4} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <DialogFooter>
+            <DialogFooter className="gap-3">
               <DialogClose asChild>
                 <Button type="button" variant="outline" onClick={onClose}>
                   Cancel

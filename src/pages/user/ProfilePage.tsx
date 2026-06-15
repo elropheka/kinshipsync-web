@@ -8,7 +8,6 @@ import {
   FiBell,
   FiShield,
   FiMoon,
-  FiCamera,
   FiChevronRight,
 } from 'react-icons/fi';
 import { Button } from '@/components/ui/button';
@@ -247,7 +246,6 @@ const ProfilePage: React.FC = () => {
     userProfile?.displayName ||
     [userProfile?.firstName, userProfile?.lastName].filter(Boolean).join(' ') ||
     'User';
-  const avatarInitial = displayLabel.charAt(0).toUpperCase();
 
   return (
     <div className="max-w-2xl mx-auto pb-10 space-y-6">
@@ -256,50 +254,24 @@ const ProfilePage: React.FC = () => {
         <p className="text-muted-foreground text-sm">Manage your account and preferences</p>
       </div>
 
-      <DashboardCard className="p-6 md:p-8 text-center">
-        <div className="relative inline-block mb-4">
-          {form.watch('avatarUrl') ? (
-            <img
-              src={form.watch('avatarUrl')}
-              alt={displayLabel}
-              className="w-24 h-24 rounded-full object-cover mx-auto"
+      <DashboardCard className="p-6 md:p-8">
+        <div className="flex flex-col items-center">
+          <div className="relative mb-4">
+            <ImageUploadInput
+              label="profile-photo"
+              variant="avatar"
+              currentImageUrl={form.watch('avatarUrl')}
+              storagePath="userAvatars"
+              onImageUploaded={(url) => void handleAvatarUploaded(url)}
+              onImageRemoved={() =>
+                form.setValue('avatarUrl', '', { shouldValidate: true, shouldDirty: true })
+              }
+              onError={(msg) => form.setError('avatarUrl', { type: 'manual', message: msg })}
             />
-          ) : (
-            <div className="w-24 h-24 rounded-full bg-secondary text-white text-3xl font-bold flex items-center justify-center mx-auto">
-              {avatarInitial}
-            </div>
-          )}
-          <Form {...form}>
-            <div className="absolute bottom-0 right-0">
-              <FormField
-                control={form.control}
-                name="avatarUrl"
-                render={({ field }) => (
-                  <FormItem className="space-y-0">
-                    <FormControl>
-                      <ImageUploadInput
-                        label="profile-photo"
-                        variant="avatar"
-                        currentImageUrl={field.value}
-                        storagePath="userAvatars"
-                        onImageUploaded={(url) => void handleAvatarUploaded(url)}
-                        onImageRemoved={() =>
-                          form.setValue('avatarUrl', '', { shouldValidate: true, shouldDirty: true })
-                        }
-                        onError={(msg) => form.setError('avatarUrl', { type: 'manual', message: msg })}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-          </Form>
-          <div className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center pointer-events-none">
-            <FiCamera className="w-3.5 h-3.5" />
           </div>
+          <h2 className="font-bold text-foreground text-lg">{displayLabel}</h2>
+          <p className="text-muted-foreground text-sm">{userProfile?.email || currentUser?.email}</p>
         </div>
-        <h2 className="font-bold text-foreground text-lg">{displayLabel}</h2>
-        <p className="text-muted-foreground text-sm">{userProfile?.email || currentUser?.email}</p>
 
         <div className="mt-6 space-y-2 text-left">
           {[
