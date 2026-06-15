@@ -68,7 +68,7 @@ export const landingFaq = {
 
 export const landingSupport = {
   badge: 'Support',
-  title: 'Get in Touch',
+  title: 'Contact Us',
   description:
     'Questions about reunions, events, vendors, or your account? Our team is here to help.',
   email: 'support@kinshipsync.com',

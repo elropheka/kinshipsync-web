@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Mail, ChevronRight, Heart, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Mail, Heart, Facebook, Instagram } from 'lucide-react';
 import beigeLogo from '@/assets/branding/beige-logo.png';
-import { legalPageRoutes } from '@/constants/mock/legalContent';
 
 const Footer: React.FC = () => {
-  const location = useLocation();
-  const isLandingPage = location.pathname === '/';
   const [hoveredSocial, setHoveredSocial] = useState<number | null>(null);
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -33,27 +30,9 @@ const Footer: React.FC = () => {
     };
   }, []);
 
-  const quickLinks = [
-    { id: 'home', label: 'Home', href: '#hero', to: isLandingPage ? undefined : '/' },
-    {
-      id: 'features',
-      label: 'Features',
-      href: '#features',
-      to: isLandingPage ? undefined : { pathname: '/', hash: '#features' },
-    },
-    {
-      id: 'support',
-      label: 'Support',
-      href: '#support',
-      to: isLandingPage ? undefined : { pathname: '/', hash: '#support' },
-    },
-  ] as const;
-
   const socialLinks = [
     { icon: <Facebook className="w-5 h-5" />, href: '#' },
-    { icon: <Twitter className="w-5 h-5" />, href: '#' },
     { icon: <Instagram className="w-5 h-5" />, href: '#' },
-    { icon: <Linkedin className="w-5 h-5" />, href: '#' }
   ];
 
   return (
@@ -77,7 +56,7 @@ const Footer: React.FC = () => {
       `}></div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
           <div className={`
             footer-about transform transition-all duration-700
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
@@ -131,154 +110,37 @@ const Footer: React.FC = () => {
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
           `} data-aos="fade-up" data-aos-delay="100">
             <h4 className="text-lg font-semibold text-primary-foreground mb-8 relative group">
-              <span className="relative z-10">Quick Links</span>
+              <span className="relative z-10">Follow Us</span>
               <div className="absolute bottom-0 left-0 w-12 h-1 bg-secondary rounded-full transform -translate-y-2 opacity-70 group-hover:w-24 transition-all"></div>
             </h4>
-            <ul className="space-y-4">
-              {quickLinks.map((link) => (
-                <li key={link.id}>
-                  {link.to ? (
-                    <Link
-                      to={link.to}
-                      className="text-primary-foreground/70 hover:text-accent transition-colors flex items-center group"
-                      onMouseEnter={() => setHoveredLink(link.id)}
-                      onMouseLeave={() => setHoveredLink(null)}
-                    >
-                      <ChevronRight className={`
-                        text-accent w-5 h-5 mr-2
-                        transform transition-all duration-300
-                        ${hoveredLink === link.id ? 'translate-x-2 scale-110' : ''}
-                      `} />
-                      <span className={`
-                        transform transition-all duration-300
-                        ${hoveredLink === link.id ? 'translate-x-1' : ''}
-                      `}>{link.label}</span>
-                    </Link>
-                  ) : (
-                    <a
-                      href={link.href}
-                      className="text-primary-foreground/70 hover:text-accent transition-colors flex items-center group"
-                      onMouseEnter={() => setHoveredLink(link.id)}
-                      onMouseLeave={() => setHoveredLink(null)}
-                    >
-                      <ChevronRight className={`
-                        text-accent w-5 h-5 mr-2
-                        transform transition-all duration-300
-                        ${hoveredLink === link.id ? 'translate-x-2 scale-110' : ''}
-                      `} />
-                      <span className={`
-                        transform transition-all duration-300
-                        ${hoveredLink === link.id ? 'translate-x-1' : ''}
-                      `}>{link.label}</span>
-                    </a>
-                  )}
-                </li>
+            <div className="flex space-x-4">
+              {socialLinks.map((social, index) => (
+                <a
+                  key={`social-${index}`}
+                  href={social.href}
+                  className="relative group"
+                  onMouseEnter={() => setHoveredSocial(index)}
+                  onMouseLeave={() => setHoveredSocial(null)}
+                >
+                  <div className={`
+                    w-12 h-12 rounded-xl bg-primary-foreground/10 border border-primary-foreground/10
+                    flex items-center justify-center
+                    transform transition-all duration-300
+                    ${hoveredSocial === index ? 'scale-110 rotate-12 shadow-lg bg-accent/20' : ''}
+                  `}>
+                    <div className={`
+                      text-accent
+                      transform transition-transform duration-300
+                      ${hoveredSocial === index ? 'scale-110' : ''}
+                    `}>
+                      {social.icon}
+                    </div>
+                  </div>
+                </a>
               ))}
-            </ul>
+            </div>
           </div>
 
-          <div className={`
-            transform transition-all duration-700 delay-400
-            ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-          `} data-aos="fade-up" data-aos-delay="200">
-            <h4 className="text-lg font-semibold text-primary-foreground mb-8 relative group">
-              <span className="relative z-10">Our Services</span>
-              <div className="absolute bottom-0 left-0 w-12 h-1 bg-secondary rounded-full transform -translate-y-2 opacity-70 group-hover:w-24 transition-all"></div>
-            </h4>
-            <ul className="space-y-4">
-              {[
-                'Event Websites',
-                'RSVP Management',
-                'Collaborative Planning',
-              ].map((service) => (
-                <li key={service}>
-                  <a 
-                    href="#" 
-                    className="text-primary-foreground/70 hover:text-accent transition-colors flex items-center group"
-                    onMouseEnter={() => setHoveredLink(service)}
-                    onMouseLeave={() => setHoveredLink(null)}
-                  >
-                    <ChevronRight className={`
-                      text-accent w-5 h-5 mr-2
-                      transform transition-all duration-300
-                      ${hoveredLink === service ? 'translate-x-2 scale-110' : ''}
-                    `} />
-                    <span className={`
-                      transform transition-all duration-300
-                      ${hoveredLink === service ? 'translate-x-1' : ''}
-                    `}>{service}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className={`
-            transform transition-all duration-700 delay-600
-            ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-          `} data-aos="fade-up" data-aos-delay="300">
-            <h4 className="text-lg font-semibold text-primary-foreground mb-8 relative group">
-              <span className="relative z-10">Legal</span>
-              <div className="absolute bottom-0 left-0 w-12 h-1 bg-secondary rounded-full transform -translate-y-2 opacity-70 group-hover:w-24 transition-all"></div>
-            </h4>
-            <ul className="space-y-4">
-              {[
-                { label: 'Privacy Policy', to: legalPageRoutes.privacyPolicy },
-                { label: 'Terms of Service', to: legalPageRoutes.termsOfService },
-                { label: 'Cookie Policy', to: legalPageRoutes.cookiePolicy },
-              ].map((item) => (
-                <li key={item.to}>
-                  <Link
-                    to={item.to}
-                    className="text-primary-foreground/70 hover:text-accent transition-colors flex items-center group"
-                    onMouseEnter={() => setHoveredLink(item.to)}
-                    onMouseLeave={() => setHoveredLink(null)}
-                  >
-                    <ChevronRight className={`
-                      text-accent w-5 h-5 mr-2
-                      transform transition-all duration-300
-                      ${hoveredLink === item.to ? 'translate-x-2 scale-110' : ''}
-                    `} />
-                    <span className={`
-                      transform transition-all duration-300
-                      ${hoveredLink === item.to ? 'translate-x-1' : ''}
-                    `}>{item.label}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <div className={`
-          flex justify-center space-x-6 mb-12
-          transform transition-all duration-700 delay-800
-          ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-        `} data-aos="fade-up" data-aos-delay="400">
-          {socialLinks.map((social, index) => (
-            <a 
-              key={`social-${index}`}
-              href={social.href}
-              className="relative group"
-              onMouseEnter={() => setHoveredSocial(index)}
-              onMouseLeave={() => setHoveredSocial(null)}
-            >
-              <div className={`
-                w-12 h-12 rounded-xl bg-primary-foreground/10 border border-primary-foreground/10
-                flex items-center justify-center
-                transform transition-all duration-300
-                ${hoveredSocial === index ? 'scale-110 rotate-12 shadow-lg bg-accent/20' : ''}
-              `}>
-                <div className={`
-                  text-accent
-                  transform transition-transform duration-300
-                  ${hoveredSocial === index ? 'scale-110' : ''}
-                `}>
-                  {social.icon}
-                </div>
-              </div>
-            </a>
-          ))}
         </div>
 
         <div className={`

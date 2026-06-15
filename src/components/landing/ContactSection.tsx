@@ -1,6 +1,6 @@
 // ContactSection.tsx
 import React, { useState, useEffect } from 'react';
-import { Mail, ArrowRight, Headphones } from 'lucide-react';
+import { Mail, ArrowRight } from 'lucide-react';
 import { landingSupport } from '@/constants/landingSupportContent';
 
 const ContactSection: React.FC = () => {
@@ -72,7 +72,7 @@ const ContactSection: React.FC = () => {
           ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
         `}>
           <span className="inline-flex items-center mb-4 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm uppercase font-semibold tracking-wider">
-            <Headphones className="w-5 h-5 mr-2" />
+            <Mail className="w-5 h-5 mr-2" />
             {landingSupport.badge}
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
@@ -89,7 +89,7 @@ const ContactSection: React.FC = () => {
             ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
           `}>
             <div className="bg-primary rounded-2xl p-8 lg:p-12 shadow-xl h-full">
-              <h3 className="text-2xl font-bold text-white mb-8">Contact Information</h3>
+              <h3 className="text-2xl font-bold text-white mb-8">Contact Us</h3>
 
               {landingSupport.contacts.map((item, index) => (
                 <div

@@ -1,7 +1,7 @@
 import { CalendarPlus, LayoutTemplate, Users, Wallet, ListChecks, Store } from 'lucide-react';
 
 export const landingHero = {
-  headline: 'Your Ultimate Event Planning Collaborator',
+  headline: 'Your Ultimate Event Planner and beyond!',
   description:
     'Bring your family together with a custom event website, collaborative planning tools, RSVP management, and a clear event schedule – all in one place.',
   subDescription:

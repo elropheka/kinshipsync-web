@@ -33,7 +33,7 @@ const VendorSection: React.FC = () => {
           `}>
             <span className="inline-flex items-center mb-4 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm uppercase font-semibold tracking-wider">
               <Store className="w-5 h-5 mr-2" />
-              Vendor Opportunities
+              Vendors
             </span>
             <h2 className="text-3xl md:text-4xl text-foreground mb-4 font-heading tracking-tight">
               Grow your business with Kinship Sync.

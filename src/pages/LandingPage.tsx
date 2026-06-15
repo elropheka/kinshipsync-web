@@ -4,13 +4,10 @@ import { ChevronUp } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Header from '../components/landing/Header';
 import HeroSection from '../components/landing/HeroSection';
-import AboutSection from '../components/landing/AboutSection';
+import HowItWorksSection from '../components/landing/HowItWorksSection';
 import WhyChooseSection from '../components/landing/FeaturesTwoSection';
 import PerfectForSection from '../components/landing/PerfectForSection';
-import HowItWorksSection from '../components/landing/HowItWorksSection';
-import PricingSection from '../components/landing/PricingSection';
 import VendorSection from '../components/landing/VendorSection';
-import FutureVisionSection from '../components/landing/FutureVisionSection';
 import ContactSection from '../components/landing/ContactSection';
 import Footer from '../components/landing/Footer';
 
@@ -55,13 +52,10 @@ const LandingPage: React.FC = () => {
 
       <main id="main" className="relative overflow-hidden">
         <HeroSection />
-        <AboutSection />
-        <WhyChooseSection />
         <HowItWorksSection />
+        <WhyChooseSection />
         <PerfectForSection />
-        <PricingSection />
         <VendorSection />
-        <FutureVisionSection />
         <ContactSection />
       </main>
 
