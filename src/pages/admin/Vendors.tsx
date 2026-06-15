@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiSearch, FiShoppingBag } from 'react-icons/fi';
+import { FiSearch, FiShoppingBag, FiStar } from 'react-icons/fi';
 import { DataTable } from '@/components/common/DataTable';
 import { getAdminVendorColumns } from './adminVendorColumns';
 import { useAllVendors } from '@/hooks/useAllVendors';
@@ -148,6 +148,47 @@ const AdminVendorsPage: React.FC = () => {
           data={filteredVendors}
           isLoading={isLoading}
           emptyMessage="No vendors found."
+          renderMobileCard={(vendor: Vendor) => {
+            const isPending = !vendor.isFeatured;
+            return (
+              <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-secondary/20 text-secondary flex items-center justify-center flex-shrink-0">
+                      <FiShoppingBag className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground text-sm">{vendor.name}</p>
+                      <p className="text-xs text-muted-foreground">{vendor.categoryIds?.[0] || 'General'}</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="link"
+                    className="text-secondary p-0 h-auto font-medium text-sm shrink-0"
+                    onClick={() => handleEditVendor(vendor)}
+                  >
+                    View
+                  </Button>
+                </div>
+                <div className="space-y-1 text-xs text-muted-foreground">
+                  {vendor.contactEmail && <p>{vendor.contactEmail}</p>}
+                </div>
+                <div className="flex items-center gap-3 text-xs">
+                  {vendor.averageRating && (
+                    <span className="inline-flex items-center gap-1 text-foreground">
+                      <FiStar className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+                      {vendor.averageRating}
+                    </span>
+                  )}
+                  <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${
+                    isPending ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-700'
+                  }`}>
+                    {isPending ? 'Pending' : 'Active'}
+                  </span>
+                </div>
+              </div>
+            );
+          }}
         />
       </DashboardCard>
 

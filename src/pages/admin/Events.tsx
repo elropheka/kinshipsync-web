@@ -7,7 +7,7 @@ import type { Event, CreateEventPayload, UpdateEventPayload, UpdateEventWebsiteD
 import type { UserProfile } from '@/types/userTypes';
 import EventEditModal from '@/components/admin/EventEditModal';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Trash2 } from 'lucide-react'; // Added Trash2 icon
+import { PlusCircle, Trash2 } from 'lucide-react';
 import { toast } from "sonner";
 import { useErrorToast } from '@/hooks/useErrorToast';
 import { ErrorState } from '@/components/common/ErrorState';
@@ -260,6 +260,37 @@ const AdminEventsPage: React.FC = () => {
                   enableRowSelection={true}
                   globalFilterPlaceholder={`Search ${category.title.toLowerCase()}...`}
                   bulkActions={bulkActions}
+                  renderMobileCard={(event: Event) => {
+                    const status = event.status || (() => {
+                      const now = new Date();
+                      const start = new Date(event.date);
+                      const end = event.endDate ? new Date(event.endDate) : start;
+                      end.setHours(23, 59, 59, 999);
+                      if (now > end) return 'completed';
+                      if (now >= start && now <= end) return 'ongoing';
+                      return 'upcoming';
+                    })();
+                    const badgeVariant = status === 'ongoing' ? 'bg-primary/10 text-primary' : status === 'completed' ? 'bg-muted text-muted-foreground' : status === 'cancelled' ? 'bg-red-100 text-red-700' : 'bg-secondary/10 text-secondary';
+                    const eventDate = new Date(event.date).toLocaleDateString();
+                    const organizerName = userMap[event.organizerId] || event.organizerId;
+                    return (
+                      <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="font-semibold text-foreground text-sm leading-snug">{event.name}</p>
+                          <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium shrink-0 ${badgeVariant}`}>{status}</span>
+                        </div>
+                        <div className="space-y-1 text-xs text-muted-foreground">
+                          <p>{eventDate}{event.location ? ` · ${event.location}` : ''}</p>
+                          <p>by {organizerName}</p>
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                          <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => handleViewEvent(event)}>View</Button>
+                          <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => handleEditEvent(event)}>Edit</Button>
+                          <Button variant="destructive" size="sm" className="h-8 text-xs ml-auto" onClick={() => handleDeleteEvent(event.id)}>Delete</Button>
+                        </div>
+                      </div>
+                    );
+                  }}
                 />
               </TabsContent>
             )

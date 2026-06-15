@@ -50,6 +50,8 @@ interface DataTableProps<TData, TValue> {
   pageCount?: number; // Total number of pages
   pagination?: PaginationState; // Use PaginationState type
   onPaginationChange?: (updater: Updater<PaginationState>) => void; // Use specific Updater type
+  /** Render a card view for each row on mobile screens (< md breakpoint) */
+  renderMobileCard?: (row: TData) => React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -65,6 +67,7 @@ export function DataTable<TData, TValue>({
   pageCount: controlledPageCount,
   pagination: controlledPagination,
   onPaginationChange,
+  renderMobileCard,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -155,7 +158,31 @@ export function DataTable<TData, TValue>({
           </DropdownMenu>
         </div>
       </div>
-      <div className="rounded-xl border border-border overflow-x-auto bg-background/50">
+      {/* Mobile card view */}
+      {renderMobileCard && (
+        <div className="block md:hidden space-y-3">
+          {isLoading ? (
+            <TableRowsSkeleton columns={1} rows={6} />
+          ) : data.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-12 px-6 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
+                <Inbox className="h-7 w-7 text-primary" />
+              </div>
+              <p className="text-base font-medium text-foreground">{emptyMessage}</p>
+              <p className="text-sm text-muted-foreground max-w-sm">
+                Records will appear here once they are added to the platform.
+              </p>
+            </div>
+          ) : (
+            data.map((item, index) => (
+              <div key={index}>{renderMobileCard(item)}</div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Desktop table view */}
+      <div className={`rounded-xl border border-border overflow-x-auto bg-background/50 ${renderMobileCard ? 'hidden md:block' : ''}`}>
         <Table className="w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

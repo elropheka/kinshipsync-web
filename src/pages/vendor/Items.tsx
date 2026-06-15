@@ -124,7 +124,37 @@ const VendorItemsPage: React.FC = () => {
           columns={columns} 
           data={items}
           isLoading={isLoading}
-          // globalFilterPlaceholder="Search your items..."
+          renderMobileCard={(item: VendorItem) => {
+            const price = typeof item.price === 'number'
+              ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(item.price)
+              : item.price;
+            return (
+              <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-semibold text-foreground text-sm">{item.name}</p>
+                    <p className="text-xs text-muted-foreground">{item.category}</p>
+                  </div>
+                  <p className="font-semibold text-foreground text-sm shrink-0">{String(price)}</p>
+                </div>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  {item.availability && (
+                    <span className="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-muted text-foreground">
+                      {item.availability}
+                    </span>
+                  )}
+                  {item.location && <span>{item.location}</span>}
+                  {item.updatedAt && (
+                    <span className="ml-auto">Updated {new Date(item.updatedAt).toLocaleDateString()}</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 pt-1">
+                  <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => handleEditItem(item)}>Edit</Button>
+                  <Button variant="destructive" size="sm" className="h-8 text-xs ml-auto" onClick={() => handleDeleteItem(item.id)}>Delete</Button>
+                </div>
+              </div>
+            );
+          }}
         />
       )}
 

@@ -138,6 +138,42 @@ const AdminUsersPage: React.FC = () => {
           data={filteredUsers}
           isLoading={isLoading}
           emptyMessage="No users found."
+          renderMobileCard={(user: UserProfile) => {
+            const name = user.displayName || [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email || 'User';
+            const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+            const joined = user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+            return (
+              <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-secondary/20 text-secondary text-xs font-bold flex items-center justify-center flex-shrink-0">
+                      {initials}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground text-sm">{name}</p>
+                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="link"
+                    className="text-secondary p-0 h-auto font-medium text-sm shrink-0"
+                    onClick={() => handleEditUser(user)}
+                  >
+                    Edit
+                  </Button>
+                </div>
+                <div className="flex items-center gap-3 text-xs">
+                  <span className="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-muted text-foreground capitalize">
+                    {user.role || 'user'}
+                  </span>
+                  <span className="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                    Active
+                  </span>
+                  <span className="text-muted-foreground ml-auto">{joined}</span>
+                </div>
+              </div>
+            );
+          }}
         />
       </DashboardCard>
 
