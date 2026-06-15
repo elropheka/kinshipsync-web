@@ -19,7 +19,7 @@ const HowItWorksSection: React.FC = () => {
   }, []);
 
   return (
-    <section id="how-it-works" className="relative py-16 md:py-24 lg:py-32 overflow-hidden bg-background">
+    <section id="how-it-works" className="relative py-10 md:py-14 lg:py-18 overflow-hidden bg-background">
       <div className="container mx-auto px-4 relative z-10">
         <div className={`
           text-center mb-16

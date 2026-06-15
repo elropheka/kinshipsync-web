@@ -114,7 +114,7 @@ const FeaturesTwoSection: React.FC = () => {
   }, []);
 
   return (
-    <section id="features" className="features section relative py-16 md:py-24 lg:py-32 overflow-hidden">
+    <section id="features" className="features section relative py-10 md:py-14 lg:py-18 overflow-hidden">
       <div className={`
         absolute inset-0 bg-gradient-to-b from-backgroundSecondary to-background
         transform transition-opacity duration-1000

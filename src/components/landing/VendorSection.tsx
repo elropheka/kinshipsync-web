@@ -23,7 +23,7 @@ const VendorSection: React.FC = () => {
   ];
 
   return (
-    <section id="vendors" className="relative py-16 md:py-24 lg:py-32 overflow-hidden bg-background">
+    <section id="vendors" className="relative py-10 md:py-14 lg:py-18 overflow-hidden bg-background">
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto">
           <div className={`

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Grid, HelpCircle, Headphones, ArrowRight, Menu, X } from 'lucide-react';
+import { Home, Grid, Store, ArrowRight, Menu, X, Mail } from 'lucide-react';
 import beigeLogo from '@/assets/branding/beige-logo.png';
 
 interface NavItem {
@@ -56,8 +56,8 @@ const Header: React.FC = () => {
   const navItems: NavItem[] = [
     { sectionId: 'hero', label: 'Home', icon: <Home className="w-5 h-5" /> },
     { sectionId: 'features', label: 'Features', icon: <Grid className="w-5 h-5" /> },
-    { sectionId: 'faq', label: 'FAQ', icon: <HelpCircle className="w-5 h-5" /> },
-    { sectionId: 'support', label: 'Support', icon: <Headphones className="w-5 h-5" /> },
+    { sectionId: 'vendors', label: 'Vendors', icon: <Store className="w-5 h-5" /> },
+    { sectionId: 'support', label: 'Contact Us', icon: <Mail className="w-5 h-5" /> },
   ];
 
   const getNavTarget = (item: NavItem) => {
@@ -227,7 +227,7 @@ const Header: React.FC = () => {
             >
               <div className="absolute inset-0 bg-accent opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
               
-              <span className="relative z-10">Get Started</span>
+              <span className="relative z-10">Download Now</span>
               <ArrowRight className="w-5 h-5 relative z-10 transform group-hover:translate-x-1 transition-transform" />
             </Link>
 
@@ -288,7 +288,7 @@ const Header: React.FC = () => {
             className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl bg-secondary text-secondary-foreground font-semibold hover:bg-secondary/90 transition-colors"
             onClick={closeMobileMenu}
           >
-            Get Started
+            Download Now
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>

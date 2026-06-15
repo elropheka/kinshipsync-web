@@ -26,7 +26,7 @@ const HeroSection: React.FC = () => {
   return (
     <section
       id="hero"
-      className="hero section relative pt-32 md:pt-40 lg:pt-48 pb-16 md:pb-24 lg:pb-32 overflow-hidden bg-primary text-primary-foreground"
+      className="hero section relative pt-32 md:pt-40 lg:pt-48 pb-10 md:pb-14 lg:pb-18 overflow-hidden bg-primary text-primary-foreground"
     >
       <div
         className="absolute inset-0 bg-primary opacity-100"
@@ -100,7 +100,7 @@ const HeroSection: React.FC = () => {
                 <span className="absolute inset-0 bg-secondary rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <span className="relative px-8 py-4 bg-secondary text-secondary-foreground font-semibold rounded-xl inline-flex items-center gap-2 transform transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
                   <Download className="w-5 h-5" />
-                  Download Now
+                  Download the App &amp; Start Planning
                 </span>
               </a>
             </div>
