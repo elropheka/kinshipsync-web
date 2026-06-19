@@ -9,7 +9,7 @@ export const landingHero: {
   sections: HeroSectionBlock[];
 } = {
   headline:
-    'A family-first planning platform built to bring people together without the stress.',
+    'Your ultimate event planner and beyond! Bring everyone together, easily organize your reunion in one central spot',
   sections: [
     { type: 'text', content: 'It\'s for:' },
     {
@@ -17,21 +17,21 @@ export const landingHero: {
       items: [
         'The cousin who always starts the group chat',
         'The auntie who keeps everyone on track',
-        'The family that refuses to lose touch, no matter the distance',
+        'The family that refuses to lose touch.',
       ],
     },
     {
       type: 'text',
       content:
-        'Kinship Sync brings everything into one simple, shared space so planning feels easy again.',
+        'Kinship Sync brings everything into one simple, shared space so planning feels easy.',
     },
     { type: 'text', content: 'With Kinship Sync, you can:' },
     {
       type: 'list',
       items: [
-        'Coordinate schedules without the back-and-forth',
-        'Collect RSVPs in seconds',
-        'Share updates everyone actually sees',
+        'Coordinate schedules',
+        'RSVPs in seconds',
+        'Share updates',
         'Keep traditions alive across cities and generations',
       ],
     },
