@@ -105,59 +105,61 @@ const AddNewCategoryModal: React.FC<AddNewCategoryModalProps> = ({ isOpen, onClo
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit, (errors) => {
             showValidationErrors(errors, 'Please correct the form errors:');
-          })} className="space-y-4 py-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField
-              control={control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Event Planners" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={control}
-              name="parentCategoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Parent Category (Optional)</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || '_NONE_'}>
+          })} className="py-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category Name</FormLabel>
                     <FormControl>
-                      <SelectTrigger disabled={isLoadingParentCategories}>
-                        <SelectValue placeholder={isLoadingParentCategories ? "Loading..." : "Select parent"} />
-                      </SelectTrigger>
+                      <Input placeholder="e.g., Event Planners" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="_NONE_">None (Top-level category)</SelectItem>
-                      {availableParentCategories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description (Optional)</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="A brief description of this category." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="parentCategoryId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Parent Category (Optional)</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || '_NONE_'}>
+                      <FormControl>
+                        <SelectTrigger disabled={isLoadingParentCategories}>
+                          <SelectValue placeholder={isLoadingParentCategories ? "Loading..." : "Select parent"} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="_NONE_">None (Top-level category)</SelectItem>
+                        {availableParentCategories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-2">
+                    <FormLabel>Description (Optional)</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="A brief description of this category." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <DialogFooter className="mt-6 gap-2 sm:gap-0">
               <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
                 Cancel
               </Button>

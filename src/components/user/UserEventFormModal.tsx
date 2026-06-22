@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { TimePicker } from '@/components/ui/time-picker';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
@@ -191,77 +192,84 @@ const UserEventFormModal: React.FC<UserEventFormModalProps> = ({ event, isOpen, 
 
           <TabsContent value="details">
             <Form {...eventForm}>
-              <form onSubmit={eventForm.handleSubmit(handleFormSubmit)} className="space-y-4 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FormField control={eventForm.control} name="coverImageUrl" render={({ field }) => (
-                  <FormItem className="sm:col-span-2">
-                    <FormControl>
-                      <ImageUploadInput
-                        label="Cover Image (Optional)"
-                        currentImageUrl={field.value}
-                        storagePath="event_covers"
-                        imageClassName="w-full aspect-video object-cover rounded-md border"
-                        onImageUploaded={(newUrl) => {
-                          eventForm.setValue('coverImageUrl', newUrl, { shouldValidate: true, shouldDirty: true });
-                        }}
-                        onImageRemoved={() => {
-                          eventForm.setValue('coverImageUrl', '', { shouldValidate: true, shouldDirty: true });
-                        }}
-                        onError={(errorMessage) => {
-                          eventForm.setError('coverImageUrl', { type: 'manual', message: errorMessage });
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={eventForm.control} name="name" render={({ field }) => (
-                  <FormItem><FormLabel>Event Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={eventForm.control} name="description" render={({ field }) => (
-                  <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} rows={3} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={eventForm.control} name="date" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Date</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="date"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={eventForm.control} name="time" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Time (Optional)</FormLabel>
-                    <FormControl>
-                      <TimePicker
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder="Select event time"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={eventForm.control} name="location" render={({ field }) => (
-                  <FormItem><FormLabel>Location (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={eventForm.control} name="visibility" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Visibility</FormLabel>
-                    <FormControl>
-                      <select {...field} className="w-full p-2 border rounded-md dark:bg-gray-700 dark:text-white">
-                        <option value="private">Private</option>
-                        <option value="public">Public</option>
-                        <option value="unlisted">Unlisted</option>
-                      </select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <DialogFooter>
+              <form onSubmit={eventForm.handleSubmit(handleFormSubmit)} className="py-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormField control={eventForm.control} name="coverImageUrl" render={({ field }) => (
+                    <FormItem className="sm:col-span-2">
+                      <FormControl>
+                        <ImageUploadInput
+                          label="Cover Image (Optional)"
+                          currentImageUrl={field.value}
+                          storagePath="event_covers"
+                          imageClassName="w-full aspect-video object-cover rounded-md border"
+                          onImageUploaded={(newUrl) => {
+                            eventForm.setValue('coverImageUrl', newUrl, { shouldValidate: true, shouldDirty: true });
+                          }}
+                          onImageRemoved={() => {
+                            eventForm.setValue('coverImageUrl', '', { shouldValidate: true, shouldDirty: true });
+                          }}
+                          onError={(errorMessage) => {
+                            eventForm.setError('coverImageUrl', { type: 'manual', message: errorMessage });
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={eventForm.control} name="name" render={({ field }) => (
+                    <FormItem><FormLabel>Event Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                  )} />
+                  <FormField control={eventForm.control} name="description" render={({ field }) => (
+                    <FormItem className="sm:col-span-2"><FormLabel>Description</FormLabel><FormControl><Textarea {...field} rows={3} /></FormControl><FormMessage /></FormItem>
+                  )} />
+                  <FormField control={eventForm.control} name="date" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Date</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={eventForm.control} name="time" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Time (Optional)</FormLabel>
+                      <FormControl>
+                        <TimePicker
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Select event time"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={eventForm.control} name="location" render={({ field }) => (
+                    <FormItem><FormLabel>Location (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                  )} />
+                  <FormField control={eventForm.control} name="visibility" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Visibility</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select visibility" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="private">Private</SelectItem>
+                          <SelectItem value="public">Public</SelectItem>
+                          <SelectItem value="unlisted">Unlisted</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+                <DialogFooter className="mt-6 gap-2 sm:gap-0">
                   <DialogClose asChild><Button type="button" variant="outline" onClick={onClose}>Cancel</Button></DialogClose>
                   <Button type="submit" disabled={isProcessing}>
                     {isProcessing ? 'Saving...' : (mode === 'edit' ? 'Save Changes' : 'Create Event')}

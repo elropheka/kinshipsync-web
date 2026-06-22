@@ -280,7 +280,10 @@ const CouponsPage: React.FC = () => {
                 ))}
               </div>
             </div>
-            <Button onClick={save} className="w-full">{editing ? 'Update' : 'Create'}</Button>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+              <Button onClick={save}>{editing ? 'Update' : 'Create'}</Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

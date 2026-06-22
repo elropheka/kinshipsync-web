@@ -19,7 +19,7 @@ const VendorItemStep2Form: React.FC = () => {
   const { control } = useFormContext<CreateVendorItemPayload>();
 
   return (
-    <div className="space-y-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <FormField
         control={control}
         name="price"

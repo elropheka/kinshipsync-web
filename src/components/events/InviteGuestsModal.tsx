@@ -97,7 +97,7 @@ const InviteGuestsModal: React.FC<InviteGuestsModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(openState) => !openState && onClose()}>
       <DialogContent className="w-full max-w-md sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Invite Guests to {eventName}</DialogTitle>
@@ -105,47 +105,32 @@ const InviteGuestsModal: React.FC<InviteGuestsModalProps> = ({
             Send an invitation to your event via email or in-app chat.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-          <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-            <Label htmlFor="recipientEmail" className="text-right">
-              Recipient Email
-            </Label>
+        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="recipientEmail">Recipient Email</Label>
             <Input
               id="recipientEmail"
               type="email"
               value={recipientEmail}
               onChange={(e) => setRecipientEmail(e.target.value)}
-              className="col-span-3"
               placeholder="guest@example.com"
             />
           </div>
-          {/* <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="recipientUserId" className="text-right">
-              Recipient User ID
-            </Label>
-            <Input
-              id="recipientUserId"
-              value={recipientUserId}
-              onChange={(e) => setRecipientUserId(e.target.value)}
-              className="col-span-3"
-              placeholder="Firebase User ID (optional)"
-            />
-          </div> */}
-          <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-            <Label htmlFor="customMessage" className="text-right">
-              Custom Message
-            </Label>
+          <div className="space-y-2">
+            <Label htmlFor="customMessage">Custom Message</Label>
             <Textarea
               id="customMessage"
               value={customMessage}
               onChange={(e) => setCustomMessage(e.target.value)}
-              className="col-span-3"
               placeholder="Looking forward to seeing you!"
             />
           </div>
           {loading && <p className="text-center text-blue-500">Sending invitation...</p>}
           {successMessage && <p className="text-center text-green-500">{successMessage}</p>}
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+              Cancel
+            </Button>
             <Button type="submit" disabled={loading}>
               Send Invitation
             </Button>

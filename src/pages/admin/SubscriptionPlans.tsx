@@ -347,8 +347,9 @@ const SubscriptionPlansPage: React.FC = () => {
             </div>
           )}
 
-          <div className="mt-4">
-            <Button onClick={save} className="w-full">{editingPlan ? 'Update Plan' : 'Create Plan'}</Button>
+          <div className="flex justify-end gap-2 mt-6">
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button onClick={save}>{editingPlan ? 'Update Plan' : 'Create Plan'}</Button>
           </div>
         </DialogContent>
       </Dialog>

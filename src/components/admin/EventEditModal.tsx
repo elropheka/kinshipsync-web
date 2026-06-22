@@ -291,14 +291,24 @@ const EventEditModal: React.FC<EventEditModalProps> = ({
                 </FormItem>
               )}
             />
-            <FormField control={eventDetailsForm.control} name="name" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Event Name *</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField control={eventDetailsForm.control} name="name" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Event Name *</FormLabel>
+                    <FormControl><Input {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField control={eventDetailsForm.control} name="location" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl><Input {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField control={eventDetailsForm.control} name="description" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
@@ -336,14 +346,6 @@ const EventEditModal: React.FC<EventEditModalProps> = ({
                 )}
               />
             </div>
-            <FormField control={eventDetailsForm.control} name="location" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField control={eventDetailsForm.control} name="visibility" render={({ field }) => (
                   <FormItem>
